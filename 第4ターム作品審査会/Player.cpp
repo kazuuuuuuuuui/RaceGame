@@ -21,6 +21,12 @@ void Player::update(){
 	//減速させる慣性
 	m_speed *= 0.965f;
 
+	//魔石をゲットしたかの判定と処理
+	if (getMagicStone()){
+		
+
+	}
+
 }
 
 
@@ -84,18 +90,44 @@ void Player::control(unsigned int _key, float _x, float _y, float _z){
 }
 
 //-------------------------------------
+//プレイヤーが魔石をゲットしたかどうか判定
+//ゲットしていたらtrue ゲットしていなかったらfalseを返す
+
+bool Player::getMagicStone(){
+
+	//プレイヤーと魔石との距離
+	glm::vec3 distance;
+	distance.x = (magicStone->m_position.x - m_position.x);
+	distance.y = (magicStone->m_position.y - m_position.y);
+	distance.z = (magicStone->m_position.z - m_position.z);
+
+	float length = sqrt(distance.x*distance.x + distance.y*distance.y + distance.z*distance.z);
+
+	printf_s("%f\n", length);
+
+	if (length < 1.f){
+		return true;
+	}
+	else{
+		return false;
+	}
+
+}
+
+//-------------------------------------
 //プレイヤーがダートに入っているか判定
 //入っていたらtrue 入っていなかったらfalseを返す
 
 bool Player::inDart(){
 	/*if (testCourse->){
 		return true;
-	}
-	else{
+		}
+		else{
 		return false;
-	}*/
+		}*/
 	return false;
 }
+
 
 
 

@@ -5,7 +5,10 @@
 #include<Windows.h>
 #include"BmpImage.h"
 
-GLuint loadImage_alpha(const char *_Filename){
+//-------------------------------------
+//bmp画像からアルファ値付きのテクスチャ作成
+
+GLuint  BmpImage::loadImage_alpha(const char *_Filename){
 	FILE *pBinMapFile;
 	pBinMapFile = fopen(_Filename, "rb");
 

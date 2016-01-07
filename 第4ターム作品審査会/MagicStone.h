@@ -43,7 +43,7 @@ public:
 		//å„Ç≈èëÇ´ä∑Ç¶
 	{
 		m_position.x = 22.f;
-		m_position.y = 0;
+		m_position.y = 0.5;
 		m_position.z = -75.f;
 	};
 

@@ -52,7 +52,7 @@ void init(){
 
 	magicStone = new MagicStone();
 
-	fire_handle = BmpImage::loadImage("bmp/fire.bmp");
+	fire_handle = BmpImage::loadImage_alpha("bmp/fire.bmp");
 }
 
 
