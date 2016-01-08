@@ -44,11 +44,13 @@ void fps(){
 void init(){
 
 	player = new Player();
+	xFile::loadXfile("xFile/bike.x", player->m_vertices);
+
 	camera = new Camera();
 
 	//後で書き換え
 	testCourse = new Course();
-	testCourse->m_handle = BmpImage::loadImage("bmp/testCourse.bmp");
+	testCourse->m_handle = BmpImage::loadImage("bmp/test.bmp");
 
 	magicStone = new MagicStone();
 
@@ -96,13 +98,17 @@ void display() {
 	//深度テスト
 	glEnable(GL_DEPTH_TEST);
 
+	//glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+
 	testCourse->draw();
 
 	magicStone->draw();
 
 	player->draw();
 
-	glDisable(GL_DEPTH_TEST);
+	//glDisable(GL_LIGHTING);
+	//glDisable(GL_DEPTH_TEST);
 
 	glFlush();
 }
@@ -112,10 +118,13 @@ void display() {
 //display関数を60F単位で再帰的に呼び出す関数
 
 void timer(int value) {
-	system("cls");
+	//system("cls");
 
+
+	printf("%d %d", (int)player->m_position.x, (int)(player->m_position.z));
+	printf(" %d\n", hoge[128+(int)player->m_position.z][(int)player->m_position.x]);
 	//printf("%d %d %d \n", pix->r, pix->g, pix->b);
-	//printf("%f %f", camera->m_position.x, camera->m_position.z);
+
 
 	//fps();
 

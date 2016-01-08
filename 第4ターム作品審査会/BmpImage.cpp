@@ -99,8 +99,15 @@ GLuint  BmpImage::loadImage_alpha(const char *_Filename){
 	return handle;
 }
 
+
+
+bool hoge[128][128];
+
+
+
+
 /*拡張子.bmpの画像読み込み*/
-GLuint BmpImage::loadImage(const char *_fileName/*, RGB *_pixels*/){
+GLuint BmpImage::loadImage(const char *_fileName){
 	FILE *pBinMapFile;
 	pBinMapFile = fopen(_fileName, "rb");
 
@@ -126,6 +133,48 @@ GLuint BmpImage::loadImage(const char *_fileName/*, RGB *_pixels*/){
 		tmp = pixels[i].r;
 		pixels[i].r = pixels[i].b;
 		pixels[i].b = tmp;
+	}
+
+
+
+
+
+	//ピクセル単位で上下反転
+	for (int i = 0; i < bmpInfoHeader.biWidth; i++){
+		for (int n = 0; n < bmpInfoHeader.biHeight / 2; n++){
+			RGB temp = pixels[bmpInfoHeader.biWidth * n + i];
+			pixels[bmpInfoHeader.biWidth * n + i] = pixels[bmpInfoHeader.biWidth*(bmpInfoHeader.biHeight - n - 1) + i];
+			pixels[bmpInfoHeader.biWidth*(bmpInfoHeader.biHeight - n - 1) + i] = temp;
+		}
+	}
+
+	int num = 128;
+	printf("r:%u ,g:%u, b:%u\n", pixels[num].r, pixels[num].g, pixels[num].b);
+
+
+	//コース判定用のバッファ作成
+	for (int i = 0; i < bmpInfoHeader.biHeight; i++){
+		for (int t = 0; t < bmpInfoHeader.biWidth; t++){
+
+			//赤なら1
+			if (pixels[t + i*bmpInfoHeader.biWidth].r == 255 &&
+				pixels[t + i*bmpInfoHeader.biWidth].g == 0 &&
+				pixels[t + i*bmpInfoHeader.biWidth].b == 0){
+				hoge[i][t] = TRUE;
+			}
+
+			//白なら0
+			else{
+				hoge[i][t] = FALSE;
+			}
+
+
+			/*printf("pixcels[%d] r:%u g:%u b:%u %d\n", t + i*bmpInfoHeader.biWidth,
+				pixels[t + i*bmpInfoHeader.biWidth].r,
+				pixels[t + i*bmpInfoHeader.biWidth].g, pixels[t + i*bmpInfoHeader.biWidth].b, hoge[i][t]);*/
+
+		}
+
 	}
 
 	GLuint handle;

@@ -6,6 +6,7 @@
 #include<math.h>
 #include"Course.h"
 #include"player.h"
+#include"BmpImage.h"
 #include"glut.h"
 
 Player *player = nullptr;
@@ -23,9 +24,11 @@ void Player::update(){
 
 	//ñÇêŒÇÉQÉbÉgÇµÇΩÇ©ÇÃîªíËÇ∆èàóù
 	if (getMagicStone()){
-		
+
 
 	}
+
+	inDart();
 
 }
 
@@ -38,6 +41,7 @@ void Player::draw(){
 	{
 		/*é©ã@ëÄçÏ*/
 		glTranslatef(m_position.x, m_position.y, m_position.z);
+				
 		glRotatef(m_rotate.y * 180 / M_PI, 0, 1, 0);
 		glScalef(m_scale.x, m_scale.y, m_scale.z);
 
@@ -49,6 +53,21 @@ void Player::draw(){
 			glVertex3f(0.5, 0, 1);
 		}
 		glEnd();
+
+		/*glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_NORMAL_ARRAY);
+
+		std::vector<float>::iterator itr_v = m_vertex.begin();
+		glVertexPointer(3, GL_FLOAT, 0, &(*itr_v));
+
+		std::vector<float>::iterator itr_n = m_normal.begin();
+		glNormalPointer(GL_FLOAT, 0, &(*itr_n));
+
+		std::vector<unsigned short>::iterator itr_i = m_index.begin();
+
+		glDrawElements(GL_TRIANGLES, m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));*/
+
+		
 
 	}
 	glPopMatrix();
@@ -103,8 +122,6 @@ bool Player::getMagicStone(){
 
 	float length = sqrt(distance.x*distance.x + distance.y*distance.y + distance.z*distance.z);
 
-	printf_s("%f\n", length);
-
 	if (length < 1.f){
 		return true;
 	}
@@ -119,12 +136,9 @@ bool Player::getMagicStone(){
 //ì¸Ç¡ÇƒÇ¢ÇΩÇÁtrue ì¸Ç¡ÇƒÇ¢Ç»Ç©Ç¡ÇΩÇÁfalseÇï‘Ç∑
 
 bool Player::inDart(){
-	/*if (testCourse->){
-		return true;
-		}
-		else{
-		return false;
-		}*/
+
+	
+
 	return false;
 }
 
