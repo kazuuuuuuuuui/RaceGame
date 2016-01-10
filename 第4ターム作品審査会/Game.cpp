@@ -50,7 +50,12 @@ void init(){
 
 	//後で書き換え
 	testCourse = new Course();
-	testCourse->m_handle = BmpImage::loadImage("bmp/test.bmp");
+
+	//テクスチャの読み込み
+	testCourse->m_handle = BmpImage::loadImage("bmp/course1.bmp");
+
+	//コースデータのバッファ作成
+	BmpImage::makeBuffer("bmp/buffer1.bmp", testCourse->m_buffer);
 
 	magicStone = new MagicStone();
 
@@ -120,10 +125,11 @@ void display() {
 void timer(int value) {
 	//system("cls");
 
+	//printf("%f %f", player->m_position.x, player->m_position.z);
+	//printf(" %d\n", testCourse->m_buffer[COURSE_HEIGHT - 1 + (int)player->m_position.z][(int)player->m_position.x]);
 
-	printf("%d %d", (int)player->m_position.x, (int)(player->m_position.z));
-	printf(" %d\n", hoge[128+(int)player->m_position.z][(int)player->m_position.x]);
-	//printf("%d %d %d \n", pix->r, pix->g, pix->b);
+	printf("CheckPoint:%d\n", player->m_checkFlag);
+	printf("LAP:%d\n", player->m_lapCount);
 
 
 	//fps();

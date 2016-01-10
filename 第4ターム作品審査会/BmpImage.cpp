@@ -3,6 +3,7 @@
 #include<stdio.h>
 #include<assert.h>
 #include<Windows.h>
+#include"Course.h"
 #include"BmpImage.h"
 
 //-------------------------------------
@@ -99,13 +100,6 @@ GLuint  BmpImage::loadImage_alpha(const char *_Filename){
 	return handle;
 }
 
-
-
-bool hoge[128][128];
-
-
-
-
 /*拡張子.bmpの画像読み込み*/
 GLuint BmpImage::loadImage(const char *_fileName){
 	FILE *pBinMapFile;
@@ -120,7 +114,9 @@ GLuint BmpImage::loadImage(const char *_fileName){
 	fread(&bmpInfoHeader, sizeof(BITMAPINFOHEADER), 1, pBinMapFile);
 
 	int imageSize = bmpInfoHeader.biWidth * bmpInfoHeader.biHeight * sizeof(RGB);
+
 	RGB *pixels = (RGB*)malloc(imageSize);
+
 	pixels = (RGB*)malloc(imageSize);
 
 	fread(pixels, imageSize, 1, pBinMapFile);
@@ -135,10 +131,6 @@ GLuint BmpImage::loadImage(const char *_fileName){
 		pixels[i].b = tmp;
 	}
 
-
-
-
-
 	//ピクセル単位で上下反転
 	for (int i = 0; i < bmpInfoHeader.biWidth; i++){
 		for (int n = 0; n < bmpInfoHeader.biHeight / 2; n++){
@@ -146,35 +138,6 @@ GLuint BmpImage::loadImage(const char *_fileName){
 			pixels[bmpInfoHeader.biWidth * n + i] = pixels[bmpInfoHeader.biWidth*(bmpInfoHeader.biHeight - n - 1) + i];
 			pixels[bmpInfoHeader.biWidth*(bmpInfoHeader.biHeight - n - 1) + i] = temp;
 		}
-	}
-
-	int num = 128;
-	printf("r:%u ,g:%u, b:%u\n", pixels[num].r, pixels[num].g, pixels[num].b);
-
-
-	//コース判定用のバッファ作成
-	for (int i = 0; i < bmpInfoHeader.biHeight; i++){
-		for (int t = 0; t < bmpInfoHeader.biWidth; t++){
-
-			//赤なら1
-			if (pixels[t + i*bmpInfoHeader.biWidth].r == 255 &&
-				pixels[t + i*bmpInfoHeader.biWidth].g == 0 &&
-				pixels[t + i*bmpInfoHeader.biWidth].b == 0){
-				hoge[i][t] = TRUE;
-			}
-
-			//白なら0
-			else{
-				hoge[i][t] = FALSE;
-			}
-
-
-			/*printf("pixcels[%d] r:%u g:%u b:%u %d\n", t + i*bmpInfoHeader.biWidth,
-				pixels[t + i*bmpInfoHeader.biWidth].r,
-				pixels[t + i*bmpInfoHeader.biWidth].g, pixels[t + i*bmpInfoHeader.biWidth].b, hoge[i][t]);*/
-
-		}
-
 	}
 
 	GLuint handle;
@@ -207,4 +170,103 @@ GLuint BmpImage::loadImage(const char *_fileName){
 	free(pixels);
 
 	return handle;
+}
+
+
+//-------------------------------------
+//拡張子bmpからコース用のバッファを作製する
+
+void BmpImage::makeBuffer(const char *_bufferName, int _buffer[][COURSE_WIDTH]){
+	FILE *pBinMapFile;
+	pBinMapFile = fopen(_bufferName, "rb");
+
+	assert(pBinMapFile != NULL);
+
+	BITMAPFILEHEADER bmpHeader;
+	fread(&bmpHeader, sizeof(BITMAPFILEHEADER), 1, pBinMapFile);
+
+	BITMAPINFOHEADER bmpInfoHeader;
+	fread(&bmpInfoHeader, sizeof(BITMAPINFOHEADER), 1, pBinMapFile);
+
+	int imageSize = bmpInfoHeader.biWidth * bmpInfoHeader.biHeight * sizeof(RGB);
+
+	RGB *pixels = (RGB*)malloc(imageSize);
+
+	pixels = (RGB*)malloc(imageSize);
+
+	fread(pixels, imageSize, 1, pBinMapFile);
+
+	fclose(pBinMapFile);
+
+	//ピクセル単位でRとBを逆転させる
+	for (int i = 0; i < bmpInfoHeader.biWidth * bmpInfoHeader.biHeight; i++){
+		unsigned char tmp;
+		tmp = pixels[i].r;
+		pixels[i].r = pixels[i].b;
+		pixels[i].b = tmp;
+	}
+
+	//ピクセル単位で上下反転
+	for (int i = 0; i < bmpInfoHeader.biWidth; i++){
+		for (int n = 0; n < bmpInfoHeader.biHeight / 2; n++){
+			RGB temp = pixels[bmpInfoHeader.biWidth * n + i];
+			pixels[bmpInfoHeader.biWidth * n + i] = pixels[bmpInfoHeader.biWidth*(bmpInfoHeader.biHeight - n - 1) + i];
+			pixels[bmpInfoHeader.biWidth*(bmpInfoHeader.biHeight - n - 1) + i] = temp;
+		}
+	}
+
+	//コース判定用のバッファ作成
+	for (int i = 0; i < bmpInfoHeader.biHeight; i++){
+		for (int t = 0; t < bmpInfoHeader.biWidth; t++){
+
+			//白なら道
+			if (pixels[t + i*bmpInfoHeader.biWidth].r == 255 &&
+				pixels[t + i*bmpInfoHeader.biWidth].g == 255 &&
+				pixels[t + i*bmpInfoHeader.biWidth].b == 255){
+
+				_buffer[i][t] = PATH;
+			}
+
+			//赤ならスタート
+			else if (pixels[t + i*bmpInfoHeader.biWidth].r == 255 &&
+				pixels[t + i*bmpInfoHeader.biWidth].g == 0 &&
+				pixels[t + i*bmpInfoHeader.biWidth].b == 0){
+
+				_buffer[i][t] = START;
+			}
+
+			//青ならゴール
+			else if (pixels[t + i*bmpInfoHeader.biWidth].r == 0 &&
+				pixels[t + i*bmpInfoHeader.biWidth].g == 0 &&
+				pixels[t + i*bmpInfoHeader.biWidth].b == 255){
+
+				_buffer[i][t] = GOAL;
+			}
+
+
+			//緑ならチェックポイントの前
+			else if (pixels[t + i*bmpInfoHeader.biWidth].r == 0 &&
+				pixels[t + i*bmpInfoHeader.biWidth].g == 255 &&
+				pixels[t + i*bmpInfoHeader.biWidth].b == 0){
+
+				_buffer[i][t] = CHECK_FLONT;
+			}
+
+			//黄色ならチェックポイントの後
+			else if (pixels[t + i*bmpInfoHeader.biWidth].r == 255 &&
+				pixels[t + i*bmpInfoHeader.biWidth].g == 255 &&
+				pixels[t + i*bmpInfoHeader.biWidth].b == 0){
+
+				_buffer[i][t] = CHECK_BEHIND;
+			}
+
+			else{
+				_buffer[i][t] = DART;
+			}
+		}
+
+	}
+
+	free(pixels);
+
 }

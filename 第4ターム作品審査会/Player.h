@@ -1,5 +1,8 @@
 #pragma once
 
+//ゴールに必要なコースの周回数
+#define LAP_MAX (3)
+
 //プレイヤーが所持出来る魔石の最大数
 #define MAGICSTONE_MAX (3)
 
@@ -38,23 +41,39 @@ public:
 	//法線情報
 	std::vector<float>m_normal;
 
+	//周回数
+	//正規の走法でコースを1周したら+1する
+	int m_lapCount;
+
+	//チェックポイントを順走するとtrueになる
+	//m_lapCountが+1された際にすべてのフラグをfalseに戻す
+	bool m_checkFlag;
+
 	MagicStone m_magicStone[MAGICSTONE_MAX];
 
 	void draw();
 	void update();
 	void control(unsigned int _key, float _x, float _y, float _z);
 	bool inDart();
+
 	bool getMagicStone();
 
-	//後で書き換える
-	Player(){
-		m_position.x = 22.f;
-		m_position.y = 0.5f;
-		m_position.z = -68.f;
+	bool passCheckPoint();
+	bool countLap();
+	bool isGoal();
 
-		/*m_scale.x = 0.1f;
-		m_scale.y = 0.1f;
-		m_scale.z = 0.1f;*/
+	//後で書き換える
+	Player() :
+		m_lapCount(0),
+		m_checkFlag(false)
+	{
+		m_position.x = 45.f;
+		m_position.y = 0.5f;
+		m_position.z = -150.f;
+
+		/*m_scale.x = 0.15f;
+		m_scale.y = 0.15f;
+		m_scale.z = 0.15f;*/
 	}
 
 };

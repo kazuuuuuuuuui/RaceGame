@@ -1,0 +1,51 @@
+#include<stdlib.h>
+#include"camera.h"
+#include"player.h"
+#include"glm\gtc\matrix_transform.hpp"
+#include"glut.h"
+
+void Camera::update(){
+
+	//投影変換行列の設定 
+	glMatrixMode(GL_PROJECTION);
+
+	//変換行列の初期化 
+	glLoadIdentity();
+
+	//透視投影法の視体積gluPerspactive(th, w/h, near, far);
+	gluPerspective(m_angle, m_aspect, m_zNear, m_zFar);
+
+	//ビュー行列の設定
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	//カメラの座標更新
+	m_position.x = player->m_position.x + sin(player->m_rotate.y) * 6;
+	m_position.y = 2;
+	m_position.z = player->m_position.z + cos(player->m_rotate.y) * 6;
+
+	//カメラの注視座標の更新
+	m_target = player->m_position;
+
+	gluLookAt(
+		// 視点の位置x,y,z;
+		m_position.x, m_position.y, m_position.z,
+
+		// 視界の中心位置の参照点座標x,y,z
+		m_target.x, m_target.y, m_target.z,
+
+		//視界の上方向のベクトルx,y,z
+		m_up.x, m_up.y, m_up.z);
+
+
+	//viewMatrix = glm::lookAt(
+	//	// 視点の位置x,y,z
+	//	glm::vec3(m_position.m_x, m_position.m_y, m_position.m_z),
+
+	//	// 視界の中心位置の参照点座標x,y,z
+	//	glm::vec3(m_target.m_x, m_target.m_y, m_target.m_z),
+	//	
+	//	//視界の上方向のベクトルx,y,z
+	//	glm::vec3(m_up.m_x, m_up.m_y, m_up.m_z)
+	//	);
+}
