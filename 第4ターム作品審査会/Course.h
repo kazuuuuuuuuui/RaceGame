@@ -4,6 +4,9 @@
 #define COURSE_WIDTH (256)
 #define COURSE_HEIGHT (256)
 
+//ゴールに必要なコースの周回数
+#define LAP_MAX (3)
+
 #include<stdlib.h>
 #include"BmpImage.h"
 #include"glut.h"

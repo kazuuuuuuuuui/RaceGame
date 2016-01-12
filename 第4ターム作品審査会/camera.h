@@ -7,6 +7,12 @@
 //ƒrƒ…[s—ñ
 //glm::mat4 viewMatrix;
 
+enum{
+	TYPE_2D = 0,
+	TYPE_3D
+};
+
+
 class Camera{
 public:
 	GLdouble m_angle;
@@ -29,7 +35,7 @@ public:
 		m_up(0, 1, 0)
 	{};
 
-	void update();
+	void update(const int _type);
 
 };
 

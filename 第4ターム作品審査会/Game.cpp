@@ -3,6 +3,7 @@
 #define WINDOW_WIDTH (900)
 #define WINDOW_HEIGHT (900)
 
+#define _CRT_SECURE_NO_WARNINGS
 #include<stdio.h>
 #include<stdlib.h>
 #define _USE_MATH_DEFINES
@@ -11,6 +12,7 @@
 #include"player.h"
 #include"Course.h"
 #include"MagicStone.h"
+#include"StrokeString.h"
 #include"glut.h"
 
 Camera *camera = nullptr;
@@ -37,6 +39,22 @@ void fps(){
 
 //-------------------------------------
 
+
+
+//-------------------------------------
+//キーボードからの入力全般
+
+void keyboard(unsigned char key, int x, int y){
+
+
+}
+
+
+void specialkeydown(int key, int x, int y){
+
+
+
+}
 
 //-------------------------------------
 //ゲームの初期化全般を行う
@@ -82,21 +100,28 @@ void joystick(unsigned int buttonMask, int x, int y, int z){
 	lastkeys = buttonMask;
 }
 
+char hoge[256];
+char piyo[256];
+
+
 
 //----------------------------------------
 //更新と描画
 
 void display() {
+
+	//毎フレーム
+	sprintf(hoge, "%d", player->m_lapCount);
+	
+	//コース選択時に1回だけ
+	sprintf(piyo, "%d", LAP_MAX);
+
+
 	/*更新*/
-	camera->update();
+	camera->update(TYPE_3D);
 	player->update();
 
-
-
-
-
-
-	/*描画*/
+	/*描画(3D)*/
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -108,12 +133,31 @@ void display() {
 
 	testCourse->draw();
 
-	magicStone->draw();
+	//magicStone->draw();
 
 	player->draw();
 
 	//glDisable(GL_LIGHTING);
 	//glDisable(GL_DEPTH_TEST);
+
+
+
+	/*更新*/
+	camera->update(TYPE_2D);
+
+
+
+	/*描画(2D)*/
+
+	//周回カウントの表示
+	//文字等の出力を1つの関数にまとめる予定
+	StrokeString::print("LAP", { 230, 250, 0 }, 0.1f, { 1, 0, 0 });
+	StrokeString::print(hoge, { 260, 250, 0 }, 0.18f, { 1, 0, 0 });
+	StrokeString::print("/", { 275, 250, 0 }, 0.1f, { 1, 0, 0 });
+	StrokeString::print(piyo, { 285, 250, 0 }, 0.1f, { 1, 0, 0 });
+	StrokeString::print("TIME", { 200, 280, 0 }, 0.1f, { 1, 0, 0 });
+
+
 
 	glFlush();
 }
@@ -125,11 +169,11 @@ void display() {
 void timer(int value) {
 	//system("cls");
 
-	//printf("%f %f", player->m_position.x, player->m_position.z);
-	//printf(" %d\n", testCourse->m_buffer[COURSE_HEIGHT - 1 + (int)player->m_position.z][(int)player->m_position.x]);
+	printf("%f %f", player->m_position.x, player->m_position.z);
+	printf(" %d\n", testCourse->m_buffer[COURSE_HEIGHT - 1 + (int)player->m_position.z][(int)player->m_position.x]);
 
-	printf("CheckPoint:%d\n", player->m_checkFlag);
-	printf("LAP:%d\n", player->m_lapCount);
+	//printf("CheckPoint:%d\n", player->m_checkFlag);
+	//printf("LAP:%d\n", player->m_lapCount);
 
 
 	//fps();
@@ -148,6 +192,8 @@ int main(int argc, char *argv[]) {
 	glutDisplayFunc(display);
 	glutTimerFunc(0, timer, 0);
 	glutJoystickFunc(joystick, 0);
+	glutKeyboardFunc(keyboard);
+	glutSpecialFunc(specialkeydown);
 
 	init();//ゲームの初期化
 

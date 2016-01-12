@@ -22,6 +22,10 @@ void Player::update(){
 	//減速させる慣性
 	m_speed *= 0.965f;
 
+
+	//既定のコース領域から出ていないかの判定
+	checkCourseOut();
+
 	//魔石をゲットしたかの判定と処理
 	if (getMagicStone()){}
 
@@ -43,7 +47,11 @@ void Player::update(){
 
 	//ゴールしたかの判定
 	if (isGoal()){
-		exit(1);
+		/*
+
+		ゴールした時の処理記述
+
+		*/
 	}
 
 }
@@ -94,7 +102,7 @@ void Player::control(unsigned int _key, float _x, float _y, float _z){
 
 		//加速度の設定
 		//-0.005fは補正値
-		glm::vec3 accelIncrement(-0.01*sin(m_rotate.y), 0, -0.01*cos(m_rotate.y));
+		glm::vec3 accelIncrement(-0.015*sin(m_rotate.y), 0, -0.015*cos(m_rotate.y));
 		m_accel = accelIncrement;
 	}
 	else{
@@ -138,6 +146,32 @@ bool Player::getMagicStone(){
 	}
 	else{
 		return false;
+	}
+
+}
+
+
+//-------------------------------------
+//既定のコース領域から出ていないかの判断と
+//出ていた場合の押し戻し処理
+
+void Player::checkCourseOut(){
+
+	if (m_position.x < 0.f){
+		m_position.x = 0.f;
+	}
+
+	if (m_position.x > COURSE_WIDTH){
+		m_position.x = COURSE_WIDTH;
+	}
+
+	if (m_position.z > 0){
+		m_position.z = 0.f;
+	}
+
+	//256のままだと256番目のピクセル情報にアクセスしてしまうので補正値+1してある
+	if (m_position.z < -COURSE_HEIGHT + 1){
+		m_position.z = -COURSE_HEIGHT + 1;
 	}
 
 }

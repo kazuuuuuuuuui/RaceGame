@@ -1,7 +1,11 @@
 #pragma once
 
-//ゴールに必要なコースの周回数
-#define LAP_MAX (3)
+
+//debug
+//デバッグ用に位置いじれるようにしておく
+#define PLAYER_TEST_POS_X (20.f)
+#define PLAYER_TEST_POS_Y (0.5f)
+#define PLAYER_TEST_POS_Z (-160.f)
 
 //プレイヤーが所持出来る魔石の最大数
 #define MAGICSTONE_MAX (3)
@@ -54,6 +58,9 @@ public:
 	void draw();
 	void update();
 	void control(unsigned int _key, float _x, float _y, float _z);
+
+	void checkCourseOut();
+
 	bool inDart();
 
 	bool getMagicStone();
@@ -67,9 +74,9 @@ public:
 		m_lapCount(0),
 		m_checkFlag(false)
 	{
-		m_position.x = 45.f;
-		m_position.y = 0.5f;
-		m_position.z = -150.f;
+		m_position.x = PLAYER_TEST_POS_X;
+		m_position.y = PLAYER_TEST_POS_Y;
+		m_position.z = PLAYER_TEST_POS_Z;
 
 		/*m_scale.x = 0.15f;
 		m_scale.y = 0.15f;
