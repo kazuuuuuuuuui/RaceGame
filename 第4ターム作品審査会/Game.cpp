@@ -44,17 +44,17 @@ void fps(){
 //-------------------------------------
 //キーボードからの入力全般
 
-void keyboard(unsigned char key, int x, int y){
-
-
-}
-
-
-void specialkeydown(int key, int x, int y){
-
-
-
-}
+//void keyboard(unsigned char key, int x, int y){
+//
+//
+//}
+//
+//
+//void specialkeydown(int key, int x, int y){
+//
+//
+//
+//}
 
 //-------------------------------------
 //ゲームの初期化全般を行う
@@ -70,7 +70,8 @@ void init(){
 	testCourse = new Course();
 
 	//テクスチャの読み込み
-	testCourse->m_handle = BmpImage::loadImage("bmp/course1.bmp");
+	testCourse->m_handle[COUSE_TEXTURE] = BmpImage::loadImage("bmp/course1.bmp");
+	testCourse->m_handle[BACKGROUND_TEXTURE] = BmpImage::loadImage("bmp/background1.bmp");
 
 	//コースデータのバッファ作成
 	BmpImage::makeBuffer("bmp/buffer1.bmp", testCourse->m_buffer);
@@ -100,8 +101,19 @@ void joystick(unsigned int buttonMask, int x, int y, int z){
 	lastkeys = buttonMask;
 }
 
-char hoge[256];
-char piyo[256];
+//取り敢えず
+int flame = 0;
+int decimal = 0;
+int second = 0;
+int minute = 0;
+
+//char str_minutes[256];
+//char str_seconds[256];
+//char str_milliSeconds[256];
+char str_time[256];
+
+char str_lapCount[256];
+char str_lapMax[256];
 
 
 
@@ -111,10 +123,17 @@ char piyo[256];
 void display() {
 
 	//毎フレーム
-	sprintf(hoge, "%d", player->m_lapCount);
-	
+	sprintf(str_lapCount, "%d", player->m_lapCount);
+
+	/*sprintf(str_milliSeconds, "%03d", decimal);
+	sprintf(str_seconds, "%02d", second);
+	sprintf(str_minutes, "%02d", minute);*/
+
+	sprintf(str_time, "%02d:%02d:%03d", minute, second, decimal);
+
+
 	//コース選択時に1回だけ
-	sprintf(piyo, "%d", LAP_MAX);
+	sprintf(str_lapMax, "%d", LAP_MAX);
 
 
 	/*更新*/
@@ -124,6 +143,7 @@ void display() {
 	/*描画(3D)*/
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(77.f / 255.f, 180.f / 255.f, 232.f / 255.f, 1);
 
 	//深度テスト
 	glEnable(GL_DEPTH_TEST);
@@ -152,12 +172,32 @@ void display() {
 	//周回カウントの表示
 	//文字等の出力を1つの関数にまとめる予定
 	StrokeString::print("LAP", { 230, 250, 0 }, 0.1f, { 1, 0, 0 });
-	StrokeString::print(hoge, { 260, 250, 0 }, 0.18f, { 1, 0, 0 });
+	StrokeString::print(str_lapCount, { 260, 250, 0 }, 0.18f, { 1, 0, 0 });
 	StrokeString::print("/", { 275, 250, 0 }, 0.1f, { 1, 0, 0 });
-	StrokeString::print(piyo, { 285, 250, 0 }, 0.1f, { 1, 0, 0 });
-	StrokeString::print("TIME", { 200, 280, 0 }, 0.1f, { 1, 0, 0 });
+	StrokeString::print(str_lapMax, { 285, 250, 0 }, 0.1f, { 1, 0, 0 });
+	StrokeString::print("TIME", { 170, 280, 0 }, 0.13f, { 1, 0, 0 });
+
+	StrokeString::print(str_time, { 220, 280, 0 }, 0.13f, { 1, 0, 0 });
 
 
+	/*StrokeString::print(str_minutes, { 210, 280, 0 }, 0.13f, { 1, 0, 0 });
+	StrokeString::print(":", { 230, 280, 0 }, 0.13f, { 1, 0, 0 });
+	StrokeString::print(str_seconds, { 235, 280, 0 }, 0.13f, { 1, 0, 0 });
+	StrokeString::print(":", { 255, 280, 0 }, 0.13f, { 1, 0, 0 });
+	StrokeString::print(str_milliSeconds, { 260, 280, 0 }, 0.13f, { 1, 0, 0 });*/
+
+	//printf("%02d:%02d:%03d\n", minute, second, decimal);
+
+	flame++;
+
+	//ミリ秒
+	decimal = ((flame * 1000) / 60) % 1000;
+
+	second = flame / 60;
+
+	minute = second / 60;
+
+	second = second % 60;
 
 	glFlush();
 }
@@ -169,8 +209,8 @@ void display() {
 void timer(int value) {
 	//system("cls");
 
-	printf("%f %f", player->m_position.x, player->m_position.z);
-	printf(" %d\n", testCourse->m_buffer[COURSE_HEIGHT - 1 + (int)player->m_position.z][(int)player->m_position.x]);
+	//printf("%f %f", player->m_position.x, player->m_position.z);
+	//printf(" %d\n", testCourse->m_buffer[COURSE_HEIGHT - 1 + (int)player->m_position.z][(int)player->m_position.x]);
 
 	//printf("CheckPoint:%d\n", player->m_checkFlag);
 	//printf("LAP:%d\n", player->m_lapCount);
@@ -192,8 +232,8 @@ int main(int argc, char *argv[]) {
 	glutDisplayFunc(display);
 	glutTimerFunc(0, timer, 0);
 	glutJoystickFunc(joystick, 0);
-	glutKeyboardFunc(keyboard);
-	glutSpecialFunc(specialkeydown);
+	//glutKeyboardFunc(keyboard);
+	//glutSpecialFunc(specialkeydown);
 
 	init();//ゲームの初期化
 
