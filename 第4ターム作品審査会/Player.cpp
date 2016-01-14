@@ -1,11 +1,13 @@
 #define BUTTON_A (1)
 #define BUTTON_X (4)
+#define BUTTON_Y (8)
 
 #define _USE_MATH_DEFINES
 #include<stdio.h>
 #include<math.h>
 #include"Course.h"
 #include"player.h"
+#include"camera.h"
 #include"BmpImage.h"
 #include"glut.h"
 
@@ -63,30 +65,55 @@ void Player::update(){
 void Player::draw(){
 	glPushMatrix();
 	{
-		/*自機操作*/
+
+		float diffuse[] = { 77 / 255.f, 77 / 255.f, 77 / 255.f, 1 };
+		glMaterialfv(
+			GL_FRONT,   // GLenum face
+			GL_DIFFUSE, // GLenum pname
+			diffuse);   // const GLfloat *params
+
 		glTranslatef(m_position.x, m_position.y, m_position.z);
 
-		/*glRotatef(90, 1, 0, 0);
-		glRotatef(180, 0, 1, 0);
 		glRotatef(m_rotate.y * 180 / M_PI, 0, 1, 0);
+		glRotatef(180, 0, 1, 0);
+		glRotatef(-90, 1, 0, 0);
 
-		glScalef(m_scale.x, m_scale.y, m_scale.z);
+		//glScalef(m_scale.x, m_scale.y, m_scale.z);
+		glScalef(0.18, 0.18, 0.18);
 
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_NORMAL_ARRAY);
 
-		std::vector<float>::iterator itr_v = m_vertex.begin();
+		std::vector<float>::iterator itr_v = m_boby.m_vertex.begin();
 		glVertexPointer(3, GL_FLOAT, 0, &(*itr_v));
 
-		std::vector<float>::iterator itr_n = m_normal.begin();
+		std::vector<float>::iterator itr_n = m_boby.m_normal.begin();
 		glNormalPointer(GL_FLOAT, 0, &(*itr_n));
 
-		std::vector<unsigned short>::iterator itr_i = m_index.begin();
+		std::vector<unsigned short>::iterator itr_i = m_boby.m_index.begin();
+		
+		
+		/*車体描画*/
+		glDrawElements(GL_TRIANGLES, m_boby.m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));
 
-		glDrawElements(GL_TRIANGLES, m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));*/
+		float def[] = { 1, 1, 1, 1 };
+		glMaterialfv(
+			GL_FRONT,   // GLenum face
+			GL_DIFFUSE, // GLenum pname
+			def);   // const GLfloat *params
 
-		glColor3f(1, 0, 0);
-		glutWireCube(1);
+
+
+
+
+		//	glColor3f(0, 1, 0);
+		//	glBegin(GL_TRIANGLES);
+		//	{
+		//		glVertex3f(0, 0, -1.5);//頭
+		//		glVertex3f(-0.5, 0, 1);
+		//		glVertex3f(0.5, 0, 1);
+		//	}
+		//	glEnd();
 
 	}
 	glPopMatrix();
@@ -109,19 +136,14 @@ void Player::control(unsigned int _key, float _x, float _y, float _z){
 		m_accel = { 0.f, 0.f, 0.f };
 	}
 
-	//後退(xボタン)
-	/*if (_key & BUTTON_X){
-		m_speed.z = 0.1f;
-		}*/
-
 	//正面右に移動
-	if ((_key & BUTTON_A || _key & BUTTON_X) && _x > 0.9){
+	if (_x > 0.9){
 		m_rotate.y -= 0.02f;
+
 	}
 
 	//正面左に移動
-
-	if ((_key & BUTTON_A || _key & BUTTON_X) && _x < -0.9){
+	if (_x < -0.9){
 		m_rotate.y += 0.02f;
 	}
 

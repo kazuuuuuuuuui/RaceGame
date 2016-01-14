@@ -15,8 +15,6 @@
 #include"StrokeString.h"
 #include"glut.h"
 
-Camera *camera = nullptr;
-
 //debug
 
 //-------------------------------------
@@ -44,10 +42,11 @@ void fps(){
 //-------------------------------------
 //キーボードからの入力全般
 
-//void keyboard(unsigned char key, int x, int y){
-//
-//
-//}
+void keyboard(unsigned char key, int x, int y){
+
+
+
+}
 //
 //
 //void specialkeydown(int key, int x, int y){
@@ -62,7 +61,7 @@ void fps(){
 void init(){
 
 	player = new Player();
-	xFile::loadXfile("xFile/bike.x", player->m_vertices);
+	xFile::loadXfile("xFile/testbike.x",player->m_boby);
 
 	camera = new Camera();
 
@@ -78,7 +77,9 @@ void init(){
 
 	magicStone = new MagicStone();
 
-	fire_handle = BmpImage::loadImage_alpha("bmp/fire.bmp");
+	//使用する魔石のテクスチャ読み込み
+	fire_handle = BmpImage::loadImage("bmp/fire.bmp");
+	blizzard_handle = BmpImage::loadImage("bmp/blizzard.bmp");
 }
 
 
@@ -107,9 +108,6 @@ int decimal = 0;
 int second = 0;
 int minute = 0;
 
-//char str_minutes[256];
-//char str_seconds[256];
-//char str_milliSeconds[256];
 char str_time[256];
 
 char str_lapCount[256];
@@ -121,14 +119,19 @@ char str_lapMax[256];
 //更新と描画
 
 void display() {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(77.f / 255.f, 180.f / 255.f, 232.f / 255.f, 1);
+
+	//深度テスト
+	glEnable(GL_DEPTH_TEST);
+
+	//ライト
+	//glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+
 
 	//毎フレーム
 	sprintf(str_lapCount, "%d", player->m_lapCount);
-
-	/*sprintf(str_milliSeconds, "%03d", decimal);
-	sprintf(str_seconds, "%02d", second);
-	sprintf(str_minutes, "%02d", minute);*/
-
 	sprintf(str_time, "%02d:%02d:%03d", minute, second, decimal);
 
 
@@ -141,52 +144,18 @@ void display() {
 	player->update();
 
 	/*描画(3D)*/
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(77.f / 255.f, 180.f / 255.f, 232.f / 255.f, 1);
-
-	//深度テスト
-	glEnable(GL_DEPTH_TEST);
-
-	//glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-
 	testCourse->draw();
 
-	//magicStone->draw();
+	magicStone->draw();
 
 	player->draw();
 
-	//glDisable(GL_LIGHTING);
-	//glDisable(GL_DEPTH_TEST);
-
+	glDisable(GL_LIGHTING);
+	glDisable(GL_DEPTH_TEST);
 
 
 	/*更新*/
 	camera->update(TYPE_2D);
-
-
-
-	/*描画(2D)*/
-
-	//周回カウントの表示
-	//文字等の出力を1つの関数にまとめる予定
-	StrokeString::print("LAP", { 230, 250, 0 }, 0.1f, { 1, 0, 0 });
-	StrokeString::print(str_lapCount, { 260, 250, 0 }, 0.18f, { 1, 0, 0 });
-	StrokeString::print("/", { 275, 250, 0 }, 0.1f, { 1, 0, 0 });
-	StrokeString::print(str_lapMax, { 285, 250, 0 }, 0.1f, { 1, 0, 0 });
-	StrokeString::print("TIME", { 170, 280, 0 }, 0.13f, { 1, 0, 0 });
-
-	StrokeString::print(str_time, { 220, 280, 0 }, 0.13f, { 1, 0, 0 });
-
-
-	/*StrokeString::print(str_minutes, { 210, 280, 0 }, 0.13f, { 1, 0, 0 });
-	StrokeString::print(":", { 230, 280, 0 }, 0.13f, { 1, 0, 0 });
-	StrokeString::print(str_seconds, { 235, 280, 0 }, 0.13f, { 1, 0, 0 });
-	StrokeString::print(":", { 255, 280, 0 }, 0.13f, { 1, 0, 0 });
-	StrokeString::print(str_milliSeconds, { 260, 280, 0 }, 0.13f, { 1, 0, 0 });*/
-
-	//printf("%02d:%02d:%03d\n", minute, second, decimal);
 
 	flame++;
 
@@ -198,6 +167,19 @@ void display() {
 	minute = second / 60;
 
 	second = second % 60;
+
+
+	/*描画(2D)*/
+
+	//周回カウントの表示
+	//文字等の出力を1つの関数にまとめる予定
+	StrokeString::print("LAP", { 230, 250, 0 }, 0.1f, { 1, 0, 0 });
+	StrokeString::print(str_lapCount, { 260, 250, 0 }, 0.18f, { 1, 0, 0 });
+	StrokeString::print("/", { 275, 250, 0 }, 0.1f, { 1, 0, 0 });
+	StrokeString::print(str_lapMax, { 285, 250, 0 }, 0.1f, { 1, 0, 0 });
+	StrokeString::print("TIME", { 180, 280, 0 }, 0.13f, { 1, 0, 0 });
+
+	StrokeString::print(str_time, { 220, 280, 0 }, 0.13f, { 1, 0, 0 });
 
 	glFlush();
 }
@@ -216,7 +198,7 @@ void timer(int value) {
 	//printf("LAP:%d\n", player->m_lapCount);
 
 
-	//fps();
+	fps();
 
 	glutPostRedisplay();
 	glutTimerFunc(1000 / 60, timer, 0);
@@ -232,7 +214,7 @@ int main(int argc, char *argv[]) {
 	glutDisplayFunc(display);
 	glutTimerFunc(0, timer, 0);
 	glutJoystickFunc(joystick, 0);
-	//glutKeyboardFunc(keyboard);
+	glutKeyboardFunc(keyboard);
 	//glutSpecialFunc(specialkeydown);
 
 	init();//ゲームの初期化

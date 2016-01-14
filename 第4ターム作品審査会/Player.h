@@ -30,6 +30,9 @@
 class Player :public FlyingObject{
 public:
 
+	//車体部分
+	xFile m_boby;
+
 	//頂点数
 	unsigned int m_vertices;
 
@@ -44,6 +47,7 @@ public:
 
 	//法線情報
 	std::vector<float>m_normal;
+
 
 	//周回数
 	//正規の走法でコースを1周したら+1する

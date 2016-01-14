@@ -1,5 +1,6 @@
 #pragma once 
 
+#include"Course.h"
 #include"FlyingObject.h"
 #include"glut.h"
 
@@ -25,6 +26,8 @@ enum {
 	MAGIC_TYPE_MAX
 };
 
+
+
 //-------------------------------------
 //–‚Î(ƒAƒCƒeƒ€)‚Ìî•ñ
 
@@ -42,11 +45,10 @@ public:
 
 		//Œã‚Å‘‚«Š·‚¦
 	{
-		m_position.x = 22.f;
+		m_position.x = 20.f;
 		m_position.y = 0.5;
-		m_position.z = -75.f;
+		m_position.z = -190.f;
 	};
-
 
 	void draw();
 
@@ -54,3 +56,4 @@ public:
 
 extern MagicStone *magicStone;
 extern GLuint fire_handle;
+extern GLuint blizzard_handle;

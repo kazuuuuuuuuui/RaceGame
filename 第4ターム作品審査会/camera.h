@@ -8,7 +8,7 @@
 //glm::mat4 viewMatrix;
 
 enum{
-	TYPE_2D = 0,
+	TYPE_2D ,
 	TYPE_3D
 };
 
@@ -38,4 +38,6 @@ public:
 	void update(const int _type);
 
 };
+
+extern Camera *camera;
 

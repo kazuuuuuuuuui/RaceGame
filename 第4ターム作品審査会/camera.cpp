@@ -4,6 +4,8 @@
 #include"glm\gtc\matrix_transform.hpp"
 #include"glut.h"
 
+Camera *camera = nullptr;
+
 void Camera::update(const int _type){
 
 	if (TYPE_3D == _type){
@@ -23,11 +25,19 @@ void Camera::update(const int _type){
 
 		//カメラの座標更新
 		m_position.x = player->m_position.x + sin(player->m_rotate.y) * 6;
-		m_position.y = 2;
+		m_position.y = 3;
 		m_position.z = player->m_position.z + cos(player->m_rotate.y) * 6;
 
 		//カメラの注視座標の更新
 		m_target = player->m_position;
+
+
+		//ライトの位置
+		//float v[] = { 0, 1, 1, 0 };
+		//glLightfv(
+		//	GL_LIGHT0,  // GLenum light
+		//	GL_POSITION,// GLenum pname
+		//	v);         // const GLfloat *params
 
 		gluLookAt(
 			// 視点の位置x,y,z;

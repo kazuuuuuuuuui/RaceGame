@@ -3,8 +3,22 @@
 
 class xFile{
 public:
-	static void loadXfile(const char *_xFileName,
-		const unsigned int &_vertices);
+	//頂点数
+	unsigned int m_vertices;
+
+	//インデックス数
+	unsigned int m_indeces;
+
+	//頂点情報
+	std::vector<float>m_vertex;
+
+	//インデックス情報
+	std::vector<unsigned short>m_index;
+
+	//法線情報
+	std::vector<float>m_normal;
+
+	static void loadXfile(const char *_xFileName,xFile &_model);
 };
 
 #endif
