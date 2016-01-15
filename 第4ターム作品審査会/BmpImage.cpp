@@ -5,6 +5,7 @@
 #include<Windows.h>
 #include"Course.h"
 #include"BmpImage.h"
+#include"MagicStone.h"
 
 //-------------------------------------
 //bmp画像からアルファ値付きのテクスチャ作成
@@ -266,6 +267,23 @@ void BmpImage::makeBuffer(const char *_bufferName, int _buffer[][COURSE_WIDTH]){
 				pixels[t + i*bmpInfoHeader.biWidth].b <= 5){
 				_buffer[i][t] = DART;
 			}
+
+			//水色ならアイテムの場所
+			else if (pixels[t + i*bmpInfoHeader.biWidth].r == 0 &&
+				pixels[t + i*bmpInfoHeader.biWidth].g == 255 &&
+				pixels[t + i*bmpInfoHeader.biWidth].b == 255){
+				_buffer[i][t] = ITEMPOSITION;
+			}
+
+			if (_buffer[i][t] == ITEMPOSITION){
+				magicStone->m_position.x = t;
+				magicStone->m_position.y = 0.5f;
+				magicStone->m_position.z = i - COURSE_HEIGHT;
+
+			}
+
+
+
 		}
 
 	}

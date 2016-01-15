@@ -2,6 +2,7 @@
 #define BUTTON_X (4)
 #define BUTTON_Y (8)
 
+#define _CRT_SECURE_NO_WARNINGS
 #define _USE_MATH_DEFINES
 #include<stdio.h>
 #include<math.h>
@@ -13,11 +14,41 @@
 
 Player *player = nullptr;
 
+//取り敢えず
+extern int flame;
+extern int milliSecond;
+extern int second;
+extern int minute;
+
+int getMilliSecond(int _flame);
+int getSecond(int _flame);
+int getMinute(int _second);
+
+
+
 //-------------------------------------
 //自機の更新
 
 void Player::update(){
 
+	printf("%02d::%02d::%03d\n", getMinute(getSecond(m_flame)), getSecond(m_flame), getMilliSecond(m_flame));
+
+	//フレームの管理
+	m_flame++;
+
+	//ミリ秒
+	m_milliSecond[m_lapCount - 1] = getMilliSecond(m_flame);
+
+	//秒
+	m_second[m_lapCount - 1] = getSecond(m_flame);
+
+	//分
+	m_minute[m_lapCount - 1] = getMinute(m_second[m_lapCount - 1]);
+
+	//second = second % 60;
+
+
+	//スピード・ポジションの更新
 	m_speed += m_accel;
 	m_position += m_speed;
 
@@ -27,9 +58,6 @@ void Player::update(){
 
 	//既定のコース領域から出ていないかの判定
 	checkCourseOut();
-
-	//魔石をゲットしたかの判定と処理
-	if (getMagicStone()){}
 
 	//ダートに入ったかの判定と処理
 	if (inDart()){
@@ -43,17 +71,25 @@ void Player::update(){
 
 	//1周したかの判定
 	if (countLap()){
+
+		m_milliSecond[m_lapCount - 1] = m_milliSecond[m_lapCount - 1];
+		m_second[m_lapCount - 1] = m_second[m_lapCount - 1];
+		m_minute[m_lapCount - 1] = m_minute[m_lapCount - 1];
+
+		sprintf(m_str_lapTime[FIRST], "%02d:%02d:%03d ", m_minute[FIRST], m_second[FIRST], m_milliSecond[FIRST]);
+		sprintf(m_str_lapTime[SECOND], "%02d:%02d:%03d ", m_minute[SECOND], m_second[SECOND], m_milliSecond[SECOND]);
+		sprintf(m_str_lapTime[THIRD], "%02d:%02d:%03d ", m_minute[THIRD], m_second[THIRD], m_milliSecond[THIRD]);
+
+		//フレームの初期化
+		m_flame = 0;
+
 		m_lapCount++;
 		m_checkFlag = false;
 	}
 
 	//ゴールしたかの判定
-	if (isGoal()){
-		/*
-
-		ゴールした時の処理記述
-
-		*/
+	if (checkIsGoal()){
+		m_isGoal = true;
 	}
 
 }
@@ -66,6 +102,9 @@ void Player::draw(){
 	glPushMatrix();
 	{
 
+		static float angle = 0.f;
+		angle -= 10.f;
+
 		float diffuse[] = { 77 / 255.f, 77 / 255.f, 77 / 255.f, 1 };
 		glMaterialfv(
 			GL_FRONT,   // GLenum face
@@ -75,8 +114,9 @@ void Player::draw(){
 		glTranslatef(m_position.x, m_position.y, m_position.z);
 
 		glRotatef(m_rotate.y * 180 / M_PI, 0, 1, 0);
-		glRotatef(180, 0, 1, 0);
-		glRotatef(-90, 1, 0, 0);
+		glRotatef(angle, 1, 0, 0);
+		//glRotatef(180, 0, 1, 0);
+		//glRotatef(-90, 1, 0, 0);
 
 		//glScalef(m_scale.x, m_scale.y, m_scale.z);
 		glScalef(0.18, 0.18, 0.18);
@@ -91,8 +131,8 @@ void Player::draw(){
 		glNormalPointer(GL_FLOAT, 0, &(*itr_n));
 
 		std::vector<unsigned short>::iterator itr_i = m_boby.m_index.begin();
-		
-		
+
+
 		/*車体描画*/
 		glDrawElements(GL_TRIANGLES, m_boby.m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));
 
@@ -106,14 +146,14 @@ void Player::draw(){
 
 
 
-		//	glColor3f(0, 1, 0);
-		//	glBegin(GL_TRIANGLES);
-		//	{
-		//		glVertex3f(0, 0, -1.5);//頭
-		//		glVertex3f(-0.5, 0, 1);
-		//		glVertex3f(0.5, 0, 1);
-		//	}
-		//	glEnd();
+		//glColor3f(0, 1, 0);
+		//glBegin(GL_TRIANGLES);
+		//{
+		//	glVertex3f(0, 0, -1.5);//頭
+		//	glVertex3f(-0.5, 0, 1);
+		//	glVertex3f(0.5, 0, 1);
+		//}
+		//glEnd();
 
 	}
 	glPopMatrix();
@@ -145,29 +185,6 @@ void Player::control(unsigned int _key, float _x, float _y, float _z){
 	//正面左に移動
 	if (_x < -0.9){
 		m_rotate.y += 0.02f;
-	}
-
-}
-
-//-------------------------------------
-//プレイヤーが魔石をゲットしたかどうか判定
-//ゲットしていたらtrue ゲットしていなかったらfalseを返す
-
-bool Player::getMagicStone(){
-
-	//プレイヤーと魔石との距離
-	glm::vec3 distance;
-	distance.x = (magicStone->m_position.x - m_position.x);
-	distance.y = (magicStone->m_position.y - m_position.y);
-	distance.z = (magicStone->m_position.z - m_position.z);
-
-	float length = sqrt(distance.x*distance.x + distance.y*distance.y + distance.z*distance.z);
-
-	if (length < 1.f){
-		return true;
-	}
-	else{
-		return false;
 	}
 
 }
@@ -274,11 +291,11 @@ bool Player::countLap(){
 
 //-------------------------------------
 //プレイヤーがゴールしたかの判定
-//周回数が3になった時点でtrueを返しゴールとする
+//周回数が既定の周回数になった時点でtrueを返しゴールとする
 
-bool Player::isGoal(){
+bool Player::checkIsGoal(){
 
-	if (LAP_MAX == m_lapCount){
+	if (LAP_MAX < m_lapCount){
 
 		return true;
 

@@ -20,8 +20,8 @@
 
 enum {
 	FIRE = 0,
-	Blizzard,
-	Thunder,
+	BLIZZARD,
+	//HASTE,
 
 	MAGIC_TYPE_MAX
 };
@@ -36,24 +36,32 @@ class MagicStone : public FlyingObject{
 public:
 
 	int m_type;
+
+	//プレイヤーによって取得されているかのフラグ
+	//デフォルトはfalse
+	bool m_isGotten;
+
+	//使用されたときにfalseになる
+	//デフォルトはtrue
 	bool m_isActive;
+
+	//プレイヤーにとられたかどうかを判定する
+	bool checkIsGotten();
 
 	//コンストラクタ
 	MagicStone() :
-		m_type(FIRE),
-		m_isActive(false)
+		m_type(rand() % MAGIC_TYPE_MAX),
+		m_isGotten(false),
+		m_isActive(true)
 
-		//後で書き換え
-	{
-		m_position.x = 20.f;
-		m_position.y = 0.5;
-		m_position.z = -190.f;
-	};
+	{};
 
 	void draw();
+	void update();
 
 };
 
 extern MagicStone *magicStone;
 extern GLuint fire_handle;
 extern GLuint blizzard_handle;
+extern GLuint haste_handle;

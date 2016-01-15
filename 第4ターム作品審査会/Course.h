@@ -29,6 +29,7 @@ enum {
 	GOAL,
 	CHECK_FLONT,
 	CHECK_BEHIND,
+	ITEMPOSITION,
 };
 
 

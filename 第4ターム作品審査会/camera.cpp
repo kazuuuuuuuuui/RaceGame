@@ -33,11 +33,11 @@ void Camera::update(const int _type){
 
 
 		//ライトの位置
-		//float v[] = { 0, 1, 1, 0 };
-		//glLightfv(
-		//	GL_LIGHT0,  // GLenum light
-		//	GL_POSITION,// GLenum pname
-		//	v);         // const GLfloat *params
+		float v[] = { 0, 1, 1, 0 };
+		glLightfv(
+			GL_LIGHT0,  // GLenum light
+			GL_POSITION,// GLenum pname
+			v);         // const GLfloat *params
 
 		gluLookAt(
 			// 視点の位置x,y,z;

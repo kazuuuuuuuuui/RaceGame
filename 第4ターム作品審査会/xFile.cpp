@@ -28,7 +28,7 @@ void xFile::loadXfile(const char *_xFileName, xFile &_model){
 			//í∏ì_êîì«Ç›çûÇ›
 			fscanf(pFile, "%u", &(_model.m_indeces));
 
-			fscanf(pFile, "%s", buf);
+			fscanf(pFile, "%*c", buf);
 
 			//í∏ì_ÇÃì«Ç›çûÇ›
 			for (int i = 0; i < _model.m_indeces / 3; i++){

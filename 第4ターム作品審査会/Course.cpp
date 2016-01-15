@@ -46,6 +46,7 @@ void Course::draw(){
 		glBindTexture(GL_TEXTURE_2D, m_handle[COUSE_TEXTURE]);
 
 		glColor3f(1, 1, 1);
+		
 		glBegin(GL_QUADS);
 		{
 			glNormal3f(0, 1, 0);
