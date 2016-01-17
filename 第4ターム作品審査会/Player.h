@@ -28,6 +28,9 @@ public:
 	//車体部分
 	xFile m_boby;
 
+	//
+	xFile m_backWheel;
+
 	//周回数
 	//正規の走法でコースを1周したら+1する
 	int m_lapCount;
@@ -44,22 +47,29 @@ public:
 	int m_milliSecond[LAP_MAX];
 	int m_second[LAP_MAX];
 	int m_minute[LAP_MAX];
-
 	char m_str_lapTime[LAP_MAX][256];
 
-	MagicStone m_hasMagicStone[MAGICSTONE_MAX];
+	//所持している魔石情報
+	//魔石を示すポインタのベクター
+	std::vector<MagicStone*> m_hasMagicStone;
 
 	void draw();
 	void update();
-	void control(unsigned int _key, float _x, float _y, float _z);
+	void control(unsigned int _pressedKey,unsigned int _downKeys, float _x, float _y, float _z);
 
 	void checkCourseOut();
 
 	bool inDart();
 
+	//周回系
 	bool passCheckPoint();
 	bool countLap();
 	bool checkIsGoal();
+
+	//アイテム系
+	int hasMagicStoneNumber();
+
+
 
 	//後で書き換える
 	Player() :

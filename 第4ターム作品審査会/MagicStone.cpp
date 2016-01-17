@@ -1,6 +1,6 @@
 
 //スフィアマッピング用に
-#define MAGICSTONR_RADIUS (0.3)
+#define MAGICSTONR_RADIUS (0.4f)
 #define MAGICSTONR_SLICE (10)
 #define MAGICSTONR_STACK (10)
 #define MAGICSTONR_REPEAT_S (1)
@@ -12,7 +12,7 @@
 #include"Player.h"
 #include"glut.h"
 
-MagicStone *magicStone = nullptr;
+MagicStone *magicStone[SET_MAGICSTONE_NUMBER] = { nullptr };
 
 //魔石(アイテム)のテクスチャを格納する
 GLuint fire_handle = 0;//ファイア
@@ -25,13 +25,17 @@ GLuint haste_handle = 0;//ヘイスト
 
 void MagicStone::update(){
 
-	if (checkIsGotten()){
+	if (false == m_isGotten && checkIsGotten()){
 		m_isGotten = true;
+		player->m_hasMagicStone.push_back(this);
+		
 	}
 
 	if (m_isGotten == true){
-		m_position.x = player->m_position.x + sin(player->m_rotate.y)*2;
-		m_position.z = player->m_position.z + cos(player->m_rotate.y)*2;
+
+		this->m_position.x = player->m_position.x + sin(player->m_rotate.y) * 2;
+		this->m_position.z = player->m_position.z + cos(player->m_rotate.y) * 2;
+
 	}
 
 }

@@ -16,6 +16,7 @@
 #define LAP_MAX (3)
 
 #include<stdlib.h>
+#include"MagicStone.h"
 #include"BmpImage.h"
 #include"glut.h"
 
@@ -45,6 +46,7 @@ public:
 	GLuint m_handle[COURSE_TEXTURE_NUMBER];//[0]にはコースの[1]には背景のテクスチャを格納する
 
 	void draw();
+	void setMagicStone();
 
 	Course() :
 		m_width(COURSE_WIDTH),

@@ -4,6 +4,9 @@
 #include"FlyingObject.h"
 #include"glut.h"
 
+//コースに配置されている魔石の数
+#define SET_MAGICSTONE_NUMBER (20)
+
 //-------------------------------------
 //魔石の種類
 /*
@@ -61,7 +64,7 @@ public:
 
 };
 
-extern MagicStone *magicStone;
+extern MagicStone *magicStone[SET_MAGICSTONE_NUMBER];
 extern GLuint fire_handle;
 extern GLuint blizzard_handle;
 extern GLuint haste_handle;

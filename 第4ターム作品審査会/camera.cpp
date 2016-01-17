@@ -40,6 +40,7 @@ void Camera::update(const int _type){
 			v);         // const GLfloat *params
 
 		gluLookAt(
+
 			// Ž‹“_‚ÌˆÊ’ux,y,z;
 			m_position.x, m_position.y, m_position.z,
 

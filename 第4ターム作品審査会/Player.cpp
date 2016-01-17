@@ -1,6 +1,7 @@
 #define BUTTON_A (1)
 #define BUTTON_X (4)
 #define BUTTON_Y (8)
+#define BUTTON_RB (16)
 
 #define _CRT_SECURE_NO_WARNINGS
 #define _USE_MATH_DEFINES
@@ -14,6 +15,8 @@
 
 Player *player = nullptr;
 
+
+//タイヤの位置等を後でいじる
 //取り敢えず
 extern int flame;
 extern int milliSecond;
@@ -31,22 +34,25 @@ int getMinute(int _second);
 
 void Player::update(){
 
-	printf("%02d::%02d::%03d\n", getMinute(getSecond(m_flame)), getSecond(m_flame), getMilliSecond(m_flame));
+	//printf("%02d::%02d::%03d\n", getMinute(getSecond(m_flame)), getSecond(m_flame), getMilliSecond(m_flame));
 
 	//フレームの管理
 	m_flame++;
 
+	sprintf(m_str_lapTime[FIRST], "%02d:%02d:%03d ", m_minute[FIRST], m_second[FIRST], m_milliSecond[FIRST]);
+	sprintf(m_str_lapTime[SECOND], "%02d:%02d:%03d ", m_minute[SECOND], m_second[SECOND], m_milliSecond[SECOND]);
+	sprintf(m_str_lapTime[THIRD], "%02d:%02d:%03d ", m_minute[THIRD], m_second[THIRD], m_milliSecond[THIRD]);
+
 	//ミリ秒
-	m_milliSecond[m_lapCount - 1] = getMilliSecond(m_flame);
+	//m_milliSecond[m_lapCount - 1] = getMilliSecond(m_flame);
 
 	//秒
-	m_second[m_lapCount - 1] = getSecond(m_flame);
+	//m_second[m_lapCount - 1] = getSecond(m_flame);
 
 	//分
-	m_minute[m_lapCount - 1] = getMinute(m_second[m_lapCount - 1]);
+	//m_minute[m_lapCount - 1] = getMinute(m_second[m_lapCount - 1]);
 
 	//second = second % 60;
-
 
 	//スピード・ポジションの更新
 	m_speed += m_accel;
@@ -72,13 +78,25 @@ void Player::update(){
 	//1周したかの判定
 	if (countLap()){
 
-		m_milliSecond[m_lapCount - 1] = m_milliSecond[m_lapCount - 1];
+		/*m_milliSecond[m_lapCount - 1] = m_milliSecond[m_lapCount - 1];
 		m_second[m_lapCount - 1] = m_second[m_lapCount - 1];
-		m_minute[m_lapCount - 1] = m_minute[m_lapCount - 1];
+		m_minute[m_lapCount - 1] = m_minute[m_lapCount - 1];*/
 
-		sprintf(m_str_lapTime[FIRST], "%02d:%02d:%03d ", m_minute[FIRST], m_second[FIRST], m_milliSecond[FIRST]);
+		//ミリ秒
+		m_milliSecond[m_lapCount - 1] = getMilliSecond(m_flame);
+
+		//秒
+		m_second[m_lapCount - 1] = getSecond(m_flame);
+
+		//分
+		m_minute[m_lapCount - 1] = getMinute(m_second[m_lapCount - 1]);
+
+		m_second[m_lapCount - 1] = m_second[m_lapCount - 1] % 60;
+
+
+		/*sprintf(m_str_lapTime[FIRST], "%02d:%02d:%03d ", m_minute[FIRST], m_second[FIRST], m_milliSecond[FIRST]);
 		sprintf(m_str_lapTime[SECOND], "%02d:%02d:%03d ", m_minute[SECOND], m_second[SECOND], m_milliSecond[SECOND]);
-		sprintf(m_str_lapTime[THIRD], "%02d:%02d:%03d ", m_minute[THIRD], m_second[THIRD], m_milliSecond[THIRD]);
+		sprintf(m_str_lapTime[THIRD], "%02d:%02d:%03d ", m_minute[THIRD], m_second[THIRD], m_milliSecond[THIRD]);*/
 
 		//フレームの初期化
 		m_flame = 0;
@@ -102,21 +120,17 @@ void Player::draw(){
 	glPushMatrix();
 	{
 
-		static float angle = 0.f;
-		angle -= 10.f;
-
-		float diffuse[] = { 77 / 255.f, 77 / 255.f, 77 / 255.f, 1 };
-		glMaterialfv(
-			GL_FRONT,   // GLenum face
-			GL_DIFFUSE, // GLenum pname
-			diffuse);   // const GLfloat *params
+		//float diffuse[] = { 255 / 255.f, 255 / 255.f, 255 / 255.f, 1 };
+		//glMaterialfv(
+		//	GL_FRONT,   // GLenum face
+		//	GL_DIFFUSE, // GLenum pname
+		//	diffuse);   // const GLfloat *params
 
 		glTranslatef(m_position.x, m_position.y, m_position.z);
 
 		glRotatef(m_rotate.y * 180 / M_PI, 0, 1, 0);
-		glRotatef(angle, 1, 0, 0);
-		//glRotatef(180, 0, 1, 0);
-		//glRotatef(-90, 1, 0, 0);
+		glRotatef(180, 0, 1, 0);
+		glRotatef(-90, 1, 0, 0);
 
 		//glScalef(m_scale.x, m_scale.y, m_scale.z);
 		glScalef(0.18, 0.18, 0.18);
@@ -136,16 +150,6 @@ void Player::draw(){
 		/*車体描画*/
 		glDrawElements(GL_TRIANGLES, m_boby.m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));
 
-		float def[] = { 1, 1, 1, 1 };
-		glMaterialfv(
-			GL_FRONT,   // GLenum face
-			GL_DIFFUSE, // GLenum pname
-			def);   // const GLfloat *params
-
-
-
-
-
 		//glColor3f(0, 1, 0);
 		//glBegin(GL_TRIANGLES);
 		//{
@@ -157,15 +161,55 @@ void Player::draw(){
 
 	}
 	glPopMatrix();
+
+
+	glPushMatrix();
+	{
+
+		//float diffuse[] = { 0 / 255.f, 0 / 255.f, 0 / 255.f, 1 };
+		//glMaterialfv(
+		//	GL_FRONT,   // GLenum face
+		//	GL_DIFFUSE, // GLenum pname
+		//	diffuse);   // const GLfloat *params
+
+		static float angle = 0.f;
+		static float scal = 0.18f;
+
+		angle -= 5.f;
+
+		glTranslatef(m_position.x + sin(m_rotate.y)*1.1, m_position.y + 0.5, m_position.z + cos(m_rotate.y)*1.1);
+		glRotatef(m_rotate.y * 180 / M_PI, 0, 1, 0);
+		glRotatef(angle, 1, 0, 0);
+		glScalef(scal, scal, scal);
+
+		std::vector<float>::iterator itr_v = m_backWheel.m_vertex.begin();
+		glVertexPointer(3, GL_FLOAT, 0, &(*itr_v));
+
+		std::vector<float>::iterator itr_n = m_backWheel.m_normal.begin();
+		glNormalPointer(GL_FLOAT, 0, &(*itr_n));
+
+		std::vector<unsigned short>::iterator itr_i = m_backWheel.m_index.begin();
+
+
+		/*後輪描画*/
+		glDrawElements(GL_TRIANGLES, m_backWheel.m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));
+
+		//float def[] = { 1, 1, 1, 1 };
+		//glMaterialfv(
+		//	GL_FRONT,   // GLenum face
+		//	GL_DIFFUSE, // GLenum pname
+		//	def);   // const GLfloat *params
+	}
+	glPopMatrix();
 }
 
 //-------------------------------------
 //自機の制御
 
-void Player::control(unsigned int _key, float _x, float _y, float _z){
+void Player::control(unsigned int _pressedKey, unsigned int _downKeys, float _x, float _y, float _z){
 
 	//前進(Aボタン)
-	if (_key & BUTTON_A){
+	if (_pressedKey & BUTTON_A){
 
 		//加速度の設定
 		//-0.005fは補正値
@@ -185,6 +229,22 @@ void Player::control(unsigned int _key, float _x, float _y, float _z){
 	//正面左に移動
 	if (_x < -0.9){
 		m_rotate.y += 0.02f;
+	}
+
+	//アイテムの使用
+	if (_downKeys &  BUTTON_RB){
+
+
+
+		//所持しているアイテムの個数を調べ
+		//アイテム持っていなかったら(0)何もしない
+		/*if (0 != hasMagicStoneNumber()){
+
+
+
+		}
+		else{}*/
+
 	}
 
 }
@@ -302,5 +362,14 @@ bool Player::checkIsGoal(){
 	}
 
 	return false;
+
+}
+
+//-------------------------------------
+//プレイヤーが持っているアイテムの個数を返す
+
+int Player::hasMagicStoneNumber(){
+
+	return m_hasMagicStone.size();
 
 }

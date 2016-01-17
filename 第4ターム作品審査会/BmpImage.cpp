@@ -275,12 +275,15 @@ void BmpImage::makeBuffer(const char *_bufferName, int _buffer[][COURSE_WIDTH]){
 				_buffer[i][t] = ITEMPOSITION;
 			}
 
-			if (_buffer[i][t] == ITEMPOSITION){
-				magicStone->m_position.x = t;
-				magicStone->m_position.y = 0.5f;
-				magicStone->m_position.z = i - COURSE_HEIGHT;
 
-			}
+
+			///*Œã‚Å‘‚«Š·‚¦‚éIII*/
+			//if (_buffer[i][t] == ITEMPOSITION){
+			//	magicStone[0]->m_position.x = t;
+			//	magicStone[0]->m_position.y = 0.5f;
+			//	magicStone[0]->m_position.z = i - COURSE_HEIGHT;
+
+			//}
 
 
 

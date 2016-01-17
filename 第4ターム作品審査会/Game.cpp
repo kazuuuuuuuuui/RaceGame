@@ -14,6 +14,7 @@
 #include"Course.h"
 #include"MagicStone.h"
 #include"StrokeString.h"
+#include"FireEffect.h"
 #include"glut.h"
 
 //debug
@@ -45,16 +46,30 @@ void fps(){
 
 void keyboard(unsigned char key, int x, int y){
 
-
+	if (' ' == key){
+		glm::vec3 accelIncrement(-0.015*sin(player->m_rotate.y), 0, -0.015*cos(player->m_rotate.y));
+		player->m_accel = accelIncrement;
+	}
+	else{
+		player->m_accel = { 0.f, 0.f, 0.f };
+	}
 
 }
-//
-//
-//void specialkeydown(int key, int x, int y){
-//
-//
-//
-//}
+
+
+void specialkeydown(int key, int x, int y){
+
+	if (GLUT_KEY_LEFT == key){
+		player->m_rotate.y += 0.02f;
+	}
+
+	if (GLUT_KEY_RIGHT == key){
+		player->m_rotate.y -= 0.02f;
+	}
+
+}
+
+GLuint hoge = 0;
 
 //-------------------------------------
 //ゲームの初期化全般を行う
@@ -64,26 +79,44 @@ void init(){
 	srand(time(NULL));
 
 	player = new Player();
-	xFile::loadXfile("xFile/taiya.x", player->m_boby);
+	xFile::loadXfile("xFile/testbike.x", player->m_boby);
+	xFile::loadXfile("xFile/taiya.x", player->m_backWheel);
 
 	camera = new Camera();
 
 	//後で書き換え
 	testCourse = new Course();
 
-	magicStone = new MagicStone();
+	for (int i = 0; i < SET_MAGICSTONE_NUMBER; i++){
+		magicStone[i] = new MagicStone();
+	}
+
+	for (int i = 0; i < PARTICLE_NUNBER; i++){
+		fire[i] = new FireEffect();
+	}
+
 
 	//テクスチャの読み込み
+	//透過度無し
 	testCourse->m_handle[COUSE_TEXTURE] = BmpImage::loadImage("bmp/course1.bmp");
 	testCourse->m_handle[BACKGROUND_TEXTURE] = BmpImage::loadImage("bmp/background1.bmp");
+
+	//透過度有り
+	smoke_handle = BmpImage::loadImage_alpha("bmp/smoke.bmp");
+	
+	hoge = BmpImage::loadImage_alpha("bmp/piyo.bmp");
 
 	//コースデータのバッファ作成
 	BmpImage::makeBuffer("bmp/buffer1.bmp", testCourse->m_buffer);
 
+	//魔石の配置
+	testCourse->setMagicStone();
+
 	//使用する魔石のテクスチャ読み込み
 	fire_handle = BmpImage::loadImage("bmp/fire.bmp");
 	blizzard_handle = BmpImage::loadImage("bmp/blizzard.bmp");
-	//haste_handle = BmpImage::loadImage("bmp/");
+
+
 }
 
 
@@ -93,15 +126,17 @@ unsigned int pressedKeys = 0;//現フレーム押されているキー
 unsigned int releasedKeys = 0;//現フレーム押されていないキー
 unsigned int lastkeys = 0;//前フレーム前に押されていたキー
 unsigned int changedKeys = 0;//前フレームと現フレームで変化があったキー
+unsigned int downkeys = 0;
 
 void joystick(unsigned int buttonMask, int x, int y, int z){
 	//printf("buttonMask:%u, x:%d ,y:%d z:%d\n", buttonMask, x, y, z);
 	pressedKeys = buttonMask;
 	releasedKeys = ~pressedKeys;
 	changedKeys = pressedKeys ^ lastkeys;
+	downkeys = pressedKeys & changedKeys;
 
 	//-1000～1000の値を-1～1の値に変換して引数として渡す
-	player->control(pressedKeys, (float)x / 1000.f, (float)y / 1000.f, (float)z / 1000.f);
+	player->control(pressedKeys, downkeys, (float)x / 1000.f, (float)y / 1000.f, (float)z / 1000.f);
 
 	lastkeys = buttonMask;
 }
@@ -132,13 +167,15 @@ int getMinute(int _second){
 }
 
 
+
+
 //----------------------------------------
 //更新と描画
 
 void display() {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	glClearColor(77.f / 255.f, 180.f / 255.f, 232.f / 255.f, 1);
 
@@ -173,25 +210,69 @@ void display() {
 
 	camera->update(TYPE_3D);
 	player->update();
-	magicStone->update();
+
+	for (int i = 0; i < SET_MAGICSTONE_NUMBER; i++){
+		magicStone[i]->update();
+	}
+
+	for (int i = 0; i < PARTICLE_NUNBER; i++){
+		fire[i]->update();
+	}
 
 	/*描画(3D)*/
 	testCourse->draw();
 
-	
-
 	player->draw();
 
 	glDisable(GL_LIGHTING);
-	glDisable(GL_DEPTH_TEST);
+	//glDisable(GL_DEPTH_TEST);
 
-	magicStone->draw();
 
+	for (int i = 0; i < SET_MAGICSTONE_NUMBER; i++){
+		magicStone[i]->draw();
+	}
+
+	for (int i = 0; i < PARTICLE_NUNBER; i++){
+		fire[i]->draw();
+	}
+	glPushMatrix();
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, hoge);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+	glTranslatef(20, 0.001f, -180);
+	glRotatef(90, 1, 0, 0);
+
+
+	glBegin(GL_QUADS);
+	glColor4f(1, 1, 1, 1);
+	glNormal3f(0, 1, 0);
+	glTexCoord2f(0.f, 0.f);
+	glVertex2f(-1.f, -1.f);
+	glTexCoord2f(0.f, 1.f);
+	glVertex2f(-1.f, 1.f);
+	glTexCoord2f(1.f, 1.f);
+	glVertex2f(1.f, 1.f);
+	glTexCoord2f(1.f, 0.f);
+	glVertex2f(1.f, -1.f);
+
+
+	glEnd();
+
+	glDisable(GL_BLEND);
+	glDisable(GL_TEXTURE_2D);
+
+
+	glPopMatrix();
+	
 
 	/*更新*/
 	camera->update(TYPE_2D);
 
-	
+
 
 	/*描画(2D)*/
 
@@ -205,13 +286,13 @@ void display() {
 		StrokeString::print(str_lapMax, { 285, 250, 0 }, 0.1f, { 1, 0, 0 });
 		StrokeString::print("TIME", { 180, 280, 0 }, 0.13f, { 1, 0, 0 });
 		StrokeString::print(str_time, { 220, 280, 0 }, 0.13f, { 1, 0, 0 });
-		
+
 		StrokeString::print("LAP1", { 220, 230, 0 }, 0.08f, { 1, 0, 0 });
 		StrokeString::print(player->m_str_lapTime[FIRST], { 250, 230, 0 }, 0.08f, { 1, 0, 0 });
-		
+
 		StrokeString::print("LAP2", { 220, 215, 0 }, 0.08f, { 1, 0, 0 });
 		StrokeString::print(player->m_str_lapTime[SECOND], { 250, 215, 0 }, 0.08f, { 1, 0, 0 });
-		
+
 		StrokeString::print("LAP3", { 220, 200, 0 }, 0.08f, { 1, 0, 0 });
 		StrokeString::print(player->m_str_lapTime[THIRD], { 250, 200, 0 }, 0.08f, { 1, 0, 0 });
 
@@ -228,6 +309,9 @@ void display() {
 //display関数を60F単位で再帰的に呼び出す関数
 
 void timer(int value) {
+
+	//printf("size:%d\n", player->m_hasMagicStone.size());
+
 	//system("cls");
 
 	//printf("%f %f\n", magicStone->m_position.x, magicStone->m_position.z);
@@ -237,7 +321,7 @@ void timer(int value) {
 	//printf("LAP:%d\n", player->m_lapCount);
 
 
-	//fps();
+	fps();
 
 	glutPostRedisplay();
 	glutTimerFunc(1000 / 60, timer, 0);
@@ -254,7 +338,7 @@ int main(int argc, char *argv[]) {
 	glutTimerFunc(0, timer, 0);
 	glutJoystickFunc(joystick, 0);
 	glutKeyboardFunc(keyboard);
-	//glutSpecialFunc(specialkeydown);
+	glutSpecialFunc(specialkeydown);
 
 	init();//ゲームの初期化
 
