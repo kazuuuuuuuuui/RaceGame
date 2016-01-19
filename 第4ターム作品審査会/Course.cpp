@@ -1,7 +1,26 @@
 #include<stdio.h>
+#include"Player.h"
 #include"Course.h"
+#include"CourseFlag.h"
 
-Course *testCourse = nullptr;
+//Course *testCourse = nullptr;
+
+//-------------------------------------
+//コース側で毎フレーム行う処理
+
+void Course::update(){
+
+	for (int i = 0; i < CHECK_POINT_NUMBER; i++){
+
+		if (m_checkPoint[i].checkPassFlag()){
+			player->m_passCheckPoint[i] = true;
+		}
+
+	}
+
+}
+
+
 
 //-------------------------------------
 //各コース全体と空の描画
@@ -71,7 +90,6 @@ void Course::draw(){
 	glDisable(GL_TEXTURE_2D);
 }
 
-
 //-------------------------------------
 //コース上に魔石を配置する
 //画像左上から右下に向かって読んでいく
@@ -82,7 +100,7 @@ void Course::setMagicStone(){
 		for (int t = 0; t < COURSE_WIDTH; t++){
 
 			if (ITEMPOSITION == m_buffer[i][t]){
-				
+
 				//取り敢えず
 				static int num = 0;
 

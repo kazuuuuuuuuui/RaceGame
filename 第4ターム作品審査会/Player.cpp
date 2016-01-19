@@ -7,6 +7,7 @@
 #define _USE_MATH_DEFINES
 #include<stdio.h>
 #include<math.h>
+#include"GameManager.h"
 #include"Course.h"
 #include"player.h"
 #include"camera.h"
@@ -70,10 +71,7 @@ void Player::update(){
 		m_speed *= 0.9f;
 	}
 
-	//チェックポイントを順送で通過したかの判定
-	if (passCheckPoint()){
-		m_checkFlag = true;
-	}
+
 
 	//1周したかの判定
 	if (countLap()){
@@ -101,8 +99,15 @@ void Player::update(){
 		//フレームの初期化
 		m_flame = 0;
 
+		//チェックフラッグの初期化
+		for (int i = 0; i < CHECK_POINT_NUMBER; i++){
+			m_passCheckPoint[i] = false;
+		}
+
 		m_lapCount++;
-		m_checkFlag = false;
+
+
+
 	}
 
 	//ゴールしたかの判定
@@ -112,7 +117,6 @@ void Player::update(){
 
 }
 
-
 //-------------------------------------
 //自機の描画
 
@@ -120,7 +124,7 @@ void Player::draw(){
 	glPushMatrix();
 	{
 
-		//float diffuse[] = { 255 / 255.f, 255 / 255.f, 255 / 255.f, 1 };
+		//float diffuse[] = { 255 / 255.f, 0 / 255.f, 0 / 255.f, 1 };
 		//glMaterialfv(
 		//	GL_FRONT,   // GLenum face
 		//	GL_DIFFUSE, // GLenum pname
@@ -129,35 +133,36 @@ void Player::draw(){
 		glTranslatef(m_position.x, m_position.y, m_position.z);
 
 		glRotatef(m_rotate.y * 180 / M_PI, 0, 1, 0);
-		glRotatef(180, 0, 1, 0);
-		glRotatef(-90, 1, 0, 0);
+		//glRotatef(180, 0, 1, 0);
+		//glRotatef(-90, 1, 0, 0);
+	
 
-		//glScalef(m_scale.x, m_scale.y, m_scale.z);
-		glScalef(0.18, 0.18, 0.18);
+		////glScalef(m_scale.x, m_scale.y, m_scale.z);
+		//glScalef(0.18, 0.18, 0.18);
 
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glEnableClientState(GL_NORMAL_ARRAY);
+		//glEnableClientState(GL_VERTEX_ARRAY);
+		//glEnableClientState(GL_NORMAL_ARRAY);
 
-		std::vector<float>::iterator itr_v = m_boby.m_vertex.begin();
-		glVertexPointer(3, GL_FLOAT, 0, &(*itr_v));
+		//std::vector<float>::iterator itr_v = m_boby.m_vertex.begin();
+		//glVertexPointer(3, GL_FLOAT, 0, &(*itr_v));
 
-		std::vector<float>::iterator itr_n = m_boby.m_normal.begin();
-		glNormalPointer(GL_FLOAT, 0, &(*itr_n));
+		//std::vector<float>::iterator itr_n = m_boby.m_normal.begin();
+		//glNormalPointer(GL_FLOAT, 0, &(*itr_n));
 
-		std::vector<unsigned short>::iterator itr_i = m_boby.m_index.begin();
+		//std::vector<unsigned short>::iterator itr_i = m_boby.m_index.begin();
 
 
-		/*車体描画*/
-		glDrawElements(GL_TRIANGLES, m_boby.m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));
+		///*車体描画*/
+		//glDrawElements(GL_TRIANGLES, m_boby.m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));
 
-		//glColor3f(0, 1, 0);
-		//glBegin(GL_TRIANGLES);
-		//{
-		//	glVertex3f(0, 0, -1.5);//頭
-		//	glVertex3f(-0.5, 0, 1);
-		//	glVertex3f(0.5, 0, 1);
-		//}
-		//glEnd();
+		glColor3f(0, 1, 0);
+		glBegin(GL_TRIANGLES);
+		{
+			glVertex3f(0, 0, -1.5);//頭
+			glVertex3f(-0.5, 0, 1);
+			glVertex3f(0.5, 0, 1);
+		}
+		glEnd();
 
 	}
 	glPopMatrix();
@@ -172,27 +177,27 @@ void Player::draw(){
 		//	GL_DIFFUSE, // GLenum pname
 		//	diffuse);   // const GLfloat *params
 
-		static float angle = 0.f;
-		static float scal = 0.18f;
+		//static float angle = 0.f;
+		//static float scal = 0.18f;
 
-		angle -= 5.f;
+		//angle -= 5.f;
 
-		glTranslatef(m_position.x + sin(m_rotate.y)*1.1, m_position.y + 0.5, m_position.z + cos(m_rotate.y)*1.1);
-		glRotatef(m_rotate.y * 180 / M_PI, 0, 1, 0);
-		glRotatef(angle, 1, 0, 0);
-		glScalef(scal, scal, scal);
+		//glTranslatef(m_position.x + sin(m_rotate.y)*1.1, m_position.y + 0.5, m_position.z + cos(m_rotate.y)*1.1);
+		//glRotatef(m_rotate.y * 180 / M_PI, 0, 1, 0);
+		//glRotatef(angle, 1, 0, 0);
+		//glScalef(scal, scal, scal);
 
-		std::vector<float>::iterator itr_v = m_backWheel.m_vertex.begin();
-		glVertexPointer(3, GL_FLOAT, 0, &(*itr_v));
+		//std::vector<float>::iterator itr_v = m_backWheel.m_vertex.begin();
+		//glVertexPointer(3, GL_FLOAT, 0, &(*itr_v));
 
-		std::vector<float>::iterator itr_n = m_backWheel.m_normal.begin();
-		glNormalPointer(GL_FLOAT, 0, &(*itr_n));
+		//std::vector<float>::iterator itr_n = m_backWheel.m_normal.begin();
+		//glNormalPointer(GL_FLOAT, 0, &(*itr_n));
 
-		std::vector<unsigned short>::iterator itr_i = m_backWheel.m_index.begin();
+		//std::vector<unsigned short>::iterator itr_i = m_backWheel.m_index.begin();
 
 
-		/*後輪描画*/
-		glDrawElements(GL_TRIANGLES, m_backWheel.m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));
+		///*後輪描画*/
+		//glDrawElements(GL_TRIANGLES, m_backWheel.m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));
 
 		//float def[] = { 1, 1, 1, 1 };
 		//glMaterialfv(
@@ -233,6 +238,16 @@ void Player::control(unsigned int _pressedKey, unsigned int _downKeys, float _x,
 
 	//アイテムの使用
 	if (_downKeys &  BUTTON_RB){
+
+		//取り敢えず
+		//ファイア
+		FireEffect *fire[PARTICLE_NUNBER] = { nullptr };
+
+		for (int i = 0; i < PARTICLE_NUNBER; i++){
+			fire[i] = new FireEffect();
+			fire[i]->m_position = m_position;
+			m_useFire.push_back(fire[i]);
+		}
 
 
 
@@ -284,7 +299,7 @@ bool Player::inDart(){
 	//プレイヤーがどのピクセル上にいるか判断し
 	//直下のピクセル情報によって判定する
 
-	if (testCourse->m_buffer[COURSE_HEIGHT - 1 + (int)m_position.z][(int)m_position.x] == DART){
+	if (gameManager->m_course->m_buffer[COURSE_HEIGHT - 1 + (int)m_position.z][(int)m_position.x] == DART){
 
 		return true;
 
@@ -297,51 +312,28 @@ bool Player::inDart(){
 }
 
 //-------------------------------------
-//プレイヤーが順走してチェックポイントを
-//通過したかどうかの判定を行う
-//チェックポイントの手前に位置していたらnumに1
-//チェックポイントの直後に位置していたらnumに2
-//それ以外は0を代入し、numの値が1→2に変化したときのみtrueを返す
-
-bool Player::passCheckPoint(){
-
-	//チェックポイントを順送して
-	//通過したかどうがを判定するための使い捨てstatic変数
-	static int num = 0;
-
-	if (testCourse->m_buffer[COURSE_HEIGHT - 1 + (int)m_position.z][(int)m_position.x] == CHECK_FLONT){
-
-		num = 1;
-
-	}
-
-	else if (testCourse->m_buffer[COURSE_HEIGHT - 1 + (int)m_position.z][(int)m_position.x] == CHECK_BEHIND){
-		if (1 == num){
-			num = 2;
-			return true;
-		}
-		else{
-			num = 2;
-		}
-	}
-
-	else{
-		num = 0;
-	}
-
-	return false;
-}
-
-//-------------------------------------
 //プレイヤーがコースを順走して1周したかどうかの判定を行う
 //ゴールの位置にいるときにチェックポイントを通過しているか判別する
 //フラグがtrueの状態のときのみtrueを返し1周とカウントする
 
 bool Player::countLap(){
 
-	if (testCourse->m_buffer[COURSE_HEIGHT - 1 + (int)m_position.z][(int)m_position.x] == GOAL && m_checkFlag == true){
+	if (gameManager->m_course->m_buffer[COURSE_HEIGHT - 1 + (int)m_position.z][(int)m_position.x] == GOAL){
 
-		return true;
+		bool fg = true;
+
+		for (int i = 0; i < CHECK_POINT_NUMBER; i++){
+
+			fg &= m_passCheckPoint[i];
+
+		}
+
+		if (fg == true){
+
+			return true;
+
+		}
+
 
 	}
 

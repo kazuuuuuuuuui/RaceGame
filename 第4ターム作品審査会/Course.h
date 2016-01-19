@@ -12,12 +12,17 @@
 #define COUSE_TEXTURE (0)
 #define BACKGROUND_TEXTURE (1)
 
+//コースに設置してある
+//周回判定用のチェックポイントの個数
+#define CHECK_POINT_NUMBER (10)
+
 //ゴールに必要なコースの周回数
 #define LAP_MAX (3)
 
 #include<stdlib.h>
 #include"MagicStone.h"
 #include"BmpImage.h"
+#include"CourseFlag.h"
 #include"glut.h"
 
 //-------------------------------------
@@ -28,9 +33,7 @@ enum {
 	DART,
 	START,
 	GOAL,
-	CHECK_FLONT,
-	CHECK_BEHIND,
-	ITEMPOSITION,
+	ITEMPOSITION
 };
 
 
@@ -44,8 +47,11 @@ public:
 	int m_height;
 	int m_buffer[COURSE_HEIGHT][COURSE_WIDTH];//各コースの各ピクセルの情報を格納するバッファ
 	GLuint m_handle[COURSE_TEXTURE_NUMBER];//[0]にはコースの[1]には背景のテクスチャを格納する
+	CourseFlag m_checkPoint[CHECK_POINT_NUMBER];//周回判定用のフラッグ
+
 
 	void draw();
+	void update();
 	void setMagicStone();
 
 	Course() :
@@ -67,4 +73,4 @@ public:
 
 };
 
-extern Course *testCourse;
+//extern Course *testCourse;

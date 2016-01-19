@@ -6,11 +6,36 @@
 #define MAGICSTONR_REPEAT_S (1)
 #define MAGICSTONR_REPEAT_T (1)
 
-#include"MagicStone.h"
+
 #define _USE_MATH_DEFINES
 #include<math.h>
+#include"MagicStone.h"
 #include"Player.h"
+#include"CourseFlag.h"
 #include"glut.h"
+
+//debug
+void Circle2DFill(float radius, int x, int y)
+{
+	for (float th1 = 0.0; th1 <= 360.0; th1 = th1 + 1.0)
+	{
+		float th2 = th1 + 10.0;
+		float th1_rad = th1 / 180.0 * M_PI;
+		float th2_rad = th2 / 180.0 * M_PI;
+
+		float x1 = radius * cos(th1_rad);
+		float y1 = radius * sin(th1_rad);
+		float x2 = radius * cos(th2_rad);
+		float y2 = radius * sin(th2_rad);
+
+		glBegin(GL_TRIANGLES);
+		glVertex2f(x, y);
+		glVertex2f(x1 + x, y1 + y);
+		glVertex2f(x2 + x, y2 + y);
+		glEnd();
+	}
+}
+
 
 MagicStone *magicStone[SET_MAGICSTONE_NUMBER] = { nullptr };
 
@@ -25,10 +50,13 @@ GLuint haste_handle = 0;//ÉwÉCÉXÉg
 
 void MagicStone::update(){
 
+	//ìÆÇ´
+	move();
+
 	if (false == m_isGotten && checkIsGotten()){
 		m_isGotten = true;
 		player->m_hasMagicStone.push_back(this);
-		
+
 	}
 
 	if (m_isGotten == true){
@@ -37,6 +65,21 @@ void MagicStone::update(){
 		this->m_position.z = player->m_position.z + cos(player->m_rotate.y) * 2;
 
 	}
+
+}
+
+//-------------------------------------
+//ñÇêŒÇÃìÆÇ´
+//è„â∫Ç…óhÇÁÇ∑(âº)
+
+void MagicStone::move(){
+
+	//éÊÇËä∏Ç¶Ç∏
+	static float ag = 0.f;
+	ag += 0.001;
+
+	//0.5Å`1
+	m_position.y = ((sin(ag) + 1) / 4) + 0.5f;
 
 }
 
@@ -70,6 +113,8 @@ void MagicStone::draw(){
 		glTranslatef(m_position.x, m_position.y, m_position.z);
 		glRotatef(0, m_rotate.x, m_rotate.y, m_rotate.z);
 		glScalef(m_scale.x, m_scale.y, m_scale.z);
+
+		glColor3f(1, 1, 1);
 
 		double s, t0, t1, r0, r1, th0, th1, phi;
 		double p[2][3];
@@ -112,6 +157,17 @@ void MagicStone::draw(){
 			glDisable(GL_TEXTURE_2D);
 		}
 
+	}
+	glPopMatrix();
+
+	//ÉAÉCÉeÉÄÇÃâe
+	glPushMatrix();
+	{
+		//0.49ÇÕå„Ç≈èCê≥
+		glTranslatef(m_position.x, 0.1, m_position.z);
+		glRotatef(90, 1, 0, 0);
+		glColor3f(110.f / 255.f, 110.f / 255.f, 110.f / 255.f);
+		Circle2DFill(0.3, 0, 0);
 	}
 	glPopMatrix();
 

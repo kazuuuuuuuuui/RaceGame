@@ -228,6 +228,13 @@ void BmpImage::makeBuffer(const char *_bufferName, int _buffer[][COURSE_WIDTH]){
 				_buffer[i][t] = PATH;
 			}
 
+			//黒ならダート
+			else if (pixels[t + i*bmpInfoHeader.biWidth].r <= 5 &&
+				pixels[t + i*bmpInfoHeader.biWidth].g <= 5 &&
+				pixels[t + i*bmpInfoHeader.biWidth].b <= 5){
+				_buffer[i][t] = DART;
+			}
+
 			//赤ならスタート
 			else if (pixels[t + i*bmpInfoHeader.biWidth].r == 255 &&
 				pixels[t + i*bmpInfoHeader.biWidth].g == 0 &&
@@ -244,49 +251,12 @@ void BmpImage::makeBuffer(const char *_bufferName, int _buffer[][COURSE_WIDTH]){
 				_buffer[i][t] = GOAL;
 			}
 
-
-			//緑ならチェックポイントの前
+			//緑ならアイテムの場所
 			else if (pixels[t + i*bmpInfoHeader.biWidth].r == 0 &&
 				pixels[t + i*bmpInfoHeader.biWidth].g == 255 &&
 				pixels[t + i*bmpInfoHeader.biWidth].b == 0){
-
-				_buffer[i][t] = CHECK_FLONT;
-			}
-
-			//黄色ならチェックポイントの後
-			else if (pixels[t + i*bmpInfoHeader.biWidth].r == 255 &&
-				pixels[t + i*bmpInfoHeader.biWidth].g == 255 &&
-				pixels[t + i*bmpInfoHeader.biWidth].b == 0){
-
-				_buffer[i][t] = CHECK_BEHIND;
-			}
-
-			//黒ならダート
-			else if (pixels[t + i*bmpInfoHeader.biWidth].r <= 5 &&
-				pixels[t + i*bmpInfoHeader.biWidth].g <= 5 &&
-				pixels[t + i*bmpInfoHeader.biWidth].b <= 5){
-				_buffer[i][t] = DART;
-			}
-
-			//水色ならアイテムの場所
-			else if (pixels[t + i*bmpInfoHeader.biWidth].r == 0 &&
-				pixels[t + i*bmpInfoHeader.biWidth].g == 255 &&
-				pixels[t + i*bmpInfoHeader.biWidth].b == 255){
 				_buffer[i][t] = ITEMPOSITION;
 			}
-
-
-
-			///*後で書き換える！！！*/
-			//if (_buffer[i][t] == ITEMPOSITION){
-			//	magicStone[0]->m_position.x = t;
-			//	magicStone[0]->m_position.y = 0.5f;
-			//	magicStone[0]->m_position.z = i - COURSE_HEIGHT;
-
-			//}
-
-
-
 		}
 
 	}

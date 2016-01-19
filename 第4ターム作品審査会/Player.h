@@ -1,6 +1,5 @@
 #pragma once
 
-
 //debug
 //デバッグ用に位置いじれるようにしておく
 #define PLAYER_TEST_POS_X (20.f)
@@ -18,6 +17,7 @@
 #include"FlyingObject.h"
 #include"MagicStone.h"
 #include"xFile.h"
+#include"FireEffect.h"
 
 //-------------------------------------
 //自機の情報
@@ -28,7 +28,7 @@ public:
 	//車体部分
 	xFile m_boby;
 
-	//
+	//後輪部分
 	xFile m_backWheel;
 
 	//周回数
@@ -38,9 +38,8 @@ public:
 	//既定の周回数に達したらtrueになる
 	bool m_isGoal;
 
-	//チェックポイントを順走するとtrueになる
-	//m_lapCountが+1された際にすべてのフラグをfalseに戻す
-	bool m_checkFlag;
+	bool m_passCheckPoint[CHECK_POINT_NUMBER];
+	//bool m_checkFlag;
 
 	//ラップタイム
 	int m_flame;
@@ -53,6 +52,9 @@ public:
 	//魔石を示すポインタのベクター
 	std::vector<MagicStone*> m_hasMagicStone;
 
+	//ファイアを使ったときのエフェクトを管理
+	std::vector<FireEffect*> m_useFire;
+
 	void draw();
 	void update();
 	void control(unsigned int _pressedKey,unsigned int _downKeys, float _x, float _y, float _z);
@@ -62,7 +64,6 @@ public:
 	bool inDart();
 
 	//周回系
-	bool passCheckPoint();
 	bool countLap();
 	bool checkIsGoal();
 
@@ -75,8 +76,8 @@ public:
 	Player() :
 		m_flame(0),
 		m_lapCount(1),
-		m_isGoal(false),
-		m_checkFlag(false)
+		m_isGoal(false)
+		//m_checkFlag(false)
 	{
 		//debug
 		m_position.x = PLAYER_TEST_POS_X;

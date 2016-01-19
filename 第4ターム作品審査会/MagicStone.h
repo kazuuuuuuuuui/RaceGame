@@ -59,6 +59,7 @@ public:
 
 	{};
 
+	void move();
 	void draw();
 	void update();
 
