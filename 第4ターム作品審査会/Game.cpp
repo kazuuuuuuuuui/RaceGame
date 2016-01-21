@@ -16,7 +16,7 @@
 #include"Enemy.h"
 #include"Course.h"
 #include"CourseFlag.h"
-#include"MagicStone.h"
+#include"Item.h"
 #include"StrokeString.h"
 #include"FireEffect.h"
 #include"glut.h"
@@ -25,12 +25,7 @@
 
 #define COURSE_TYPE (1)
 
-
-Enemy *com1 = nullptr;
-
 /**************************/
-
-
 
 
 //-------------------------------------
@@ -58,38 +53,44 @@ void fps(){
 //-------------------------------------
 //キーボードからの入力全般
 
+//debug
+float xx = 0.f;
+float yy = 0.f;
+
 void keyboard(unsigned char key, int x, int y){
 
-	if (' ' == key){
-		glm::vec3 accelIncrement(-0.015*sin(player->m_rotate.y), 0, -0.015*cos(player->m_rotate.y));
-		player->m_accel = accelIncrement;
+	//debug
+	if ('d' == key){
+		xx += 1.f;
 	}
-	else{
-		player->m_accel = { 0.f, 0.f, 0.f };
+	else if ('a' == key){
+		xx -= 1.f;
 	}
+	else if ('w' == key){
+		yy += 1.f;
+	}
+	else if ('s' == key){
+		yy -= 1.f;
+	}
+
 
 }
 
 
 void specialkeydown(int key, int x, int y){
 
-	if (GLUT_KEY_LEFT == key){
-		player->m_rotate.y += 0.02f;
-	}
-
-	if (GLUT_KEY_RIGHT == key){
-		player->m_rotate.y -= 0.02f;
-	}
-
 }
 
+
+
+//debug
 GLuint hoge = 0;
 
 //取り敢えず
 Course* createCourse(){
 
-	Course *course = nullptr;
-	course = new Course();
+	Course *newcourse = nullptr;
+	newcourse = new Course();
 
 
 
@@ -98,34 +99,53 @@ Course* createCourse(){
 	//debug
 	if (1 == COURSE_TYPE){
 		//チェックポイントの位置設定
-		course->m_checkPoint[0].m_position = { 22.5f, 0.01f, -195.f };
-		course->m_checkPoint[1].m_position = { 75.f, 0.01f, -230.f };
-		course->m_checkPoint[2].m_position = { 170.f, 0.01f, -180.f };
-		course->m_checkPoint[3].m_position = { 241.f, 0.01f, -170.f };
-		course->m_checkPoint[4].m_position = { 130.f, 0.01f, -115.f };
-		course->m_checkPoint[5].m_position = { 175.f, 0.01f, -75.f };
-		course->m_checkPoint[6].m_position = { 230.f, 0.01f, -15.f };
-		course->m_checkPoint[7].m_position = { 150.f, 0.01f, -35.f };
-		course->m_checkPoint[8].m_position = { 47.f, 0.01f, -25.f };
-		course->m_checkPoint[9].m_position = { 24.f, 0.01f, -115.f };
+		newcourse->m_checkPoint[0].m_position = { 22.5f, 0.01f, -195.f };
+		newcourse->m_checkPoint[1].m_position = { 40.f, 0.01f, -240.f };
+		newcourse->m_checkPoint[2].m_position = { 72.f, 0.01f, -240.f };
+		newcourse->m_checkPoint[3].m_position = { 91.f, 0.01f, -200.5f };
+		newcourse->m_checkPoint[4].m_position = { 115.f, 0.01f, -159.f };
+		newcourse->m_checkPoint[5].m_position = { 135.f, 0.01f, -155.f };
+		newcourse->m_checkPoint[6].m_position = { 160.f, 0.01f, -163.5f };
+		newcourse->m_checkPoint[7].m_position = { 174.f, 0.01f, -173.f };
+		newcourse->m_checkPoint[8].m_position = { 186.f, 0.01f, -229.f };
+		newcourse->m_checkPoint[9].m_position = { 208.f, 0.01f, -230.5f };
+		newcourse->m_checkPoint[10].m_position = { 225.f, 0.01f, -223.5f };
+		newcourse->m_checkPoint[11].m_position = { 233.5f, 0.01f, -205.f };
+		newcourse->m_checkPoint[12].m_position = { 242.f, 0.01f, -175.5f };
+		newcourse->m_checkPoint[13].m_position = { 237.f, 0.01f, -142.f };
+		newcourse->m_checkPoint[14].m_position = { 207.f, 0.01f, -124.f };
+		newcourse->m_checkPoint[15].m_position = { 108.f, 0.01f, -112.f };
+		newcourse->m_checkPoint[16].m_position = { 91.f, 0.01f, -88.f };
+		newcourse->m_checkPoint[17].m_position = { 180.f, 0.01f, -73.5f };
+		newcourse->m_checkPoint[18].m_position = { 237.f, 0.01f, -48.f };
+		newcourse->m_checkPoint[19].m_position = { 233.f, 0.01f, -15.f };
+		newcourse->m_checkPoint[20].m_position = { 186.f, 0.01f, -8.5f };
+		newcourse->m_checkPoint[21].m_position = { 146.f, 0.01f, -35.f };
+		newcourse->m_checkPoint[22].m_position = { 99.f, 0.01f, -27.f };
+		newcourse->m_checkPoint[23].m_position = { 57.f, 0.01f, -14.f };
+		newcourse->m_checkPoint[24].m_position = { 27.f, 0.01f, -56.f };
 
-		course->m_handle[COUSE_TEXTURE] = BmpImage::loadImage("bmp/course1/course1.bmp");
+		//続きから
+
+
+
+		newcourse->m_handle[COUSE_TEXTURE] = BmpImage::loadImage("bmp/course1/course1.bmp");
 		//course->m_handle[BACKGROUND_TEXTURE] = BmpImage::loadImage("bmp/course1/background1.bmp");
-		BmpImage::makeBuffer("bmp/course1/buffer1.bmp", course->m_buffer);
+		BmpImage::makeBuffer("bmp/course1/buffer1.bmp", newcourse->m_buffer);
 	}
 	//
 
 	//コース2(仮)
 	else if (2 == COURSE_TYPE){
-		course->m_handle[COUSE_TEXTURE] = BmpImage::loadImage("bmp/course2/course2.bmp");
+		newcourse->m_handle[COUSE_TEXTURE] = BmpImage::loadImage("bmp/course2/course2.bmp");
 		//course->m_handle[BACKGROUND_TEXTURE] = BmpImage::loadImage("bmp/course2/background2.bmp");
-		BmpImage::makeBuffer("bmp/course2/buffer2.bmp", course->m_buffer);
+		BmpImage::makeBuffer("bmp/course2/buffer2.bmp", newcourse->m_buffer);
 	}
 	//
 
-	course->setMagicStone();
+	newcourse->setMagicStone();
 
-	return course;
+	return newcourse;
 
 }
 
@@ -138,9 +158,6 @@ void init(){
 
 	srand(time(NULL));
 
-	//ゲームマネージャーの生成
-	gameManager = new GameManager();
-
 	//プレイヤーの生成
 	player = new Player();
 	xFile::loadXfile("xFile/testbike.x", player->m_boby);
@@ -148,8 +165,7 @@ void init(){
 
 	//敵の生成
 	com1 = new Enemy();
-	com1->m_position = { 20, 0.5f, -160 };
-	com1->m_accel = { 0.001*sin(com1->m_rotate.y), 0, 0.001*cos(com1->m_rotate.y) };
+	com1->m_accel = { -0.0001*sin(com1->m_rotate.y), 0, -0.0001*cos(com1->m_rotate.y) };
 	xFile::loadXfile("xFile/testbike.x", com1->m_boby);
 	xFile::loadXfile("xFile/taiya.x", com1->m_backWheel);
 
@@ -159,13 +175,13 @@ void init(){
 	//アイテム生成→コースの生成→アイテムの設置
 
 	//アイテムの生成
-	for (int i = 0; i < SET_MAGICSTONE_NUMBER; i++){
-		magicStone[i] = new MagicStone();
+	for (int i = 0; i < SET_ITEM_NUMBER; i++){
+		item[i] = new Item();
 	}
 
 	//後で書き換え
 	//コースの生成
-	gameManager->m_course = createCourse();
+	course = createCourse();
 
 	//テクスチャの読み込み
 	//透過度無し
@@ -259,7 +275,10 @@ void display() {
 	sprintf(str_lapMax, "%d", LAP_MAX);
 
 	/*更新*/
-	flame++;
+	if (false == player->m_isGoal){
+		flame++;
+	}
+
 
 	//ミリ秒
 	milliSecond = getMilliSecond(flame);
@@ -274,15 +293,15 @@ void display() {
 
 
 	camera->update(TYPE_3D);
-	gameManager->m_course->update();
+	course->update();
 	player->update();
 	com1->update();
 	com1->AI();
 
 	//testCourse->update();
 
-	for (int i = 0; i < SET_MAGICSTONE_NUMBER; i++){
-		magicStone[i]->update();
+	for (int i = 0; i < SET_ITEM_NUMBER; i++){
+		item[i]->update();
 	}
 
 	//ファイアの更新
@@ -291,16 +310,10 @@ void display() {
 	}
 
 	/*描画(3D)*/
-	gameManager->m_course->draw();
-	//testCourse->draw();
-
-	//debug
-	/*for (int i = 0; i < CHECK_POINT_NUMBER; i++){
-		testCourse->m_checkPoint[i].draw();
-		}*/
+	course->draw();
 
 	for (int i = 0; i < CHECK_POINT_NUMBER; i++){
-		gameManager->m_course->m_checkPoint[i].draw();
+		course->m_checkPoint[i].draw();
 	}
 
 	player->draw();
@@ -310,9 +323,8 @@ void display() {
 	glDisable(GL_LIGHTING);
 	//glDisable(GL_DEPTH_TEST);
 
-
-	for (int i = 0; i < SET_MAGICSTONE_NUMBER; i++){
-		magicStone[i]->draw();
+	for (int i = 0; i < SET_ITEM_NUMBER; i++){
+		item[i]->draw();
 	}
 
 	//ファイアの描画
@@ -386,6 +398,18 @@ void display() {
 	}
 	else{
 		StrokeString::print("GOAL", { 75, 210, 0 }, 0.5f, { 1, 1, 1 });
+
+		StrokeString::print("LAP1", { 60, 158, 0 }, 0.2f, { 1, 0, 0 });
+		StrokeString::print(player->m_str_lapTime[FIRST], { 130, 158, 0 }, 0.2f, { 1, 0, 0 });
+
+		StrokeString::print("LAP2", { 60, 114, 0 }, 0.2f, { 1, 0, 0 });
+		StrokeString::print(player->m_str_lapTime[SECOND], { 130, 114, 0 }, 0.2f, { 1, 0, 0 });
+
+		StrokeString::print("LAP3", { 60, 72, 0 }, 0.2f, { 1, 0, 0 });
+		StrokeString::print(player->m_str_lapTime[THIRD], { 130, 72, 0 }, 0.2f, { 1, 0, 0 });
+
+		StrokeString::print("TOTALTIME", { 24, 30, 0 }, 0.15f, { 1, 0, 0 });
+		StrokeString::print(str_time, { 131, 30, 0 }, 0.2f, { 1, 0, 0 });
 	}
 
 	glFlush();
@@ -398,10 +422,15 @@ void display() {
 void timer(int value) {
 
 	//debug
+	//printf("xx:%f yy:%f\n", xx, yy);
+
+	//printf("piyo:%d\n", com1->piyo);
+
 	/*for (int i = 0; i < CHECK_POINT_NUMBER; i++){
+
 		printf("[%d]:%d", i, player->m_passCheckPoint[i]);
 
-		if (9 == i){
+		if (CHECK_POINT_NUMBER - 1 == i){
 			printf("\n");
 		}
 

@@ -14,15 +14,15 @@
 #define THIRD (2)
 
 #include<vector>
-#include"FlyingObject.h"
-#include"MagicStone.h"
+#include"GameObject.h"
+#include"Item.h"
 #include"xFile.h"
 #include"FireEffect.h"
 
 //-------------------------------------
 //自機の情報
 
-class Player :public FlyingObject{
+class Player :public GameObject{
 public:
 
 	//車体部分
@@ -34,6 +34,9 @@ public:
 	//周回数
 	//正規の走法でコースを1周したら+1する
 	int m_lapCount;
+
+	//順位
+	int m_ranking;
 
 	//既定の周回数に達したらtrueになる
 	bool m_isGoal;
@@ -50,14 +53,14 @@ public:
 
 	//所持している魔石情報
 	//魔石を示すポインタのベクター
-	std::vector<MagicStone*> m_hasMagicStone;
+	std::vector<Item*> m_hasMagicStone;
 
 	//ファイアを使ったときのエフェクトを管理
 	std::vector<FireEffect*> m_useFire;
 
 	void draw();
 	void update();
-	void control(unsigned int _pressedKey,unsigned int _downKeys, float _x, float _y, float _z);
+	void control(unsigned int _pressedKey, unsigned int _downKeys, float _x, float _y, float _z);
 
 	void checkCourseOut();
 
@@ -76,13 +79,18 @@ public:
 	Player() :
 		m_flame(0),
 		m_lapCount(1),
+		m_ranking(1),
 		m_isGoal(false)
-		//m_checkFlag(false)
+
 	{
 		//debug
 		m_position.x = PLAYER_TEST_POS_X;
 		m_position.y = PLAYER_TEST_POS_Y;
 		m_position.z = PLAYER_TEST_POS_Z;
+
+		m_scale.x = 0.18f;
+		m_scale.y = 0.18f;
+		m_scale.z = 0.18f;
 
 		//ラップタイムの初期化
 		for (int i = 0; i < LAP_MAX; i++){

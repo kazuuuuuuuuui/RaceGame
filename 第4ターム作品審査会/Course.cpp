@@ -1,22 +1,17 @@
 #include<stdio.h>
 #include"Player.h"
+#include"Enemy.h"
 #include"Course.h"
 #include"CourseFlag.h"
 
-//Course *testCourse = nullptr;
+Course *course = nullptr;
 
 //-------------------------------------
 //コース側で毎フレーム行う処理
 
 void Course::update(){
 
-	for (int i = 0; i < CHECK_POINT_NUMBER; i++){
-
-		if (m_checkPoint[i].checkPassFlag()){
-			player->m_passCheckPoint[i] = true;
-		}
-
-	}
+	
 
 }
 
@@ -104,9 +99,9 @@ void Course::setMagicStone(){
 				//取り敢えず
 				static int num = 0;
 
-				magicStone[num]->m_position.x = t;
-				magicStone[num]->m_position.y = 0.5f;
-				magicStone[num]->m_position.z = i - COURSE_HEIGHT;
+				item[num]->m_position.x = t;
+				item[num]->m_position.y = 0.5f;
+				item[num]->m_position.z = i - COURSE_HEIGHT;
 
 				num++;
 

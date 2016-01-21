@@ -14,13 +14,13 @@
 
 //コースに設置してある
 //周回判定用のチェックポイントの個数
-#define CHECK_POINT_NUMBER (10)
+#define CHECK_POINT_NUMBER (25)
 
 //ゴールに必要なコースの周回数
 #define LAP_MAX (3)
 
 #include<stdlib.h>
-#include"MagicStone.h"
+#include"Item.h"
 #include"BmpImage.h"
 #include"CourseFlag.h"
 #include"glut.h"
@@ -73,4 +73,4 @@ public:
 
 };
 
-//extern Course *testCourse;
+extern Course *course;

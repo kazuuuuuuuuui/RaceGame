@@ -5,7 +5,7 @@
 #include<Windows.h>
 #include"Course.h"
 #include"BmpImage.h"
-#include"MagicStone.h"
+#include"Item.h"
 
 //-------------------------------------
 //bmp画像からアルファ値付きのテクスチャ作成

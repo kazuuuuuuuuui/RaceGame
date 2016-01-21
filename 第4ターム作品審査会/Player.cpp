@@ -32,28 +32,50 @@ int getMinute(int _second);
 
 //-------------------------------------
 //自機の更新
+//ゴールした時点で更新を止める
 
 void Player::update(){
 
-	//printf("%02d::%02d::%03d\n", getMinute(getSecond(m_flame)), getSecond(m_flame), getMilliSecond(m_flame));
+	if (false == m_isGoal){
 
-	//フレームの管理
-	m_flame++;
+		//フレームの管理
+		m_flame++;
+
+
+		//1周したかの判定
+		if (countLap()){
+
+			//ミリ秒
+			m_milliSecond[m_lapCount - 1] = getMilliSecond(m_flame);
+
+			//秒
+			m_second[m_lapCount - 1] = getSecond(m_flame);
+
+			//分
+			m_minute[m_lapCount - 1] = getMinute(m_second[m_lapCount - 1]);
+
+			m_second[m_lapCount - 1] = m_second[m_lapCount - 1] % 60;
+
+
+			//フレームの初期化
+			m_flame = 0;
+
+			//チェックフラッグの初期化
+			for (int i = 0; i < CHECK_POINT_NUMBER; i++){
+				m_passCheckPoint[i] = false;
+			}
+
+			m_lapCount++;
+
+
+		}
+
+	}
 
 	sprintf(m_str_lapTime[FIRST], "%02d:%02d:%03d ", m_minute[FIRST], m_second[FIRST], m_milliSecond[FIRST]);
 	sprintf(m_str_lapTime[SECOND], "%02d:%02d:%03d ", m_minute[SECOND], m_second[SECOND], m_milliSecond[SECOND]);
 	sprintf(m_str_lapTime[THIRD], "%02d:%02d:%03d ", m_minute[THIRD], m_second[THIRD], m_milliSecond[THIRD]);
 
-	//ミリ秒
-	//m_milliSecond[m_lapCount - 1] = getMilliSecond(m_flame);
-
-	//秒
-	//m_second[m_lapCount - 1] = getSecond(m_flame);
-
-	//分
-	//m_minute[m_lapCount - 1] = getMinute(m_second[m_lapCount - 1]);
-
-	//second = second % 60;
 
 	//スピード・ポジションの更新
 	m_speed += m_accel;
@@ -62,6 +84,16 @@ void Player::update(){
 	//減速させる慣性
 	m_speed *= 0.965f;
 
+	//チェックポイントを通過しているかの判定処理
+	for (int i = 0; i < CHECK_POINT_NUMBER; i++){
+
+		if (false == m_passCheckPoint[i] && course->m_checkPoint[i].checkPassFlag(m_position)){
+
+			m_passCheckPoint[i] = true;
+
+		}
+
+	}
 
 	//既定のコース領域から出ていないかの判定
 	checkCourseOut();
@@ -69,45 +101,6 @@ void Player::update(){
 	//ダートに入ったかの判定と処理
 	if (inDart()){
 		m_speed *= 0.9f;
-	}
-
-
-
-	//1周したかの判定
-	if (countLap()){
-
-		/*m_milliSecond[m_lapCount - 1] = m_milliSecond[m_lapCount - 1];
-		m_second[m_lapCount - 1] = m_second[m_lapCount - 1];
-		m_minute[m_lapCount - 1] = m_minute[m_lapCount - 1];*/
-
-		//ミリ秒
-		m_milliSecond[m_lapCount - 1] = getMilliSecond(m_flame);
-
-		//秒
-		m_second[m_lapCount - 1] = getSecond(m_flame);
-
-		//分
-		m_minute[m_lapCount - 1] = getMinute(m_second[m_lapCount - 1]);
-
-		m_second[m_lapCount - 1] = m_second[m_lapCount - 1] % 60;
-
-
-		/*sprintf(m_str_lapTime[FIRST], "%02d:%02d:%03d ", m_minute[FIRST], m_second[FIRST], m_milliSecond[FIRST]);
-		sprintf(m_str_lapTime[SECOND], "%02d:%02d:%03d ", m_minute[SECOND], m_second[SECOND], m_milliSecond[SECOND]);
-		sprintf(m_str_lapTime[THIRD], "%02d:%02d:%03d ", m_minute[THIRD], m_second[THIRD], m_milliSecond[THIRD]);*/
-
-		//フレームの初期化
-		m_flame = 0;
-
-		//チェックフラッグの初期化
-		for (int i = 0; i < CHECK_POINT_NUMBER; i++){
-			m_passCheckPoint[i] = false;
-		}
-
-		m_lapCount++;
-
-
-
 	}
 
 	//ゴールしたかの判定
@@ -133,36 +126,38 @@ void Player::draw(){
 		glTranslatef(m_position.x, m_position.y, m_position.z);
 
 		glRotatef(m_rotate.y * 180 / M_PI, 0, 1, 0);
-		//glRotatef(180, 0, 1, 0);
-		//glRotatef(-90, 1, 0, 0);
-	
 
-		////glScalef(m_scale.x, m_scale.y, m_scale.z);
-		//glScalef(0.18, 0.18, 0.18);
+		//
+		glRotatef(180, 0, 1, 0);
+		glRotatef(-90, 1, 0, 0);
 
-		//glEnableClientState(GL_VERTEX_ARRAY);
-		//glEnableClientState(GL_NORMAL_ARRAY);
-
-		//std::vector<float>::iterator itr_v = m_boby.m_vertex.begin();
-		//glVertexPointer(3, GL_FLOAT, 0, &(*itr_v));
-
-		//std::vector<float>::iterator itr_n = m_boby.m_normal.begin();
-		//glNormalPointer(GL_FLOAT, 0, &(*itr_n));
-
-		//std::vector<unsigned short>::iterator itr_i = m_boby.m_index.begin();
+		glScalef(m_scale.x, m_scale.y, m_scale.z);
 
 
-		///*車体描画*/
-		//glDrawElements(GL_TRIANGLES, m_boby.m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_NORMAL_ARRAY);
 
-		glColor3f(0, 1, 0);
-		glBegin(GL_TRIANGLES);
-		{
-			glVertex3f(0, 0, -1.5);//頭
-			glVertex3f(-0.5, 0, 1);
-			glVertex3f(0.5, 0, 1);
-		}
-		glEnd();
+		std::vector<float>::iterator itr_v = m_boby.m_vertex.begin();
+		glVertexPointer(3, GL_FLOAT, 0, &(*itr_v));
+
+		std::vector<float>::iterator itr_n = m_boby.m_normal.begin();
+		glNormalPointer(GL_FLOAT, 0, &(*itr_n));
+
+		std::vector<unsigned short>::iterator itr_i = m_boby.m_index.begin();
+
+
+		/*車体描画*/
+		glDrawElements(GL_TRIANGLES, m_boby.m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));
+
+		//debug
+		//glColor3f(0, 1, 0);
+		//glBegin(GL_TRIANGLES);
+		//{
+		//	glVertex3f(0, 0, -1.5);//頭
+		//	glVertex3f(-0.5, 0, 1);
+		//	glVertex3f(0.5, 0, 1);
+		//}
+		//glEnd();
 
 	}
 	glPopMatrix();
@@ -177,27 +172,28 @@ void Player::draw(){
 		//	GL_DIFFUSE, // GLenum pname
 		//	diffuse);   // const GLfloat *params
 
-		//static float angle = 0.f;
-		//static float scal = 0.18f;
+		static float angle = 0.f;
 
-		//angle -= 5.f;
+		angle -= 5.f;
 
-		//glTranslatef(m_position.x + sin(m_rotate.y)*1.1, m_position.y + 0.5, m_position.z + cos(m_rotate.y)*1.1);
-		//glRotatef(m_rotate.y * 180 / M_PI, 0, 1, 0);
-		//glRotatef(angle, 1, 0, 0);
-		//glScalef(scal, scal, scal);
+		glTranslatef(m_position.x + sin(m_rotate.y)*1.1, m_position.y + 0.5, m_position.z + cos(m_rotate.y)*1.1);
 
-		//std::vector<float>::iterator itr_v = m_backWheel.m_vertex.begin();
-		//glVertexPointer(3, GL_FLOAT, 0, &(*itr_v));
+		glRotatef(m_rotate.y * 180 / M_PI, 0, 1, 0);
+		glRotatef(angle, 1, 0, 0);
 
-		//std::vector<float>::iterator itr_n = m_backWheel.m_normal.begin();
-		//glNormalPointer(GL_FLOAT, 0, &(*itr_n));
+		glScalef(m_scale.x, m_scale.y, m_scale.z);
 
-		//std::vector<unsigned short>::iterator itr_i = m_backWheel.m_index.begin();
+		std::vector<float>::iterator itr_v = m_backWheel.m_vertex.begin();
+		glVertexPointer(3, GL_FLOAT, 0, &(*itr_v));
+
+		std::vector<float>::iterator itr_n = m_backWheel.m_normal.begin();
+		glNormalPointer(GL_FLOAT, 0, &(*itr_n));
+
+		std::vector<unsigned short>::iterator itr_i = m_backWheel.m_index.begin();
 
 
-		///*後輪描画*/
-		//glDrawElements(GL_TRIANGLES, m_backWheel.m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));
+		/*後輪描画*/
+		glDrawElements(GL_TRIANGLES, m_backWheel.m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));
 
 		//float def[] = { 1, 1, 1, 1 };
 		//glMaterialfv(
@@ -299,7 +295,7 @@ bool Player::inDart(){
 	//プレイヤーがどのピクセル上にいるか判断し
 	//直下のピクセル情報によって判定する
 
-	if (gameManager->m_course->m_buffer[COURSE_HEIGHT - 1 + (int)m_position.z][(int)m_position.x] == DART){
+	if (course->m_buffer[COURSE_HEIGHT - 1 + (int)m_position.z][(int)m_position.x] == DART){
 
 		return true;
 
@@ -318,7 +314,7 @@ bool Player::inDart(){
 
 bool Player::countLap(){
 
-	if (gameManager->m_course->m_buffer[COURSE_HEIGHT - 1 + (int)m_position.z][(int)m_position.x] == GOAL){
+	if (course->m_buffer[COURSE_HEIGHT - 1 + (int)m_position.z][(int)m_position.x] == GOAL){
 
 		bool fg = true;
 
