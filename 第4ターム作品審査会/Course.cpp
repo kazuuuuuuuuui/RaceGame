@@ -1,6 +1,6 @@
 #include<stdio.h>
-#include"Player.h"
-#include"Enemy.h"
+//#include"Player.h"
+//#include"Enemy.h"
 #include"Course.h"
 #include"CourseFlag.h"
 

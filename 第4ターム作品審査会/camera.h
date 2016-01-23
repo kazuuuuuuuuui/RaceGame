@@ -1,6 +1,6 @@
 #pragma once
 
-#include"player.h"
+#include"Player.h"
 #include"glm\glm.hpp"
 #include"glut.h"
 

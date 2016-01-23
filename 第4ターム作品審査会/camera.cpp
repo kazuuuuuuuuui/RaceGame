@@ -1,6 +1,6 @@
 #include<stdlib.h>
 #include"camera.h"
-#include"player.h"
+//#include"player.h"
 #include"glm\gtc\matrix_transform.hpp"
 #include"glut.h"
 

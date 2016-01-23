@@ -3,7 +3,7 @@
 #include<stdio.h>
 #include<windows.h>
 #include<assert.h>
-#include"Player.h"
+//#include"Player.h"
 #include"glm\glm.hpp"
 #include"xFile.h"
 

@@ -1,6 +1,8 @@
 #ifndef XFILE_H_
 #define XFILE_H_
 
+#include<vector>
+
 class xFile{
 public:
 	//í∏ì_êî
