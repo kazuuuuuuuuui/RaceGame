@@ -27,38 +27,25 @@ void Player::control(unsigned int _pressedKey, unsigned int _downKeys, float _x,
 	//正面右に移動
 	if (_x > 0.9){
 		m_rotate.y -= 0.02f;
-
+		m_rotate.z += 0.005f;
 	}
 
 	//正面左に移動
-	if (_x < -0.9){
+	else if (_x < -0.9){
 		m_rotate.y += 0.02f;
+		m_rotate.z -= 0.005f;
+	}
+	else{
+		m_rotate.z = 0.f;
 	}
 
 	//アイテムの使用
-	//if (_downKeys &  BUTTON_RB){
+	if (_downKeys &  BUTTON_RB){
 
-	//	//取り敢えず
-	//	//ファイア
-	//	FireEffect *fire[PARTICLE_NUNBER] = { nullptr };
+		if (m_hasItem.size() > 0){
+			m_hasItem.pop_back();
+		}
 
-	//	for (int i = 0; i < PARTICLE_NUNBER; i++){
-	//		fire[i] = new FireEffect();
-	//		fire[i]->m_position = m_position;
-	//		m_useFire.push_back(fire[i]);
-	//	}
-
-
-
-	//	//所持しているアイテムの個数を調べ
-	//	//アイテム持っていなかったら(0)何もしない
-	//	/*if (0 != hasMagicStoneNumber()){
-
-
-
-	//	}
-	//	else{}*/
-
-	//}
+	}
 
 }

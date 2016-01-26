@@ -11,7 +11,6 @@ Course *course = nullptr;
 
 void Course::update(){
 
-	
 
 }
 
@@ -89,7 +88,7 @@ void Course::draw(){
 //コース上に魔石を配置する
 //画像左上から右下に向かって読んでいく
 
-void Course::setMagicStone(){
+void Course::setItem(){
 
 	for (int i = 0; i < COURSE_HEIGHT; i++){
 		for (int t = 0; t < COURSE_WIDTH; t++){

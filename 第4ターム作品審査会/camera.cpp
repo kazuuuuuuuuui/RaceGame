@@ -24,9 +24,9 @@ void Camera::update(const int _type){
 		glLoadIdentity();
 
 		//カメラの座標更新
-		m_position.x = player->m_position.x + sin(player->m_rotate.y) * 6;
-		m_position.y = 3;
-		m_position.z = player->m_position.z + cos(player->m_rotate.y) * 6;
+		m_position.x = player->m_position.x + sin(player->m_rotate.y) * 7;
+		m_position.y = 3.5f;
+		m_position.z = player->m_position.z + cos(player->m_rotate.y) * 7;
 
 		//カメラの注視座標の更新
 		m_target = player->m_position;

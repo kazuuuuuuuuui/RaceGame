@@ -12,9 +12,16 @@
 #define COUSE_TEXTURE (0)
 #define BACKGROUND_TEXTURE (1)
 
+//コースに配置されている魔石の数
+#define SET_ITEM_NUMBER (20)
+
 //コースに設置してある
 //周回判定用のチェックポイントの個数
-#define CHECK_POINT_NUMBER (25)
+#define CHECK_POINT_NUMBER (10)
+
+//コースに設置してある
+//敵キャラAI用のポイントの個数
+#define AI_POINT_NUMBER (25)
 
 //ゴールに必要なコースの周回数
 #define LAP_MAX (3)
@@ -23,6 +30,7 @@
 #include"Item.h"
 #include"BmpImage.h"
 #include"CourseFlag.h"
+#include"AIFlag.h"
 #include"glut.h"
 
 //-------------------------------------
@@ -47,12 +55,13 @@ public:
 	int m_height;
 	int m_buffer[COURSE_HEIGHT][COURSE_WIDTH];//各コースの各ピクセルの情報を格納するバッファ
 	GLuint m_handle[COURSE_TEXTURE_NUMBER];//[0]にはコースの[1]には背景のテクスチャを格納する
-	CourseFlag m_checkPoint[CHECK_POINT_NUMBER];//周回判定用のフラッグ
+	CourseFlag m_checkPoint[CHECK_POINT_NUMBER];//周回判定用のポイント
+	AIFlag m_AIPoint[AI_POINT_NUMBER];//敵AI用のポイント
 
 
 	void draw();
 	void update();
-	void setMagicStone();
+	void setItem();
 
 	Course() :
 		m_width(COURSE_WIDTH),
