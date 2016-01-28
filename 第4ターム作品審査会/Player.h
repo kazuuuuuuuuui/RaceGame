@@ -1,6 +1,7 @@
 #pragma once
 
 #include"Character.h"
+#include"Smoke.h"
 
 class Player :public Character{
 public:

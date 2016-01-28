@@ -4,6 +4,8 @@
 #define BUTTON_RB (16)
 
 #include"Player.h"
+#include"Fire.h"
+#include"Blizzard.h"
 
 Player *player = nullptr;
 
@@ -25,15 +27,15 @@ void Player::control(unsigned int _pressedKey, unsigned int _downKeys, float _x,
 	}
 
 	//正面右に移動
-	if (_x > 0.9){
+	if (_x > 0.85){
 		m_rotate.y -= 0.02f;
-		m_rotate.z += 0.005f;
+		m_rotate.z -= 0.005f;
 	}
 
 	//正面左に移動
-	else if (_x < -0.9){
+	else if (_x < -0.85){
 		m_rotate.y += 0.02f;
-		m_rotate.z -= 0.005f;
+		m_rotate.z += 0.005f;
 	}
 	else{
 		m_rotate.z = 0.f;
@@ -43,7 +45,32 @@ void Player::control(unsigned int _pressedKey, unsigned int _downKeys, float _x,
 	if (_downKeys &  BUTTON_RB){
 
 		if (m_hasItem.size() > 0){
+
+			//使ったアイテムの種類によって
+			//応じたエフェクトを出す
+
+			//ファイアを使用した
+			if (FIRE == hasItemLast()){
+
+				Fire *fire = new Fire();
+				fire->m_basePosition = { m_position.x, 0.5f, m_position.z };
+				fire->m_speed = { -sin(m_rotate.y)*0.8f, 0.f, -cos(m_rotate.y)*0.8f };
+				effect.push_back(fire);
+
+			}
+
+			//ブリザドを使用した
+			else if (BLIZZARD == hasItemLast()){
+
+				Blizzard *blizzard = new Blizzard();
+				blizzard->m_basePosition = { m_position.x + sin(m_rotate.y)*2.5f, 0.01f, m_position.z + cos(m_rotate.y)*2.5f };
+				effect.push_back(blizzard);
+
+
+			}
+
 			m_hasItem.pop_back();
+
 		}
 
 	}

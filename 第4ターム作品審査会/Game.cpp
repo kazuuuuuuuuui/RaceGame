@@ -1,10 +1,5 @@
-/*
 
-順位判定
-周回数→どのチェックポイントまで通過したか→次のチェックポイントまでの距離
-
-
-*/
+//カーブにチェックポイントを置く
 
 #define WINDOW_WIDTH (900)
 #define WINDOW_HEIGHT (900)
@@ -24,8 +19,11 @@
 #include"Course.h"
 #include"CourseFlag.h"
 #include"Item.h"
+#include"Effect.h"
+#include"Fire.h"
+#include"Blizzard.h"
 #include"StrokeString.h"
-#include"FireEffect.h"
+#include"Smoke.h"
 #include"glut.h"
 
 /***********debug***********/
@@ -38,12 +36,11 @@ Enemy *com3 = nullptr;
 
 /**************************/
 
-
 //レースが始まっているかのフラグ
-bool startRace = false;
+//bool startRace = false;
 
 //debug
-//bool startRace = true;
+bool startRace = true;
 
 //-------------------------------------
 //レーススタートのカウントダウン
@@ -54,7 +51,7 @@ int timenow = 0;//経過時間
 int timebase = 0;//計測開始時間
 int startCount = 6;
 
-
+//取り敢えず
 GLuint threeTexture = 0;
 GLuint twoTexture = 0;
 GLuint oneTexture = 0;
@@ -294,13 +291,14 @@ Course* createCourse(){
 	//コース1(仮)
 	//debug
 	if (1 == COURSE_TYPE){
+
 		//チェックポイントの位置設定
 		newcourse->m_checkPoint[0].m_position = { 57.f, 0.5f, -241.f };
-		newcourse->m_checkPoint[1].m_position = { 140.f, 0.5f, -156.5 };
-		newcourse->m_checkPoint[2].m_position = { 172.f, 0.5f, -196.f };
+		newcourse->m_checkPoint[1].m_position = { 140.f, 0.5f, -156.5f };
+		newcourse->m_checkPoint[2].m_position = { 201.f, 0.5f, -231.5f };
 		newcourse->m_checkPoint[3].m_position = { 238.5f, 0.5f, -195.f };
 		newcourse->m_checkPoint[4].m_position = { 185.f, 0.5f, -122.f };
-		newcourse->m_checkPoint[5].m_position = { 134.f, 0.5f, -116.5f };
+		newcourse->m_checkPoint[5].m_position = { 89.f, 0.5f, -97.5f };
 		newcourse->m_checkPoint[6].m_position = { 160.5f, 0.5f, -74.5f };
 		newcourse->m_checkPoint[7].m_position = { 236.f, 0.5f, -37.f };
 		newcourse->m_checkPoint[8].m_position = { 124.f, 0.5f, -35.f };
@@ -424,60 +422,60 @@ void init(){
 	//後で書き換え
 	//プレイヤーの生成
 	player = new Player();
-	player->m_position = { 12.f, 0.5f, -160.f };
+	player->m_position = { 12.f, 0.f, -160.f };
 
-	player->m_frontPosition.x = player->m_position.x - sin(player->m_rotate.y)*1.55f;
+	/*player->m_frontPosition.x = player->m_position.x - sin(player->m_rotate.y)*1.55f;
 	player->m_frontPosition.y = 1.f;
 	player->m_frontPosition.z = player->m_position.z - cos(player->m_rotate.y)*1.55f;
 
 	player->m_backPosition.x = player->m_position.x + sin(player->m_rotate.y)*1.15f;
 	player->m_backPosition.y = 1.f;
-	player->m_backPosition.z = player->m_position.z + cos(player->m_rotate.y)*1.15f;
+	player->m_backPosition.z = player->m_position.z + cos(player->m_rotate.y)*1.15f;*/
 
 	player->m_body = body;
 	player->m_backWheel = backWheel;
 
 	//敵の生成
 	com1 = new Enemy();
-	com1->m_position = { 15.f, 0.5f, -150.f };
+	com1->m_position = { 15.f, 0.f, -150.f };
 
-	com1->m_frontPosition.x = com1->m_position.x - sin(com1->m_rotate.y)*1.55f;
+	/*com1->m_frontPosition.x = com1->m_position.x - sin(com1->m_rotate.y)*1.55f;
 	com1->m_frontPosition.y = 1.f;
 	com1->m_frontPosition.z = com1->m_position.z - cos(com1->m_rotate.y)*1.55f;
 
 	com1->m_backPosition.x = com1->m_position.x + sin(com1->m_rotate.y)*1.15f;
 	com1->m_backPosition.y = 1.f;
-	com1->m_backPosition.z = com1->m_position.z + cos(com1->m_rotate.y)*1.15f;
+	com1->m_backPosition.z = com1->m_position.z + cos(com1->m_rotate.y)*1.15f;*/
 
 	com1->m_body = body;
 	com1->m_backWheel = backWheel;
 
 	//
 	com2 = new Enemy();
-	com2->m_position = { 20.f, 0.5f, -140.f };
+	com2->m_position = { 20.f, 0.f, -140.f };
 
-	com2->m_frontPosition.x = com2->m_position.x - sin(com2->m_rotate.y)*1.55f;
-	com2->m_frontPosition.y = 1.f;
-	com2->m_frontPosition.z = com2->m_position.z - cos(com2->m_rotate.y)*1.55f;
+	//com2->m_frontPosition.x = com2->m_position.x - sin(com2->m_rotate.y)*1.55f;
+	//com2->m_frontPosition.y = 1.f;
+	//com2->m_frontPosition.z = com2->m_position.z - cos(com2->m_rotate.y)*1.55f;
 
-	com2->m_backPosition.x = com2->m_position.x + sin(com2->m_rotate.y)*1.15f;
-	com2->m_backPosition.y = 1.f;
-	com2->m_backPosition.z = com2->m_position.z + cos(com2->m_rotate.y)*1.15f;
+	//com2->m_backPosition.x = com2->m_position.x + sin(com2->m_rotate.y)*1.15f;
+	//com2->m_backPosition.y = 1.f;
+	//com2->m_backPosition.z = com2->m_position.z + cos(com2->m_rotate.y)*1.15f;
 
 	com2->m_body = body;
 	com2->m_backWheel = backWheel;
 
 	//
 	com3 = new Enemy();
-	com3->m_position = { 25.f, 0.5f, -130.f };
+	com3->m_position = { 25.f, 0.f, -130.f };
 
-	com3->m_frontPosition.x = com3->m_position.x - sin(com3->m_rotate.y)*1.55f;
+	/*com3->m_frontPosition.x = com3->m_position.x - sin(com3->m_rotate.y)*1.55f;
 	com3->m_frontPosition.y = 1.f;
 	com3->m_frontPosition.z = com3->m_position.z - cos(com3->m_rotate.y)*1.55f;
 
 	com3->m_backPosition.x = com3->m_position.x + sin(com3->m_rotate.y)*1.15f;
 	com3->m_backPosition.y = 1.f;
-	com3->m_backPosition.z = com3->m_position.z + cos(com3->m_rotate.y)*1.15f;
+	com3->m_backPosition.z = com3->m_position.z + cos(com3->m_rotate.y)*1.15f;*/
 
 	com3->m_body = body;
 	com3->m_backWheel = backWheel;
@@ -492,7 +490,6 @@ void init(){
 	camera = new Camera();
 
 	//アイテム生成→コースの生成→アイテムの設置
-
 	//アイテムの生成
 	for (int i = 0; i < SET_ITEM_NUMBER; i++){
 		item[i] = new Item();
@@ -514,18 +511,18 @@ void init(){
 	goTexture = BmpImage::loadImage_alpha("bmp/start/go.bmp");
 	goalTexture = BmpImage::loadImage_alpha("bmp/goal.bmp");
 
-	smoke_handle = BmpImage::loadImage_alpha("bmp/Effect/smoke.bmp");
+	smoke_handle = BmpImage::loadImage_smoke("bmp/Effect/smoke.bmp");
 
 	rank1st = BmpImage::loadImage_alpha("bmp/Ranking/1st.bmp");
 	rank2nd = BmpImage::loadImage_alpha("bmp/Ranking/2nd.bmp");
 	rank3rd = BmpImage::loadImage_alpha("bmp/Ranking/3rd.bmp");
 	rank4th = BmpImage::loadImage_alpha("bmp/Ranking/4th.bmp");
 
-	//koori = BmpImage::loadImage_alpha("bmp/Effect/blizzard.bmp");
+	EffectBlizzard = BmpImage::loadImage_alpha("bmp/Effect/blizzard.bmp");
 
 	//使用する魔石のテクスチャ読み込み
-	fire_handle = BmpImage::loadImage("bmp/MagicStone/ms_fire.bmp");
-	blizzard_handle = BmpImage::loadImage("bmp/MagicStone/ms_blizzard.bmp");
+	ItemFire = BmpImage::loadImage("bmp/MagicStone/ms_fire.bmp");
+	ItemBlizzard = BmpImage::loadImage("bmp/MagicStone/ms_blizzard.bmp");
 
 	//最初の順位設定と順位付与
 	for (unsigned int i = 0; i < character.size(); i++){
@@ -540,6 +537,15 @@ void init(){
 	sprintf_s(player->m_str_lapTime[FIRST], "%02d:%02d:%03d ", player->m_minute[FIRST], player->m_second[FIRST], player->m_milliSecond[FIRST]);
 	sprintf_s(player->m_str_lapTime[SECOND], "%02d:%02d:%03d ", player->m_minute[SECOND], player->m_second[SECOND], player->m_milliSecond[SECOND]);
 	sprintf_s(player->m_str_lapTime[THIRD], "%02d:%02d:%03d ", player->m_minute[THIRD], player->m_second[THIRD], player->m_milliSecond[THIRD]);
+
+
+
+	//debug
+
+
+
+
+
 }
 
 
@@ -629,7 +635,7 @@ bool isHitCharacter(Character *_my, Character *_you){
 
 	back_body = _my->m_backPosition - _you->m_position;
 
-	float hitLine = 0.8f;
+	float hitLine = 0.9f;
 
 	if (glm::length(front_front) < hitLine || glm::length(back_back) < hitLine ||
 		glm::length(front_back) < hitLine || glm::length(front_body) < hitLine || glm::length(back_body) < hitLine){
@@ -702,9 +708,9 @@ void display() {
 		minute = getMinute(second);
 		second = second % 60;
 
-		com1->control();
+		/*com1->control();
 		com2->control();
-		com3->control();
+		com3->control();*/
 
 
 		for (unsigned int i = 0; i < character.size(); i++){
@@ -736,6 +742,12 @@ void display() {
 		item[i]->update();
 	}
 
+	//debug
+	//エフェクトの更新
+	for (unsigned int i = 0; i < effect.size(); i++){
+		effect[i]->update();
+	}
+
 	//-------------------------------------
 	//描画(3D)
 	course->draw();
@@ -757,55 +769,31 @@ void display() {
 
 		character[i]->draw();
 		character[i]->drawHasItem();
-
+	
 	}
-
-	//glDisable(GL_DEPTH_TEST);
 
 	for (int i = 0; i < SET_ITEM_NUMBER; i++){
 		item[i]->draw();
+	}	
+
+	glDisable(GL_DEPTH_TEST);
+
+	//debug
+	//エフェクトの描画
+
+	//深度テストの有無はエフェクト個別で設定している
+	for (unsigned int i = 0; i < effect.size(); i++){
+		effect[i]->draw();
 	}
 
-	//ファイアの描画
-	/*for (std::vector<FireEffect*>::iterator itr = player->m_useFire.begin(); itr != player->m_useFire.end(); itr++){
-		(*itr)->draw();
-		}*/
+	//煙の描画
+	for (unsigned int i = 0; i < character.size(); i++){
+
+		character[i]->m_smoke.draw();
+	
+	}
 
 
-	//ブリザード
-	/*glPushMatrix();
-
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, hoge);
-
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-
-	glTranslatef(25, 0.001f, -180);
-	glRotatef(90, 1, 0, 0);
-
-
-	glBegin(GL_QUADS);
-	glColor4f(1, 1, 1, 1);
-	glNormal3f(0, 1, 0);
-	glTexCoord2f(0.f, 0.f);
-	glVertex2f(-1.f, -1.f);
-	glTexCoord2f(0.f, 1.f);
-	glVertex2f(-1.f, 1.f);
-	glTexCoord2f(1.f, 1.f);
-	glVertex2f(1.f, 1.f);
-	glTexCoord2f(1.f, 0.f);
-	glVertex2f(1.f, -1.f);
-
-
-	glEnd();
-
-	glDisable(GL_BLEND);
-	glDisable(GL_TEXTURE_2D);
-
-
-	glPopMatrix();*/
-	//
 
 	/*更新*/
 	camera->update(TYPE_2D);
@@ -901,7 +889,21 @@ void timer(int value) {
 
 	//debug
 
-	for (unsigned int i = 0; i < player->m_hasItem.size(); i++){
+	//printf("x:%f y : %f z : %f\n", player->m_position.x, player->m_position.y, player->m_position.z);
+
+	/*printf("\n");
+
+	for (int i = 0; i < effect.size(); i++){
+
+		printf("[%d]::x:%f y:%f z:%f\n", i, effect[i]->m_basePosition.x, effect[i]->m_basePosition.y, effect[i]->m_basePosition.z);
+
+	}*/
+
+
+
+
+
+	/*for (unsigned int i = 0; i < player->m_hasItem.size(); i++){
 		printf("[%d]:", i);
 
 		if (0 == player->m_hasItem[i]){
@@ -912,8 +914,11 @@ void timer(int value) {
 		}
 
 	}
+	
 
-	printf("\n");
+	printf("\n");*/
+
+	//printf("%d\n", effect.size());
 
 	//printf("xx:%f yy:%f\n", xx, yy);
 
@@ -925,7 +930,7 @@ void timer(int value) {
 
 	//printf("%f %f\n", xx, yy);
 
-	//printf("%f %f %f\n", player->m_position.x,player->m_position.y, player->m_position.z);
+	printf("%f %f %f\n", player->m_position.x,player->m_position.y, player->m_position.z);
 	//printf("%f %f %f\n", com1->m_position.x, com1->m_position.y, com1->m_position.z);
 	//printf("%f\n", com1->m_nextCheckPointLength);
 

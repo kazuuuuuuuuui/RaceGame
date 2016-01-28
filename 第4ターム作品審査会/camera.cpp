@@ -1,7 +1,7 @@
 #include<stdlib.h>
 #include"camera.h"
-//#include"player.h"
-#include"glm\gtc\matrix_transform.hpp"
+#include"Matrix.h"
+#include"glm\glm.hpp"
 #include"glut.h"
 
 Camera *camera = nullptr;
@@ -39,16 +39,20 @@ void Camera::update(const int _type){
 			GL_POSITION,// GLenum pname
 			v);         // const GLfloat *params
 
-		gluLookAt(
+		//ビュー行列
+		viewMatrix = glm::lookAt(
 
 			// 視点の位置x,y,z;
-			m_position.x, m_position.y, m_position.z,
+			glm::vec3(m_position.x, m_position.y, m_position.z),
 
 			// 視界の中心位置の参照点座標x,y,z
-			m_target.x, m_target.y, m_target.z,
+			glm::vec3(m_target.x, m_target.y, m_target.z),
 
 			//視界の上方向のベクトルx,y,z
-			m_up.x, m_up.y, m_up.z);
+			glm::vec3(m_up.x, m_up.y, m_up.z));
+
+		//ビュー行列適用
+		glMultMatrixf((GLfloat*)&viewMatrix);
 
 	}
 

@@ -4,11 +4,8 @@
 #include"glm\glm.hpp"
 #include"glut.h"
 
-//ƒrƒ…[s—ñ
-//glm::mat4 viewMatrix;
-
 enum{
-	TYPE_2D ,
+	TYPE_2D = 0,
 	TYPE_3D
 };
 

@@ -54,6 +54,7 @@ GLuint  BmpImage::loadImage_alpha(const char *_Filename){
 		pixels[i].b = tmp;
 	}
 
+
 	for (int i = 0; i < bmpInfoHeader.biWidth * bmpInfoHeader.biHeight; i++){
 		pixels_alpha[i].r = pixels[i].r;
 		pixels_alpha[i].g = pixels[i].g;
@@ -68,7 +69,9 @@ GLuint  BmpImage::loadImage_alpha(const char *_Filename){
 		}
 	}
 
+
 	GLuint handle;
+
 	glGenTextures(1, &handle);
 	glBindTexture(GL_TEXTURE_2D, handle);
 
@@ -173,6 +176,106 @@ GLuint BmpImage::loadImage(const char *_fileName){
 	return handle;
 }
 
+
+//-------------------------------------
+//煙エフェクト読み込み専用
+
+GLuint BmpImage::loadImage_smoke(const char *_Filename){
+	FILE *pBinMapFile;
+	pBinMapFile = fopen(_Filename, "rb");
+
+	assert(pBinMapFile != NULL);
+
+	BITMAPFILEHEADER bmpHeader;
+	fread(
+		&bmpHeader,
+		sizeof(BITMAPFILEHEADER),
+		1,
+		pBinMapFile
+		);
+
+	BITMAPINFOHEADER bmpInfoHeader;
+	fread(
+		&bmpInfoHeader,
+		sizeof(BITMAPINFOHEADER),
+		1,
+		pBinMapFile
+		);
+
+	int imageSize = bmpInfoHeader.biWidth * bmpInfoHeader.biHeight * sizeof(RGB);
+	RGB *pixels = (RGB*)malloc(imageSize);
+
+	fread(
+		pixels,
+		imageSize,
+		1,
+		pBinMapFile
+		);
+	fclose(pBinMapFile);
+
+
+	for (int i = 0; i < bmpInfoHeader.biWidth * bmpInfoHeader.biHeight; i++){
+		unsigned char tmp;
+		tmp = pixels[i].r;
+		pixels[i].r = pixels[i].b;
+		pixels[i].b = tmp;
+	}
+
+	int texDataSize = bmpInfoHeader.biWidth * bmpInfoHeader.biHeight * sizeof(RGBA);
+	RGBA *pixelsData = (RGBA*)malloc(texDataSize);
+
+	//RGBを白で初期化
+	for (int i = 0; i < bmpInfoHeader.biWidth * bmpInfoHeader.biHeight; i++){
+		pixelsData[i].r = 0xff;
+		pixelsData[i].g = 0xff;
+		pixelsData[i].b = 0xff;
+	}
+
+	//各ピクセルのRの値を、テクスチャ用ピクセルのアルファ値に書き込む。
+	for (int i = 0; i < bmpInfoHeader.biWidth * bmpInfoHeader.biHeight; i++){
+		pixelsData[i].a = pixels[i].r;
+	}
+
+	GLuint textures;
+
+	glGenTextures(
+		1,        //GLsizei n
+		&textures);//GLuint *textures
+
+
+	//pixceldata
+	glBindTexture(
+		GL_TEXTURE_2D,//GLenum target
+		textures//GLuint texture
+		);
+
+	glTexImage2D(
+		GL_TEXTURE_2D,   //GLenum target
+		0,               //GLint level
+		GL_RGBA,          //GLint internalformat(生成するテクスチャのフォーマット)
+		bmpInfoHeader.biWidth,               //GLsizei width
+		bmpInfoHeader.biHeight,               //GLsizei height
+		0,               //GLint border
+		GL_RGBA,          //GLenum format(ピクセルデータのフォーマット)
+		GL_UNSIGNED_BYTE,//GLenum type
+		pixelsData          //const GLvoid *pixels
+		);
+
+	glTexParameteri(
+		GL_TEXTURE_2D,          // GLenum target
+		GL_TEXTURE_MIN_FILTER,  // GLenum pname
+		GL_NEAREST);            // GLint param
+
+	glTexParameteri(
+		GL_TEXTURE_2D,          // GLenum target
+		GL_TEXTURE_MAG_FILTER,  // GLenum pname
+		GL_NEAREST);
+
+	free(pixels);
+	free(pixelsData);
+
+	return textures;
+}
 
 //-------------------------------------
 //拡張子bmpからコース用のバッファを作製する
