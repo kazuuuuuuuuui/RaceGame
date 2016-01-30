@@ -12,6 +12,7 @@
 #include<math.h>
 #include<time.h>
 #include<algorithm>
+#include<list>
 #include"GameManager.h"
 #include"camera.h"
 #include"player.h"
@@ -29,6 +30,9 @@
 /***********debug***********/
 
 #define COURSE_TYPE (1)
+
+//タイトル用テスト
+bool hoge = false;
 
 Enemy *com1 = nullptr;
 Enemy *com2 = nullptr;
@@ -52,8 +56,14 @@ int timebase = 0;//計測開始時間
 int startCount = 6;
 
 //取り敢えず
+
+//タイトルに使う用
+GLuint titleTexture = 0;
+
 GLuint threeTexture = 0;
 GLuint twoTexture = 0;
+
+
 GLuint oneTexture = 0;
 GLuint goTexture = 0;
 GLuint goalTexture = 0;
@@ -275,10 +285,6 @@ void specialkeydown(int key, int x, int y){
 }
 
 
-
-//debug
-//GLuint koori = 0;
-
 //取り敢えず
 Course* createCourse(){
 
@@ -418,19 +424,21 @@ void init(){
 	xFile::loadXfile("xFile/testbike.x", body);
 	xFile::loadXfile("xFile/taiya.x", backWheel);
 
+	//車体のモデルデータの向き修正
+	body.rotate();
 
 	//後で書き換え
 	//プレイヤーの生成
 	player = new Player();
 	player->m_position = { 12.f, 0.f, -160.f };
 
-	/*player->m_frontPosition.x = player->m_position.x - sin(player->m_rotate.y)*1.55f;
-	player->m_frontPosition.y = 1.f;
+	player->m_frontPosition.x = player->m_position.x - sin(player->m_rotate.y)*1.55f;
+	player->m_frontPosition.y = 0.5f;
 	player->m_frontPosition.z = player->m_position.z - cos(player->m_rotate.y)*1.55f;
 
 	player->m_backPosition.x = player->m_position.x + sin(player->m_rotate.y)*1.15f;
-	player->m_backPosition.y = 1.f;
-	player->m_backPosition.z = player->m_position.z + cos(player->m_rotate.y)*1.15f;*/
+	player->m_backPosition.y = 0.5f;
+	player->m_backPosition.z = player->m_position.z + cos(player->m_rotate.y)*1.15f;
 
 	player->m_body = body;
 	player->m_backWheel = backWheel;
@@ -439,13 +447,13 @@ void init(){
 	com1 = new Enemy();
 	com1->m_position = { 15.f, 0.f, -150.f };
 
-	/*com1->m_frontPosition.x = com1->m_position.x - sin(com1->m_rotate.y)*1.55f;
-	com1->m_frontPosition.y = 1.f;
+	com1->m_frontPosition.x = com1->m_position.x - sin(com1->m_rotate.y)*1.55f;
+	com1->m_frontPosition.y = 0.5f;
 	com1->m_frontPosition.z = com1->m_position.z - cos(com1->m_rotate.y)*1.55f;
 
 	com1->m_backPosition.x = com1->m_position.x + sin(com1->m_rotate.y)*1.15f;
-	com1->m_backPosition.y = 1.f;
-	com1->m_backPosition.z = com1->m_position.z + cos(com1->m_rotate.y)*1.15f;*/
+	com1->m_backPosition.y = 0.5f;
+	com1->m_backPosition.z = com1->m_position.z + cos(com1->m_rotate.y)*1.15f;
 
 	com1->m_body = body;
 	com1->m_backWheel = backWheel;
@@ -454,13 +462,13 @@ void init(){
 	com2 = new Enemy();
 	com2->m_position = { 20.f, 0.f, -140.f };
 
-	//com2->m_frontPosition.x = com2->m_position.x - sin(com2->m_rotate.y)*1.55f;
-	//com2->m_frontPosition.y = 1.f;
-	//com2->m_frontPosition.z = com2->m_position.z - cos(com2->m_rotate.y)*1.55f;
+	com2->m_frontPosition.x = com2->m_position.x - sin(com2->m_rotate.y)*1.55f;
+	com2->m_frontPosition.y = 0.5f;
+	com2->m_frontPosition.z = com2->m_position.z - cos(com2->m_rotate.y)*1.55f;
 
-	//com2->m_backPosition.x = com2->m_position.x + sin(com2->m_rotate.y)*1.15f;
-	//com2->m_backPosition.y = 1.f;
-	//com2->m_backPosition.z = com2->m_position.z + cos(com2->m_rotate.y)*1.15f;
+	com2->m_backPosition.x = com2->m_position.x + sin(com2->m_rotate.y)*1.15f;
+	com2->m_backPosition.y = 0.5f;
+	com2->m_backPosition.z = com2->m_position.z + cos(com2->m_rotate.y)*1.15f;
 
 	com2->m_body = body;
 	com2->m_backWheel = backWheel;
@@ -469,13 +477,13 @@ void init(){
 	com3 = new Enemy();
 	com3->m_position = { 25.f, 0.f, -130.f };
 
-	/*com3->m_frontPosition.x = com3->m_position.x - sin(com3->m_rotate.y)*1.55f;
+	com3->m_frontPosition.x = com3->m_position.x - sin(com3->m_rotate.y)*1.55f;
 	com3->m_frontPosition.y = 1.f;
 	com3->m_frontPosition.z = com3->m_position.z - cos(com3->m_rotate.y)*1.55f;
 
 	com3->m_backPosition.x = com3->m_position.x + sin(com3->m_rotate.y)*1.15f;
 	com3->m_backPosition.y = 1.f;
-	com3->m_backPosition.z = com3->m_position.z + cos(com3->m_rotate.y)*1.15f;*/
+	com3->m_backPosition.z = com3->m_position.z + cos(com3->m_rotate.y)*1.15f;
 
 	com3->m_body = body;
 	com3->m_backWheel = backWheel;
@@ -501,7 +509,7 @@ void init(){
 
 	//テクスチャの読み込み
 	//透過度無し
-
+	titleTexture = BmpImage::loadImage("bmp/title/title.bmp");
 
 
 	//透過度有り
@@ -511,7 +519,7 @@ void init(){
 	goTexture = BmpImage::loadImage_alpha("bmp/start/go.bmp");
 	goalTexture = BmpImage::loadImage_alpha("bmp/goal.bmp");
 
-	smoke_handle = BmpImage::loadImage_smoke("bmp/Effect/smoke.bmp");
+	smoke_handle = BmpImage::loadImage_alpha("bmp/Effect/smoke.bmp");
 
 	rank1st = BmpImage::loadImage_alpha("bmp/Ranking/1st.bmp");
 	rank2nd = BmpImage::loadImage_alpha("bmp/Ranking/2nd.bmp");
@@ -653,232 +661,303 @@ bool isHitCharacter(Character *_my, Character *_you){
 
 void display() {
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	//タイトル処理
 
-	glClearColor(77.f / 255.f, 180.f / 255.f, 232.f / 255.f, 1);
+	if (true == hoge){
 
-	//深度テスト
-	glEnable(GL_DEPTH_TEST);
+		camera->update(TYPE_2D);
 
-	//ライト
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-
-	//毎フレーム
-	sprintf_s(str_lapCount, "%d", player->m_lapCount);
-	sprintf_s(str_time, "%02d:%02d:%03d", minute, second, milliSecond);
-
-	//コース選択時に1回だけ
-	sprintf_s(str_lapMax, "%d", LAP_MAX);
-
-	//-------------------------------------
-	//更新
-
-	//レースが始まったらする処理
-	camera->update(TYPE_3D);
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, titleTexture);
 
 
-	if (true == startRace){
+		glBegin(GL_QUADS);
+		{
+			glTexCoord2f(0.f, 1.f);
+			glVertex2f(0.f, 0.f);
+
+			glTexCoord2f(1.f, 1.f);
+			glVertex2f(300.f, 0.f);
+
+			glTexCoord2f(1.f, 0.f);
+			glVertex2f(300.f, 300.f);
+
+			glTexCoord2f(0.f, 0.f);
+			glVertex2f(0, 300.f);
+
+		}
+		glEnd();
+
+		glEnable(GL_TEXTURE_2D);
+
+	}
+
+	else{
+
+
+
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		glClearColor(77.f / 255.f, 180.f / 255.f, 232.f / 255.f, 1);
+
+		//深度テスト
+		glEnable(GL_DEPTH_TEST);
+
+		//ライト
+		glEnable(GL_LIGHTING);
+		glEnable(GL_LIGHT0);
+
+		//毎フレーム
+		sprintf_s(str_lapCount, "%d", player->m_lapCount);
+		sprintf_s(str_time, "%02d:%02d:%03d", minute, second, milliSecond);
+
+		//コース選択時に1回だけ
+		sprintf_s(str_lapMax, "%d", LAP_MAX);
+
+		//-------------------------------------
+		//更新
+
+		//レースが始まったらする処理
+		camera->update(TYPE_3D);
+
+
+		if (true == startRace){
+
+			if (false == player->m_isGoal){
+
+				flame++;
+
+
+				//順位の判定
+				for (unsigned int i = 0; i < character.size(); i++){
+					std::sort(character.begin(), character.end(), checkRanking);
+				}
+
+				//順位の設定
+				//実際に順位を付与する処理
+				for (unsigned int i = 0; i < character.size(); i++){
+					character[i]->m_ranking = i + 1;
+				}
+			}
+
+			//ミリ秒
+			milliSecond = getMilliSecond(flame);
+
+			//秒
+			second = getSecond(flame);
+
+			//分
+			minute = getMinute(second);
+			second = second % 60;
+
+			/*com1->control();
+			com2->control();
+			com3->control();*/
+
+
+			for (unsigned int i = 0; i < character.size(); i++){
+
+				character[i]->update();
+
+			}
+
+			//接触判定
+			for (unsigned int i = 0; i < character.size(); i++){
+				for (unsigned int t = i + 1; t < character.size(); t++){
+
+					if (isHitCharacter(character[i], character[t])){
+
+						//1フレーム前の座標に戻して進行方向とは
+						//逆のベクトルを足し込む
+						character[i]->m_position = character[i]->m_lastPosition;
+						glm::vec3 sp = { sin(character[i]->m_rotate.y)*0.01, 0, cos(character[i]->m_rotate.y)*0.01 };
+						character[i]->m_speed += sp;
+						character[t]->m_speed -= sp;
+					}
+
+				}
+			}
+
+		}
+
+		for (int i = 0; i < SET_ITEM_NUMBER; i++){
+			item[i]->update();
+		}
+
+		//debug
+		//エフェクトの更新
+		/*	for (unsigned int i = 0; i < effect.size(); i++){
+				effect[i]->update();
+				}*/
+
+		std::list<Effect*>::iterator it = effect.begin();
+		it = effect.begin();
+		while (it != effect.end())
+		{
+			(*it)->update();
+			(*it)->checkCourseOut();
+			++it;
+		}
+
+		//エフェクト削除処理
+		it = effect.begin();
+		while (it != effect.end()){
+
+			if (false == (*it)->m_isActive){
+				it = effect.erase(it);
+				continue;
+			}
+
+			it++;
+
+		}
+
+
+
+		//-------------------------------------
+		//描画(3D)
+		course->draw();
+
+		//debug
+		//for (int i = 0; i < CHECK_POINT_NUMBER; i++){
+			//course->m_checkPoint[i].draw();
+		//}
+
+		//for (int i = 0; i < AI_POINT_NUMBER; i++){
+		//	course->m_AIPoint[i].draw();
+		//}
+
+		glDisable(GL_LIGHTING);
+
+		//車体部と車輪部のみライティングを有効にしてある
+		//影部はライティング無効
+		for (unsigned int i = 0; i < character.size(); i++){
+
+			character[i]->draw();
+			character[i]->drawHasItem();
+
+		}
+
+		for (int i = 0; i < SET_ITEM_NUMBER; i++){
+			item[i]->draw();
+		}
+
+		glDisable(GL_DEPTH_TEST);
+
+		//debug
+		//エフェクトの描画
+
+		//深度テストの有無はエフェクト個別で設定している
+		//for (unsigned int i = 0; i < effect.size(); i++){
+		//	effect[i]->draw();
+		//}
+
+		it = effect.begin();
+		while (it != effect.end())
+		{
+			(*it)->draw();
+			++it;
+		}
+
+
+		//煙の描画
+		for (unsigned int i = 0; i < character.size(); i++){
+
+			character[i]->m_smoke.draw();
+
+		}
+
+
+
+		/*更新*/
+		camera->update(TYPE_2D);
+
+		countRaceStart();
+
+		/*描画(2D)*/
+
+		//順位の表示
+		printRanking();
+
+		printRaceStart();
+
+		//周回カウントの表示
+		//文字等の出力を1つの関数にまとめる予定
 
 		if (false == player->m_isGoal){
 
-			flame++;
+			//debug
+			//if (true == player->m_isGoal){
 
+			StrokeString::print("LAP", { 230, 250, 0 }, 0.1f, { 1, 0, 0 });
+			StrokeString::print(str_lapCount, { 260, 250, 0 }, 0.18f, { 1, 0, 0 });
+			StrokeString::print("/", { 275, 250, 0 }, 0.1f, { 1, 0, 0 });
+			StrokeString::print(str_lapMax, { 285, 250, 0 }, 0.1f, { 1, 0, 0 });
+			StrokeString::print("TIME", { 180, 280, 0 }, 0.13f, { 1, 0, 0 });
+			StrokeString::print(str_time, { 220, 280, 0 }, 0.13f, { 1, 0, 0 });
 
-			//順位の判定
-			for (unsigned int i = 0; i < character.size(); i++){
-				std::sort(character.begin(), character.end(), checkRanking);
-			}
+			StrokeString::print("LAP1", { 220, 230, 0 }, 0.08f, { 1, 0, 0 });
+			StrokeString::print(player->m_str_lapTime[FIRST], { 250, 230, 0 }, 0.08f, { 1, 0, 0 });
 
-			//順位の設定
-			//実際に順位を付与する処理
-			for (unsigned int i = 0; i < character.size(); i++){
-				character[i]->m_ranking = i + 1;
-			}
-		}
+			StrokeString::print("LAP2", { 220, 215, 0 }, 0.08f, { 1, 0, 0 });
+			StrokeString::print(player->m_str_lapTime[SECOND], { 250, 215, 0 }, 0.08f, { 1, 0, 0 });
 
-		//ミリ秒
-		milliSecond = getMilliSecond(flame);
-
-		//秒
-		second = getSecond(flame);
-
-		//分
-		minute = getMinute(second);
-		second = second % 60;
-
-		/*com1->control();
-		com2->control();
-		com3->control();*/
-
-
-		for (unsigned int i = 0; i < character.size(); i++){
-
-			character[i]->update();
+			StrokeString::print("LAP3", { 220, 200, 0 }, 0.08f, { 1, 0, 0 });
+			StrokeString::print(player->m_str_lapTime[THIRD], { 250, 200, 0 }, 0.08f, { 1, 0, 0 });
 
 		}
+		else{
 
-		//接触判定
-		for (unsigned int i = 0; i < character.size(); i++){
-			for (unsigned int t = i + 1; t < character.size(); t++){
+			//GOALの文字
+			glEnable(GL_TEXTURE_2D);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-				if (isHitCharacter(character[i], character[t])){
-
-					//1フレーム前の座標に戻して進行方向とは
-					//逆のベクトルを足し込む
-					character[i]->m_position = character[i]->m_lastPosition;
-					glm::vec3 sp = { sin(character[i]->m_rotate.y)*0.01, 0, cos(character[i]->m_rotate.y)*0.01 };
-					character[i]->m_speed += sp;
-					character[t]->m_speed -= sp;
-				}
-
-			}
-		}
-
-	}
-
-	for (int i = 0; i < SET_ITEM_NUMBER; i++){
-		item[i]->update();
-	}
-
-	//debug
-	//エフェクトの更新
-	for (unsigned int i = 0; i < effect.size(); i++){
-		effect[i]->update();
-	}
-
-	//-------------------------------------
-	//描画(3D)
-	course->draw();
-
-	//debug
-	for (int i = 0; i < CHECK_POINT_NUMBER; i++){
-		course->m_checkPoint[i].draw();
-	}
-
-	//for (int i = 0; i < AI_POINT_NUMBER; i++){
-	//	course->m_AIPoint[i].draw();
-	//}
-
-	glDisable(GL_LIGHTING);
-
-	//車体部と車輪部のみライティングを有効にしてある
-	//影部はライティング無効
-	for (unsigned int i = 0; i < character.size(); i++){
-
-		character[i]->draw();
-		character[i]->drawHasItem();
-	
-	}
-
-	for (int i = 0; i < SET_ITEM_NUMBER; i++){
-		item[i]->draw();
-	}	
-
-	glDisable(GL_DEPTH_TEST);
-
-	//debug
-	//エフェクトの描画
-
-	//深度テストの有無はエフェクト個別で設定している
-	for (unsigned int i = 0; i < effect.size(); i++){
-		effect[i]->draw();
-	}
-
-	//煙の描画
-	for (unsigned int i = 0; i < character.size(); i++){
-
-		character[i]->m_smoke.draw();
-	
-	}
-
-
-
-	/*更新*/
-	camera->update(TYPE_2D);
-
-	countRaceStart();
-
-	/*描画(2D)*/
-
-	//順位の表示
-	printRanking();
-
-	printRaceStart();
-
-	//周回カウントの表示
-	//文字等の出力を1つの関数にまとめる予定
-
-	if (false == player->m_isGoal){
-
-		//debug
-		//if (true == player->m_isGoal){
-
-		StrokeString::print("LAP", { 230, 250, 0 }, 0.1f, { 1, 0, 0 });
-		StrokeString::print(str_lapCount, { 260, 250, 0 }, 0.18f, { 1, 0, 0 });
-		StrokeString::print("/", { 275, 250, 0 }, 0.1f, { 1, 0, 0 });
-		StrokeString::print(str_lapMax, { 285, 250, 0 }, 0.1f, { 1, 0, 0 });
-		StrokeString::print("TIME", { 180, 280, 0 }, 0.13f, { 1, 0, 0 });
-		StrokeString::print(str_time, { 220, 280, 0 }, 0.13f, { 1, 0, 0 });
-
-		StrokeString::print("LAP1", { 220, 230, 0 }, 0.08f, { 1, 0, 0 });
-		StrokeString::print(player->m_str_lapTime[FIRST], { 250, 230, 0 }, 0.08f, { 1, 0, 0 });
-
-		StrokeString::print("LAP2", { 220, 215, 0 }, 0.08f, { 1, 0, 0 });
-		StrokeString::print(player->m_str_lapTime[SECOND], { 250, 215, 0 }, 0.08f, { 1, 0, 0 });
-
-		StrokeString::print("LAP3", { 220, 200, 0 }, 0.08f, { 1, 0, 0 });
-		StrokeString::print(player->m_str_lapTime[THIRD], { 250, 200, 0 }, 0.08f, { 1, 0, 0 });
-
-	}
-	else{
-
-		//GOALの文字
-		glEnable(GL_TEXTURE_2D);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-		glPushMatrix();
-		{
-
-			glTranslatef(140, 185, 0);
-
-			glBindTexture(GL_TEXTURE_2D, goalTexture);
-
-			glBegin(GL_QUADS);
+			glPushMatrix();
 			{
-				glColor4f(1, 1, 1, 1);
-				glTexCoord2f(0, 0);
-				glVertex2f(0, 0);
-				glTexCoord2f(1, 0);
-				glVertex2f(150, 0);
-				glTexCoord2f(1, 1);
-				glVertex2f(150, 80);
-				glTexCoord2f(0, 1);
-				glVertex2f(0, 80);
+
+				glTranslatef(140, 185, 0);
+
+				glBindTexture(GL_TEXTURE_2D, goalTexture);
+
+				glBegin(GL_QUADS);
+				{
+					glColor4f(1, 1, 1, 1);
+					glTexCoord2f(0, 0);
+					glVertex2f(0, 0);
+					glTexCoord2f(1, 0);
+					glVertex2f(150, 0);
+					glTexCoord2f(1, 1);
+					glVertex2f(150, 80);
+					glTexCoord2f(0, 1);
+					glVertex2f(0, 80);
+				}
+				glEnd();
 			}
-			glEnd();
+			glPopMatrix();
+
+			glDisable(GL_TEXTURE_2D);
+			glDisable(GL_BLEND);
+
+			StrokeString::print("LAP1", { 60, 158, 0 }, 0.2f, { 1, 0, 0 });
+			StrokeString::print(player->m_str_lapTime[FIRST], { 130, 158, 0 }, 0.2f, { 1, 0, 0 });
+
+			StrokeString::print("LAP2", { 60, 114, 0 }, 0.2f, { 1, 0, 0 });
+			StrokeString::print(player->m_str_lapTime[SECOND], { 130, 114, 0 }, 0.2f, { 1, 0, 0 });
+
+			StrokeString::print("LAP3", { 60, 72, 0 }, 0.2f, { 1, 0, 0 });
+			StrokeString::print(player->m_str_lapTime[THIRD], { 130, 72, 0 }, 0.2f, { 1, 0, 0 });
+
+			StrokeString::print("TOTALTIME", { 24, 30, 0 }, 0.15f, { 1, 0, 0 });
+			StrokeString::print(str_time, { 131, 30, 0 }, 0.2f, { 1, 0, 0 });
 		}
-		glPopMatrix();
 
-		glDisable(GL_TEXTURE_2D);
-		glDisable(GL_BLEND);
 
-		StrokeString::print("LAP1", { 60, 158, 0 }, 0.2f, { 1, 0, 0 });
-		StrokeString::print(player->m_str_lapTime[FIRST], { 130, 158, 0 }, 0.2f, { 1, 0, 0 });
-
-		StrokeString::print("LAP2", { 60, 114, 0 }, 0.2f, { 1, 0, 0 });
-		StrokeString::print(player->m_str_lapTime[SECOND], { 130, 114, 0 }, 0.2f, { 1, 0, 0 });
-
-		StrokeString::print("LAP3", { 60, 72, 0 }, 0.2f, { 1, 0, 0 });
-		StrokeString::print(player->m_str_lapTime[THIRD], { 130, 72, 0 }, 0.2f, { 1, 0, 0 });
-
-		StrokeString::print("TOTALTIME", { 24, 30, 0 }, 0.15f, { 1, 0, 0 });
-		StrokeString::print(str_time, { 131, 30, 0 }, 0.2f, { 1, 0, 0 });
 	}
 
 	glFlush();
+
 }
 
 
@@ -891,32 +970,21 @@ void timer(int value) {
 
 	//printf("x:%f y : %f z : %f\n", player->m_position.x, player->m_position.y, player->m_position.z);
 
-	/*printf("\n");
+	//for (int i = 0; i < effect.size(); i++){
 
-	for (int i = 0; i < effect.size(); i++){
+	//	printf("[%d]::x:%f y:%f z:%f\n", i, effect[i]->m_basePosition.x, effect[i]->m_basePosition.y, effect[i]->m_basePosition.z);
 
-		printf("[%d]::x:%f y:%f z:%f\n", i, effect[i]->m_basePosition.x, effect[i]->m_basePosition.y, effect[i]->m_basePosition.z);
+	//}
 
-	}*/
-
-
-
-
-
-	/*for (unsigned int i = 0; i < player->m_hasItem.size(); i++){
-		printf("[%d]:", i);
-
-		if (0 == player->m_hasItem[i]){
-			printf("ファイア\n");
-		}
-		else if (1 == player->m_hasItem[i]){
-			printf("ブリザガ\n");
-		}
-
+	/*std::list<Effect*>::iterator it = effect.begin();
+	while (it != effect.end())
+	{
+		printf("x:%f y:%f z:%f\n", (*it)->m_basePosition.x, (*it)->m_basePosition.y, (*it)->m_basePosition.z);
+		++it;
 	}
-	
 
 	printf("\n");*/
+
 
 	//printf("%d\n", effect.size());
 
@@ -930,7 +998,7 @@ void timer(int value) {
 
 	//printf("%f %f\n", xx, yy);
 
-	printf("%f %f %f\n", player->m_position.x,player->m_position.y, player->m_position.z);
+	//printf("%f %f %f\n", player->m_position.x, player->m_position.y, player->m_position.z);
 	//printf("%f %f %f\n", com1->m_position.x, com1->m_position.y, com1->m_position.z);
 	//printf("%f\n", com1->m_nextCheckPointLength);
 
@@ -950,7 +1018,7 @@ void timer(int value) {
 	//printf("x:%f z:%f\n", player->m_position.x, player->m_position.z);
 
 
-	fps();
+	//fps();
 
 	glutPostRedisplay();
 	glutTimerFunc(1000 / 60, timer, 0);

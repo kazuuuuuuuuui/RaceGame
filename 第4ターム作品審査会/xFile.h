@@ -21,6 +21,8 @@ public:
 	std::vector<float>m_normal;
 
 	static void loadXfile(const char *_xFileName,xFile &_model);
+
+	void rotate();
 };
 
 #endif

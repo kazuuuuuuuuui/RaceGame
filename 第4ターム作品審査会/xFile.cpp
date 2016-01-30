@@ -3,7 +3,10 @@
 #include<stdio.h>
 #include<windows.h>
 #include<assert.h>
-//#include"Player.h"
+#define _USE_MATH_DEFINES
+#include<math.h>
+#include"glm\gtc\matrix_transform.hpp"
+#include"glm\gtx\transform.hpp"
 #include"glm\glm.hpp"
 #include"xFile.h"
 
@@ -129,4 +132,41 @@ void xFile::loadXfile(const char *_xFileName, xFile &_model){
 
 
 	fclose(pFile);
+}
+
+
+//Ô‘Ì‚ÌŒü‚«’²®‚Ì‚½‚ß‚ÌŠÖ”
+void xFile::rotate(){
+
+	//’¸“_‚ÌC³
+	for (int i = 0; i < m_vertex.size(); i += 3){
+
+		glm::vec4 v(m_vertex[i], m_vertex[i + 1], m_vertex[i + 2], 0.0f);
+
+
+		v = glm::rotate(-90.0f * (float)(M_PI / 180.0f), glm::vec3(1, 0, 0)) * v;
+		v = glm::rotate(180.0f * (float)(M_PI / 180.0f), glm::vec3(0, 1, 0)) * v;
+
+		m_vertex[i + 0] = v.x;
+		m_vertex[i + 1] = v.y;
+		m_vertex[i + 2] = v.z;
+
+	}
+
+	//–@ü‚ÌC³
+	for (int i = 0; i < m_normal.size(); i += 3){
+
+		glm::vec4 v(m_normal[i], m_normal[i + 1], m_normal[i + 2], 0.0f);
+
+
+		v = glm::rotate(-90.0f * (float)(M_PI / 180.0f), glm::vec3(1, 0, 0)) * v;
+		v = glm::rotate(180.0f * (float)(M_PI / 180.0f), glm::vec3(0, 1, 0)) * v;
+
+
+		m_normal[i + 0] = v.x;
+		m_normal[i + 1] = v.y;
+		m_normal[i + 2] = v.z;
+
+	}
+
 }

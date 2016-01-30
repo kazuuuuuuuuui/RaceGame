@@ -26,16 +26,21 @@ void Player::control(unsigned int _pressedKey, unsigned int _downKeys, float _x,
 		m_accel = { 0.f, 0.f, 0.f };
 	}
 
+	//debug
+	float speed = glm::length(m_speed);
+
+	printf("%f\n", speed);
+
 	//ê≥ñ âEÇ…à⁄ìÆ
 	if (_x > 0.85){
 		m_rotate.y -= 0.02f;
-		m_rotate.z -= 0.005f;
+		m_rotate.z -= 0.01f*speed;
 	}
 
 	//ê≥ñ ç∂Ç…à⁄ìÆ
 	else if (_x < -0.85){
 		m_rotate.y += 0.02f;
-		m_rotate.z += 0.005f;
+		m_rotate.z += 0.01f*speed;
 	}
 	else{
 		m_rotate.z = 0.f;
@@ -53,8 +58,9 @@ void Player::control(unsigned int _pressedKey, unsigned int _downKeys, float _x,
 			if (FIRE == hasItemLast()){
 
 				Fire *fire = new Fire();
-				fire->m_basePosition = { m_position.x, 0.5f, m_position.z };
-				fire->m_speed = { -sin(m_rotate.y)*0.8f, 0.f, -cos(m_rotate.y)*0.8f };
+				fire->m_isActive = true;
+				fire->m_basePosition = { m_position.x - sin(m_rotate.y) * 1.f, 0.5f, m_position.z - cos(m_rotate.y) * 1.f };
+				fire->m_speed = { -sin(m_rotate.y)*1.f, 0.f, -cos(m_rotate.y)*1.f };
 				effect.push_back(fire);
 
 			}
@@ -63,6 +69,7 @@ void Player::control(unsigned int _pressedKey, unsigned int _downKeys, float _x,
 			else if (BLIZZARD == hasItemLast()){
 
 				Blizzard *blizzard = new Blizzard();
+				blizzard->m_isActive = true;
 				blizzard->m_basePosition = { m_position.x + sin(m_rotate.y)*2.5f, 0.01f, m_position.z + cos(m_rotate.y)*2.5f };
 				effect.push_back(blizzard);
 
