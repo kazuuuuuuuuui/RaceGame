@@ -6,6 +6,7 @@
 #include"GameObject.h"
 #include"Course.h"
 #include"Smoke.h"
+#include"Dash.h"
 #include"xFile.h"
 
 //1周目 2周目 3周目
@@ -13,8 +14,24 @@
 #define SECOND (1)
 #define THIRD (2)
 
+enum{
+	PLAYER1,
+	PLAYER2,
+	PLAYER3,
+	PLAYER4
+};
+
+
+
+
 class Character :public GameObject{
 public:
+
+	//種類
+	int m_type;
+
+	//自身の行列
+	glm::mat4 m_matrix;
 
 	//1フレーム前のポジション
 	glm::vec3 m_lastPosition;
@@ -22,6 +39,8 @@ public:
 	//前輪と後輪のポジション
 	glm::vec3 m_frontPosition;
 	glm::vec3 m_backPosition;
+
+	glm::vec3 m_dashSpeed;
 
 	//アイテムに当たった時の回転値
 	float m_crashRotate;
@@ -35,7 +54,11 @@ public:
 	//後輪部分
 	xFile m_backWheel;
 
+	//車体から出る煙
 	Smoke m_smoke;
+
+	//ダッシュ時のエフェクト
+	Dash *m_dash;
 
 	//ラップタイム
 	int m_flame;
@@ -104,6 +127,10 @@ public:
 
 	//コンストラクタ
 	Character() :
+		m_type(0),
+		m_matrix(glm::mat4(1.f)),
+		m_dash(nullptr),
+		m_dashSpeed(0,0,0),
 		m_crashRotate(0.f),
 		m_wheelSpeed(0.f),
 		m_lastPosition(0, 0, 0),

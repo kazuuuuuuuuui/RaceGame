@@ -8,6 +8,7 @@
 #include"Item.h"
 #include"camera.h"
 #include"BmpImage.h"
+#include"Material.h"
 #include"glm\gtc\matrix_transform.hpp"
 #include"glm\gtx\transform.hpp"
 #include"glut.h"
@@ -85,19 +86,52 @@ void Character::update(){
 	m_lastPosition = m_position;
 
 	//スピード・ポジションの更新
-	m_speed += m_accel;
+	m_speed += (m_dashSpeed + m_accel);
+
 	m_position += m_speed;
+
+	//前輪と後輪のポジション更新
+
+	//前輪座標
+	m_frontPosition.x = m_position.x - sin(m_rotate.y)*1.55f;
+	m_frontPosition.y = 0.5f;
+	m_frontPosition.z = m_position.z - cos(m_rotate.y)*1.55f;
+
+	//後輪座標
+	m_backPosition.x = m_position.x + sin(m_rotate.y)*1.15f;
+	m_backPosition.y = 0.5f;
+	m_backPosition.z = m_position.z + cos(m_rotate.y)*1.15f;
 
 
 	//煙の更新
 	m_smoke.update();
-
 	m_smoke.m_basePosition.x = m_position.x + sin(m_rotate.y)*1.7f;
 	m_smoke.m_basePosition.y = 0.5f;
 	m_smoke.m_basePosition.z = m_position.z + cos(m_rotate.y)*1.7f;
 
+	//ダッシュエフェクトの更新
+	if (nullptr != m_dash){
+		m_dash->m_basePosition.x = m_position.x + sin(m_rotate.y)*0.8;
+		m_dash->m_basePosition.y = -0.2f;
+		m_dash->m_basePosition.z = m_position.z + cos(m_rotate.y)*0.8;
+	}
+
 	//減速させる慣性
 	m_speed *= 0.965f;
+
+	//ダッシュの減速処理
+	m_dashSpeed *= 0.95;
+
+	if (m_dash != NULL){
+
+		if (glm::length(m_dashSpeed) <= 0.00001){
+			m_dash->m_isActive = false;
+		}
+
+	}
+
+	printf("%f\n", glm::length(m_dashSpeed));
+
 
 	//車輪の回転スピード更新
 	//*100は補正値
@@ -106,9 +140,6 @@ void Character::update(){
 
 	//スリップ処理
 	slip();
-
-
-
 
 	//チェックポイントを通過しているかの判定処理
 	for (int i = 0; i < CHECK_POINT_NUMBER; i++){
@@ -164,129 +195,166 @@ void Character::update(){
 
 void Character::draw(){
 
-	glm::mat4 parent;
-
-	glEnable(GL_LIGHTING);
-
 	/*車体描画*/
-	glPushMatrix();
+	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	{
 
-		//行列計算
-		glm::mat4 parentTranslate = glm::translate(glm::vec3(m_position.x, m_position.y, m_position.z));
-
-		glm::mat4 parentRotate = glm::rotate(m_rotate.y + m_crashRotate, glm::vec3(0, 1, 0));
-		//glm::rotate(m_rotate.z, glm::vec3(0, 0, 1))*
-
-
-		glm::mat4 parentScale = glm::scale(glm::vec3(m_scale.x, m_scale.y, m_scale.z));
-
-		//親の行列
-		parent = parentTranslate *parentRotate * parentScale;
-
-		//行列適応
-		glMultMatrixf((GLfloat*)&parent);
+		glEnable(GL_LIGHTING);
 
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_NORMAL_ARRAY);
 
-		std::vector<float>::iterator itr_v = m_body.m_vertex.begin();
-		glVertexPointer(3, GL_FLOAT, 0, &(*itr_v));
+		glPushMatrix();
+		{
 
-		std::vector<float>::iterator itr_n = m_body.m_normal.begin();
-		glNormalPointer(GL_FLOAT, 0, &(*itr_n));
+			//行列計算
+			glm::mat4 translate = glm::translate(glm::vec3(m_position.x, m_position.y, m_position.z));
 
-		std::vector<unsigned short>::iterator itr_i = m_body.m_index.begin();
-
-		glDrawElements(GL_TRIANGLES, m_body.m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));
-
-	}
-	glPopMatrix();
+			glm::mat4 rotate = glm::rotate(m_rotate.y + m_crashRotate, glm::vec3(0, 1, 0))*
+				glm::rotate(m_rotate.z, glm::vec3(0, 0, 1));
 
 
-	//回転処理
-	static float angle = 0;
+			glm::mat4 scale = glm::scale(glm::vec3(m_scale.x, m_scale.y, m_scale.z));
 
-	//後輪
-	glPushMatrix();
-	{
+			//親の行列
+			m_matrix = translate *rotate *scale;
 
-		angle -= m_wheelSpeed;
-		angle *= 0.98f;
+			//行列適応
+			glMultMatrixf((GLfloat*)&m_matrix);
 
-		//angleの値を-10000～0で扱うため
-		if (angle < -200.f){
-			angle = 0.f;
+			std::vector<float>::iterator itr_v = m_body.m_vertex.begin();
+			glVertexPointer(3, GL_FLOAT, 0, &(*itr_v));
+
+			std::vector<float>::iterator itr_n = m_body.m_normal.begin();
+			glNormalPointer(GL_FLOAT, 0, &(*itr_n));
+
+			std::vector<unsigned short>::iterator itr_i = m_body.m_index.begin();
+
+
+			//マテリアルの設定
+
+		/*	switch (m_type){
+
+			case PLAYER1:
+
+				float diffuse[4] = { 1, 0, 0, 1 };
+				glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
+
+				break;
+
+			case PLAYER2:
+
+				float diffuse[4] = { 0, 1, 0, 1 };
+				glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
+
+				break;
+
+			case PLAYER3:
+
+				float diffuse[4] = { 0, 0, 1, 1 };
+				glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
+
+				break;
+
+			case PLAYER4:
+
+				float diffuse[4] = { 0, 1, 1, 1 };
+				glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
+
+				break;
+			}*/
+
+			/*float specular[] = { 1, 0, 0, 1 };
+			glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
+			glMaterialf(GL_FRONT, GL_SHININESS, 100);*/
+
+			glDrawElements(GL_TRIANGLES, m_body.m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));
+
 		}
-
-		glm::mat4 childRotate = glm::rotate(angle, glm::vec3(1, 0, 0));
-
-		glm::mat4 childScale = glm::scale(glm::vec3(0.92f, 0.92f, 0.92f));
-
-		//子供の行列
-		glm::mat4 child = childRotate * childScale;
-
-		//オフセット
-		glm::mat4 offSet = glm::translate(glm::vec3(0.0f, 3.1f, 6.3f));
-
-		glm::mat4 myMatrix = parent * offSet *child;
+		glPopMatrix();
 
 
-		glMultMatrixf((GLfloat*)&myMatrix);
+		//回転処理
+		static float angle = 0;
+
+		//後輪
+		glPushMatrix();
+		{
+			angle -= m_wheelSpeed;
+			angle *= 0.98f;
+
+			//angleの値を-10000～0で扱うため
+			if (angle < -200.f){
+				angle = 0.f;
+			}
+
+			glm::mat4 childRotate = glm::rotate(angle, glm::vec3(1, 0, 0));
+
+			glm::mat4 childScale = glm::scale(glm::vec3(0.9f, 0.9f, 0.9f));
+
+			//子供の行列
+			glm::mat4 child = childRotate * childScale;
+
+			//オフセット
+			glm::mat4 offSet = glm::translate(glm::vec3(0.0f, 3.1f, 6.3f));
+
+			glm::mat4 myMatrix = m_matrix * offSet *child;
 
 
-		std::vector<float>::iterator itr_v = m_backWheel.m_vertex.begin();
-		glVertexPointer(3, GL_FLOAT, 0, &(*itr_v));
-
-		std::vector<float>::iterator itr_n = m_backWheel.m_normal.begin();
-		glNormalPointer(GL_FLOAT, 0, &(*itr_n));
-
-		std::vector<unsigned short>::iterator itr_i = m_backWheel.m_index.begin();
+			glMultMatrixf((GLfloat*)&myMatrix);
 
 
-		/*後輪描画*/
-		glDrawElements(GL_TRIANGLES, m_backWheel.m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));
+			std::vector<float>::iterator itr_v = m_backWheel.m_vertex.begin();
+			glVertexPointer(3, GL_FLOAT, 0, &(*itr_v));
+
+			std::vector<float>::iterator itr_n = m_backWheel.m_normal.begin();
+			glNormalPointer(GL_FLOAT, 0, &(*itr_n));
+
+			std::vector<unsigned short>::iterator itr_i = m_backWheel.m_index.begin();
+
+			float diffuse[] = { 0, 0, 0, 1 };
+			glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
+
+			/*後輪描画*/
+			glDrawElements(GL_TRIANGLES, m_backWheel.m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));
+
+		}
+		glPopMatrix();
+
+
+		//前輪
+		glPushMatrix();
+		{
+
+			glm::mat4 childRotate = glm::rotate(angle, glm::vec3(1, 0, 0));
+
+			glm::mat4 childScale = glm::scale(glm::vec3(0.72f, 0.72f, 0.72f));
+
+			//子供の行列
+			glm::mat4 child = childRotate * childScale;
+
+			//オフセット
+			glm::mat4 offSet = glm::translate(glm::vec3(0.0f, 2.8f, -9.f));
+
+			glm::mat4 myMatrix = m_matrix * offSet *child;
+
+			glMultMatrixf((GLfloat*)&myMatrix);
+
+			std::vector<float>::iterator itr_v = m_backWheel.m_vertex.begin();
+			glVertexPointer(3, GL_FLOAT, 0, &(*itr_v));
+
+			std::vector<float>::iterator itr_n = m_backWheel.m_normal.begin();
+			glNormalPointer(GL_FLOAT, 0, &(*itr_n));
+
+			std::vector<unsigned short>::iterator itr_i = m_backWheel.m_index.begin();
+
+			glDrawElements(GL_TRIANGLES, m_backWheel.m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));
+
+		}
+		glPopMatrix();
 
 	}
-	glPopMatrix();
-
-
-	//前輪部分
-	glPushMatrix();
-	{
-
-		glm::mat4 childRotate = glm::rotate(angle, glm::vec3(1, 0, 0));
-
-		glm::mat4 childScale = glm::scale(glm::vec3(0.9f, 0.9f, 0.9f));
-
-		//子供の行列
-		glm::mat4 child = childRotate * childScale;
-
-		//オフセット
-		glm::mat4 offSet = glm::translate(glm::vec3(0.0f, 2.8f, -8.6f));
-
-		glm::mat4 myMatrix = parent * offSet *child;
-
-
-		glMultMatrixf((GLfloat*)&myMatrix);
-
-		std::vector<float>::iterator itr_v = m_backWheel.m_vertex.begin();
-		glVertexPointer(3, GL_FLOAT, 0, &(*itr_v));
-
-		std::vector<float>::iterator itr_n = m_backWheel.m_normal.begin();
-		glNormalPointer(GL_FLOAT, 0, &(*itr_n));
-
-		std::vector<unsigned short>::iterator itr_i = m_backWheel.m_index.begin();
-
-
-		/*後輪描画*/
-		glDrawElements(GL_TRIANGLES, m_backWheel.m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));
-
-	}
-	glPopMatrix();
-
-	glDisable(GL_LIGHTING);
-
+	glPopAttrib();
 
 	//影部描画
 	//車体
@@ -304,10 +372,10 @@ void Character::draw(){
 		glm::mat4 parentScale = glm::scale(glm::vec3(m_scale.x, 0, m_scale.z));
 
 		//親の行列
-		parent = parentTranslate *parentRotate * parentScale;
+		m_matrix = parentTranslate *parentRotate * parentScale;
 
 		//行列適応
-		glMultMatrixf((GLfloat*)&parent);
+		glMultMatrixf((GLfloat*)&m_matrix);
 
 		std::vector<float>::iterator itr_v = m_body.m_vertex.begin();
 		glVertexPointer(3, GL_FLOAT, 0, &(*itr_v));
@@ -332,7 +400,7 @@ void Character::draw(){
 		//オフセット
 		glm::mat4 offSet = glm::translate(glm::vec3(0.0f, 0.01f, 6.3f));
 
-		glm::mat4 myMatrix = parent * offSet *child;
+		glm::mat4 myMatrix = m_matrix * offSet *child;
 
 
 		glMultMatrixf((GLfloat*)&myMatrix);
@@ -354,33 +422,33 @@ void Character::draw(){
 
 	//debug
 	//本体
-	//glColor3f(1, 1, 1);
-	//glPushMatrix();
-	//{
-	//	glTranslatef(m_position.x, m_position.y, m_position.z);
-	//	glRotatef(m_rotate.y * 180 / M_PI, 0, 1, 0);
-	//	glScalef(m_scale.x, m_scale.y, m_scale.z);
-	//	glutSolidCube(1);
-	//}
-	//glPopMatrix();
-	////前
-	//glPushMatrix();
-	//{
-	//	glTranslatef(m_frontPosition.x, m_frontPosition.y - 0.5f, m_frontPosition.z);
-	//	glRotatef(m_rotate.y * 180 / M_PI, 0, 1, 0);
-	//	glScalef(m_scale.x, m_scale.y, m_scale.z);
-	//	glutSolidCube(1);
-	//}
-	//glPopMatrix();
-	////後ろ
-	//glPushMatrix();
-	//{
-	//	glTranslatef(m_backPosition.x, m_backPosition.y - 0.5f, m_backPosition.z);
-	//	glRotatef(m_rotate.y * 180 / M_PI, 0, 1, 0);
-	//	glScalef(m_scale.x, m_scale.y, m_scale.z);
-	//	glutSolidCube(1);
-	//}
-	//glPopMatrix();
+	glColor3f(1, 1, 1);
+	glPushMatrix();
+	{
+		glTranslatef(m_position.x, m_position.y, m_position.z);
+		glRotatef(m_rotate.y * 180 / M_PI, 0, 1, 0);
+		glScalef(m_scale.x, m_scale.y, m_scale.z);
+		glutSolidCube(1);
+	}
+	glPopMatrix();
+	//前
+	glPushMatrix();
+	{
+		glTranslatef(m_frontPosition.x, m_frontPosition.y - 0.5f, m_frontPosition.z);
+		glRotatef(m_rotate.y * 180 / M_PI, 0, 1, 0);
+		glScalef(m_scale.x, m_scale.y, m_scale.z);
+		glutSolidCube(1);
+	}
+	glPopMatrix();
+	//後ろ
+	glPushMatrix();
+	{
+		glTranslatef(m_backPosition.x, m_backPosition.y - 0.5f, m_backPosition.z);
+		glRotatef(m_rotate.y * 180 / M_PI, 0, 1, 0);
+		glScalef(m_scale.x, m_scale.y, m_scale.z);
+		glutSolidCube(1);
+	}
+	glPopMatrix();
 
 
 }
@@ -413,9 +481,9 @@ void Character::drawHasItem(){
 
 		glPushMatrix();
 		{
-			glTranslatef(m_position.x + sin(m_rotate.y) * 2.5 + sin(m_rotate.y)*i,
+			glTranslatef(m_position.x + sin(m_rotate.y) * 2.8 + sin(m_rotate.y)*i,
 				0.5f,
-				m_position.z + cos(m_rotate.y) * 2.5 + cos(m_rotate.y)*i);
+				m_position.z + cos(m_rotate.y) * 2.8 + cos(m_rotate.y)*i);
 
 			glColor3f(1, 1, 1);
 

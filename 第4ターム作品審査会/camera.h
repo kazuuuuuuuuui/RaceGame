@@ -29,6 +29,7 @@ public:
 		m_position(0, 0, 0),
 		m_rotate(0, 0, 0),
 		m_target(player->m_position.x, player->m_position.y, player->m_position.z),
+
 		m_up(0, 1, 0)
 	{};
 

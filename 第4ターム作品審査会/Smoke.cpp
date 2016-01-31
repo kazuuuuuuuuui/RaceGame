@@ -1,4 +1,5 @@
 #include"Smoke.h"
+#include"Fire.h"
 #include"Player.h"
 #include"Character.h"
 
@@ -28,7 +29,7 @@ void Smoke::draw(){
 		glTranslatef(m_basePosition.x, m_basePosition.y, m_basePosition.z);
 
 		for (int i = 0; i < SMOKE_PARTICLE_NUMBER; i++){
-			m_particle[i].draw({ 128.f / 256.f, 128.f / 256.f, 128.f / 256.f, });
+			m_particle[i].draw(0,{ 128.f / 256.f, 128.f / 256.f, 128.f / 256.f, }, smoke_handle);
 		}
 
 	}

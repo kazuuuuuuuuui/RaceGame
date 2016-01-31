@@ -23,6 +23,7 @@
 #include"Effect.h"
 #include"Fire.h"
 #include"Blizzard.h"
+#include"Dash.h"
 #include"StrokeString.h"
 #include"Smoke.h"
 #include"glut.h"
@@ -73,6 +74,8 @@ GLuint rank1st = 0;
 GLuint rank2nd = 0;
 GLuint rank3rd = 0;
 GLuint rank4th = 0;
+
+GLuint dashIcon = 0;
 
 //debug
 float xx = 0.f;
@@ -176,6 +179,37 @@ void printRaceStart(){
 
 }
 
+//GOALの文字
+void printGoal(){
+
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glPushMatrix();
+	{
+
+		glTranslatef(140, 185, 0);
+
+		glBindTexture(GL_TEXTURE_2D, goalTexture);
+
+		glBegin(GL_QUADS);
+		{
+			glColor4f(1, 1, 1, 1);
+			glTexCoord2f(0, 0); glVertex2f(0, 0);
+			glTexCoord2f(1, 0); glVertex2f(150, 0);
+			glTexCoord2f(1, 1); glVertex2f(150, 80);
+			glTexCoord2f(0, 1); glVertex2f(0, 80);
+		}
+		glEnd();
+	}
+	glPopMatrix();
+
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_BLEND);
+
+}
+
 
 //順位のテクスチャ描画
 void printRanking(){
@@ -235,6 +269,36 @@ void printRanking(){
 }
 
 
+void printDashGage(){
+
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glPushMatrix();
+	{
+		glTranslatef(5, 255, 0);
+
+		glBindTexture(GL_TEXTURE_2D, dashIcon);
+
+		glBegin(GL_QUADS);
+		{
+			glColor4f(1, 1, 1, 1);
+			glTexCoord2f(0, 0); glVertex2f(0, 0);
+			glTexCoord2f(1, 0); glVertex2f(40, 0);
+			glTexCoord2f(1, 1); glVertex2f(40, 40);
+			glTexCoord2f(0, 1); glVertex2f(0, 40);
+		}
+		glEnd();
+	}
+	glPopMatrix();
+
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_BLEND);
+
+}
+
+
 //-------------------------------------
 //fps計測用変数と関数
 int GLframe = 0; //フレーム数
@@ -264,16 +328,26 @@ void keyboard(unsigned char key, int x, int y){
 
 	//debug
 	if ('d' == key){
-		xx += 1.f;
+		//camera->m_position.x += 10.f;
+		xx += 10.f;
 	}
 	else if ('a' == key){
-		xx -= 1.f;
+		//camera->m_position.x -= 10.f;
+		xx -= 10.f;
 	}
 	else if ('w' == key){
-		yy += 1.f;
+		//camera->m_position.y += 10.f;
+		yy += 10.f;
 	}
 	else if ('s' == key){
-		yy -= 1.f;
+		//camera->m_position.y -= 10.f;
+		yy -= 10.f;
+	}
+	else if ('r' == key){
+		camera->m_position.z += 10.f;
+	}
+	else if ('f' == key){
+		camera->m_position.z -= 10.f;
 	}
 
 
@@ -288,8 +362,8 @@ void specialkeydown(int key, int x, int y){
 //取り敢えず
 Course* createCourse(){
 
-	Course *newcourse = nullptr;
-	newcourse = new Course();
+	Course *newCourse = nullptr;
+	newCourse = new Course();
 
 
 
@@ -299,62 +373,61 @@ Course* createCourse(){
 	if (1 == COURSE_TYPE){
 
 		//チェックポイントの位置設定
-		newcourse->m_checkPoint[0].m_position = { 57.f, 0.5f, -241.f };
-		newcourse->m_checkPoint[1].m_position = { 140.f, 0.5f, -156.5f };
-		newcourse->m_checkPoint[2].m_position = { 201.f, 0.5f, -231.5f };
-		newcourse->m_checkPoint[3].m_position = { 238.5f, 0.5f, -195.f };
-		newcourse->m_checkPoint[4].m_position = { 185.f, 0.5f, -122.f };
-		newcourse->m_checkPoint[5].m_position = { 89.f, 0.5f, -97.5f };
-		newcourse->m_checkPoint[6].m_position = { 160.5f, 0.5f, -74.5f };
-		newcourse->m_checkPoint[7].m_position = { 236.f, 0.5f, -37.f };
-		newcourse->m_checkPoint[8].m_position = { 124.f, 0.5f, -35.f };
-		newcourse->m_checkPoint[9].m_position = { 23.5f, 0.5f, -89.5f };
+		newCourse->m_checkPoint[0].m_position = { 57.f, 0.5f, -241.f };
+		newCourse->m_checkPoint[1].m_position = { 140.f, 0.5f, -156.5f };
+		newCourse->m_checkPoint[2].m_position = { 201.f, 0.5f, -231.5f };
+		newCourse->m_checkPoint[3].m_position = { 238.5f, 0.5f, -195.f };
+		newCourse->m_checkPoint[4].m_position = { 185.f, 0.5f, -122.f };
+		newCourse->m_checkPoint[5].m_position = { 89.f, 0.5f, -97.5f };
+		newCourse->m_checkPoint[6].m_position = { 160.5f, 0.5f, -74.5f };
+		newCourse->m_checkPoint[7].m_position = { 236.f, 0.5f, -37.f };
+		newCourse->m_checkPoint[8].m_position = { 124.f, 0.5f, -35.f };
+		newCourse->m_checkPoint[9].m_position = { 23.5f, 0.5f, -89.5f };
 
 
 		//AIポイントの位置設定
-		newcourse->m_AIPoint[0].m_position = { 22.5f, 0.5f, -195.f };
-		newcourse->m_AIPoint[1].m_position = { 40.f, 0.5f, -240.f };
-		newcourse->m_AIPoint[2].m_position = { 72.f, 0.5f, -240.f };
-		newcourse->m_AIPoint[3].m_position = { 91.f, 0.5f, -200.5f };
-		newcourse->m_AIPoint[4].m_position = { 115.f, 0.5f, -159.f };
-		newcourse->m_AIPoint[5].m_position = { 135.f, 0.5f, -155.f };
-		newcourse->m_AIPoint[6].m_position = { 160.f, 0.5f, -163.5f };
-		newcourse->m_AIPoint[7].m_position = { 174.f, 0.5f, -173.f };
-		newcourse->m_AIPoint[8].m_position = { 186.f, 0.5f, -229.f };
-		newcourse->m_AIPoint[9].m_position = { 208.f, 0.5f, -230.5f };
-		newcourse->m_AIPoint[10].m_position = { 225.f, 0.5f, -223.5f };
-		newcourse->m_AIPoint[11].m_position = { 233.5f, 0.5f, -205.f };
-		newcourse->m_AIPoint[12].m_position = { 242.f, 0.5f, -175.5f };
-		newcourse->m_AIPoint[13].m_position = { 237.f, 0.5f, -142.f };
-		newcourse->m_AIPoint[14].m_position = { 207.f, 0.5f, -124.f };
-		newcourse->m_AIPoint[15].m_position = { 108.f, 0.5f, -112.f };
-		newcourse->m_AIPoint[16].m_position = { 91.f, 0.5f, -88.f };
-		newcourse->m_AIPoint[17].m_position = { 180.f, 0.5f, -73.5f };
-		newcourse->m_AIPoint[18].m_position = { 237.f, 0.5f, -48.f };
-		newcourse->m_AIPoint[19].m_position = { 233.f, 0.5f, -15.f };
-		newcourse->m_AIPoint[20].m_position = { 186.f, 0.5f, -8.5f };
-		newcourse->m_AIPoint[21].m_position = { 146.f, 0.5f, -35.f };
-		newcourse->m_AIPoint[22].m_position = { 99.f, 0.5f, -27.f };
-		newcourse->m_AIPoint[23].m_position = { 57.f, 0.5f, -14.f };
-		newcourse->m_AIPoint[24].m_position = { 27.f, 0.5f, -56.f };
+		newCourse->m_AIPoint[0].m_position = { 22.5f, 0.5f, -195.f };
+		newCourse->m_AIPoint[1].m_position = { 40.f, 0.5f, -240.f };
+		newCourse->m_AIPoint[2].m_position = { 72.f, 0.5f, -240.f };
+		newCourse->m_AIPoint[3].m_position = { 91.f, 0.5f, -200.5f };
+		newCourse->m_AIPoint[4].m_position = { 115.f, 0.5f, -159.f };
+		newCourse->m_AIPoint[5].m_position = { 135.f, 0.5f, -155.f };
+		newCourse->m_AIPoint[6].m_position = { 160.f, 0.5f, -163.5f };
+		newCourse->m_AIPoint[7].m_position = { 174.f, 0.5f, -173.f };
+		newCourse->m_AIPoint[8].m_position = { 186.f, 0.5f, -229.f };
+		newCourse->m_AIPoint[9].m_position = { 208.f, 0.5f, -230.5f };
+		newCourse->m_AIPoint[10].m_position = { 225.f, 0.5f, -223.5f };
+		newCourse->m_AIPoint[11].m_position = { 233.5f, 0.5f, -205.f };
+		newCourse->m_AIPoint[12].m_position = { 242.f, 0.5f, -175.5f };
+		newCourse->m_AIPoint[13].m_position = { 237.f, 0.5f, -142.f };
+		newCourse->m_AIPoint[14].m_position = { 207.f, 0.5f, -124.f };
+		newCourse->m_AIPoint[15].m_position = { 108.f, 0.5f, -112.f };
+		newCourse->m_AIPoint[16].m_position = { 91.f, 0.5f, -88.f };
+		newCourse->m_AIPoint[17].m_position = { 180.f, 0.5f, -73.5f };
+		newCourse->m_AIPoint[18].m_position = { 237.f, 0.5f, -48.f };
+		newCourse->m_AIPoint[19].m_position = { 233.f, 0.5f, -15.f };
+		newCourse->m_AIPoint[20].m_position = { 186.f, 0.5f, -8.5f };
+		newCourse->m_AIPoint[21].m_position = { 146.f, 0.5f, -35.f };
+		newCourse->m_AIPoint[22].m_position = { 99.f, 0.5f, -27.f };
+		newCourse->m_AIPoint[23].m_position = { 57.f, 0.5f, -14.f };
+		newCourse->m_AIPoint[24].m_position = { 27.f, 0.5f, -56.f };
 
-		newcourse->m_handle[COUSE_TEXTURE] = BmpImage::loadImage("bmp/course1/course1.bmp");
+		newCourse->m_handle[COUSE_TEXTURE] = BmpImage::loadImage("bmp/course1/course1.bmp");
 		//course->m_handle[BACKGROUND_TEXTURE] = BmpImage::loadImage("bmp/course1/background1.bmp");
-		BmpImage::makeBuffer("bmp/course1/buffer1.bmp", newcourse->m_buffer);
+		BmpImage::makeBuffer("bmp/course1/buffer1.bmp", newCourse->m_buffer);
 	}
 	//
 
 	//コース2(仮)
 	else if (2 == COURSE_TYPE){
-		newcourse->m_handle[COUSE_TEXTURE] = BmpImage::loadImage("bmp/course2/course2.bmp");
+		newCourse->m_handle[COUSE_TEXTURE] = BmpImage::loadImage("bmp/course2/course2.bmp");
 		//course->m_handle[BACKGROUND_TEXTURE] = BmpImage::loadImage("bmp/course2/background2.bmp");
-		BmpImage::makeBuffer("bmp/course2/buffer2.bmp", newcourse->m_buffer);
+		BmpImage::makeBuffer("bmp/course2/buffer2.bmp", newCourse->m_buffer);
 	}
-	//
 
-	newcourse->setItem();
+	newCourse->setItem();
 
-	return newcourse;
+	return newCourse;
 
 }
 
@@ -416,6 +489,12 @@ bool checkRanking(Character *_character1, Character *_character2){
 xFile body;
 xFile backWheel;
 
+
+
+
+
+
+
 void init(){
 
 	srand(time(NULL));
@@ -430,6 +509,7 @@ void init(){
 	//後で書き換え
 	//プレイヤーの生成
 	player = new Player();
+	player->m_type = PLAYER1;
 	player->m_position = { 12.f, 0.f, -160.f };
 
 	player->m_frontPosition.x = player->m_position.x - sin(player->m_rotate.y)*1.55f;
@@ -446,6 +526,7 @@ void init(){
 	//敵の生成
 	com1 = new Enemy();
 	com1->m_position = { 15.f, 0.f, -150.f };
+	com1->m_type = PLAYER2;
 
 	com1->m_frontPosition.x = com1->m_position.x - sin(com1->m_rotate.y)*1.55f;
 	com1->m_frontPosition.y = 0.5f;
@@ -461,6 +542,7 @@ void init(){
 	//
 	com2 = new Enemy();
 	com2->m_position = { 20.f, 0.f, -140.f };
+	com2->m_type = PLAYER3;
 
 	com2->m_frontPosition.x = com2->m_position.x - sin(com2->m_rotate.y)*1.55f;
 	com2->m_frontPosition.y = 0.5f;
@@ -476,13 +558,14 @@ void init(){
 	//
 	com3 = new Enemy();
 	com3->m_position = { 25.f, 0.f, -130.f };
+	com3->m_type = PLAYER4;
 
 	com3->m_frontPosition.x = com3->m_position.x - sin(com3->m_rotate.y)*1.55f;
-	com3->m_frontPosition.y = 1.f;
+	com3->m_frontPosition.y = 0.5f;
 	com3->m_frontPosition.z = com3->m_position.z - cos(com3->m_rotate.y)*1.55f;
 
 	com3->m_backPosition.x = com3->m_position.x + sin(com3->m_rotate.y)*1.15f;
-	com3->m_backPosition.y = 1.f;
+	com3->m_backPosition.y = 0.5f;
 	com3->m_backPosition.z = com3->m_position.z + cos(com3->m_rotate.y)*1.15f;
 
 	com3->m_body = body;
@@ -511,7 +594,6 @@ void init(){
 	//透過度無し
 	titleTexture = BmpImage::loadImage("bmp/title/title.bmp");
 
-
 	//透過度有り
 	threeTexture = BmpImage::loadImage_alpha("bmp/start/three.bmp");
 	twoTexture = BmpImage::loadImage_alpha("bmp/start/two.bmp");
@@ -520,11 +602,14 @@ void init(){
 	goalTexture = BmpImage::loadImage_alpha("bmp/goal.bmp");
 
 	smoke_handle = BmpImage::loadImage_alpha("bmp/Effect/smoke.bmp");
+	dash_handle = BmpImage::loadImage_alpha("bmp/Effect/dash.bmp");
 
 	rank1st = BmpImage::loadImage_alpha("bmp/Ranking/1st.bmp");
 	rank2nd = BmpImage::loadImage_alpha("bmp/Ranking/2nd.bmp");
 	rank3rd = BmpImage::loadImage_alpha("bmp/Ranking/3rd.bmp");
 	rank4th = BmpImage::loadImage_alpha("bmp/Ranking/4th.bmp");
+
+	dashIcon = BmpImage::loadImage_alpha("bmp/dashIcon.bmp");
 
 	EffectBlizzard = BmpImage::loadImage_alpha("bmp/Effect/blizzard.bmp");
 
@@ -545,15 +630,6 @@ void init(){
 	sprintf_s(player->m_str_lapTime[FIRST], "%02d:%02d:%03d ", player->m_minute[FIRST], player->m_second[FIRST], player->m_milliSecond[FIRST]);
 	sprintf_s(player->m_str_lapTime[SECOND], "%02d:%02d:%03d ", player->m_minute[SECOND], player->m_second[SECOND], player->m_milliSecond[SECOND]);
 	sprintf_s(player->m_str_lapTime[THIRD], "%02d:%02d:%03d ", player->m_minute[THIRD], player->m_second[THIRD], player->m_milliSecond[THIRD]);
-
-
-
-	//debug
-
-
-
-
-
 }
 
 
@@ -617,36 +693,36 @@ bool isHitCharacter(Character *_my, Character *_you){
 	glm::vec3 front_front;
 
 	//自分の後輪と相手の後輪とのベクトル
-	glm::vec3 back_back;
+	//glm::vec3 back_back;
 
 	//自分の後輪と相手の後輪とのベクトル
-	glm::vec3 front_back;
+	//glm::vec3 front_back;
 
 	//自分の後輪と相手の後輪とのベクトル
-	glm::vec3 back_front;
+	//glm::vec3 back_front;
 
 	//自分の前輪と相手の中心座標とのベクトル
-	glm::vec3 front_body;
+	//glm::vec3 front_body;
 
 	//自分の後輪と相手の中心座標とのベクトル
-	glm::vec3 back_body;
+	//glm::vec3 back_body;
 
 
 	//要調整！！！
-	front_front = _my->m_frontPosition - _you->m_frontPosition;
+	front_front = (_my->m_frontPosition - sin(_my->m_rotate.y)) - (_you->m_frontPosition);
 
-	back_back = _my->m_backPosition - _you->m_backPosition;
+	//back_back = _my->m_backPosition - _you->m_backPosition;
 
-	front_back = _my->m_frontPosition - _you->m_backPosition;
+	//front_back = _my->m_frontPosition - _you->m_backPosition;
 
-	front_body = _my->m_frontPosition - _you->m_position;
+	//front_body = _my->m_frontPosition - _you->m_position;
 
-	back_body = _my->m_backPosition - _you->m_position;
+	//back_body = _my->m_backPosition - _you->m_position;
 
-	float hitLine = 0.9f;
+	float hitLine = 1.f;
 
-	if (glm::length(front_front) < hitLine || glm::length(back_back) < hitLine ||
-		glm::length(front_back) < hitLine || glm::length(front_body) < hitLine || glm::length(back_body) < hitLine){
+	if (glm::length(front_front) < hitLine/* || glm::length(back_back) < hitLine ||
+		glm::length(front_back) < hitLine || glm::length(front_body) < hitLine || glm::length(back_body) < hitLine*/){
 		return true;
 	}
 
@@ -785,18 +861,14 @@ void display() {
 			item[i]->update();
 		}
 
-		//debug
-		//エフェクトの更新
-		/*	for (unsigned int i = 0; i < effect.size(); i++){
-				effect[i]->update();
-				}*/
 
+		//エフェクトの更新
 		std::list<Effect*>::iterator it = effect.begin();
 		it = effect.begin();
 		while (it != effect.end())
 		{
 			(*it)->update();
-			(*it)->checkCourseOut();
+			//(*it)->checkCourseOut();
 			++it;
 		}
 
@@ -821,7 +893,7 @@ void display() {
 
 		//debug
 		//for (int i = 0; i < CHECK_POINT_NUMBER; i++){
-			//course->m_checkPoint[i].draw();
+		//course->m_checkPoint[i].draw();
 		//}
 
 		//for (int i = 0; i < AI_POINT_NUMBER; i++){
@@ -835,7 +907,6 @@ void display() {
 		for (unsigned int i = 0; i < character.size(); i++){
 
 			character[i]->draw();
-			character[i]->drawHasItem();
 
 		}
 
@@ -847,12 +918,6 @@ void display() {
 
 		//debug
 		//エフェクトの描画
-
-		//深度テストの有無はエフェクト個別で設定している
-		//for (unsigned int i = 0; i < effect.size(); i++){
-		//	effect[i]->draw();
-		//}
-
 		it = effect.begin();
 		while (it != effect.end())
 		{
@@ -860,6 +925,11 @@ void display() {
 			++it;
 		}
 
+		for (unsigned int i = 0; i < character.size(); i++){
+
+			character[i]->drawHasItem();
+
+		}
 
 		//煙の描画
 		for (unsigned int i = 0; i < character.size(); i++){
@@ -867,8 +937,6 @@ void display() {
 			character[i]->m_smoke.draw();
 
 		}
-
-
 
 		/*更新*/
 		camera->update(TYPE_2D);
@@ -890,6 +958,8 @@ void display() {
 			//debug
 			//if (true == player->m_isGoal){
 
+			printDashGage();
+
 			StrokeString::print("LAP", { 230, 250, 0 }, 0.1f, { 1, 0, 0 });
 			StrokeString::print(str_lapCount, { 260, 250, 0 }, 0.18f, { 1, 0, 0 });
 			StrokeString::print("/", { 275, 250, 0 }, 0.1f, { 1, 0, 0 });
@@ -908,37 +978,7 @@ void display() {
 
 		}
 		else{
-
-			//GOALの文字
-			glEnable(GL_TEXTURE_2D);
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-			glPushMatrix();
-			{
-
-				glTranslatef(140, 185, 0);
-
-				glBindTexture(GL_TEXTURE_2D, goalTexture);
-
-				glBegin(GL_QUADS);
-				{
-					glColor4f(1, 1, 1, 1);
-					glTexCoord2f(0, 0);
-					glVertex2f(0, 0);
-					glTexCoord2f(1, 0);
-					glVertex2f(150, 0);
-					glTexCoord2f(1, 1);
-					glVertex2f(150, 80);
-					glTexCoord2f(0, 1);
-					glVertex2f(0, 80);
-				}
-				glEnd();
-			}
-			glPopMatrix();
-
-			glDisable(GL_TEXTURE_2D);
-			glDisable(GL_BLEND);
+			printGoal();
 
 			StrokeString::print("LAP1", { 60, 158, 0 }, 0.2f, { 1, 0, 0 });
 			StrokeString::print(player->m_str_lapTime[FIRST], { 130, 158, 0 }, 0.2f, { 1, 0, 0 });
@@ -979,8 +1019,8 @@ void timer(int value) {
 	/*std::list<Effect*>::iterator it = effect.begin();
 	while (it != effect.end())
 	{
-		printf("x:%f y:%f z:%f\n", (*it)->m_basePosition.x, (*it)->m_basePosition.y, (*it)->m_basePosition.z);
-		++it;
+	printf("x:%f y:%f z:%f\n", (*it)->m_basePosition.x, (*it)->m_basePosition.y, (*it)->m_basePosition.z);
+	++it;
 	}
 
 	printf("\n");*/
@@ -988,7 +1028,7 @@ void timer(int value) {
 
 	//printf("%d\n", effect.size());
 
-	//printf("xx:%f yy:%f\n", xx, yy);
+	printf("xx:%f yy:%f\n", xx, yy);
 
 	//printf("%d\n", player->m_hasItem.size());
 

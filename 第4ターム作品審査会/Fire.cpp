@@ -51,7 +51,7 @@ void Fire::draw(){
 		glTranslatef(m_basePosition.x, m_basePosition.y, m_basePosition.z);
 
 		for (int i = 0; i < FIRE_PARTICLE_NUMBER; i++){
-			m_particle[i].draw({ 1.f, 0.25f, 0.125f });
+			m_particle[i].draw(0, { 1.f, 0.25f, 0.125f }, smoke_handle);
 		}
 
 	}

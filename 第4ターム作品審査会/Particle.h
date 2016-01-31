@@ -2,6 +2,7 @@
 
 #include"GameObject.h"
 #include"glm\glm.hpp"
+#include"glut.h"
 
 class Particle :public GameObject{
 public:
@@ -9,7 +10,7 @@ public:
 	float m_alpha;
 
 	void draw(){};
-	void draw(glm::vec3 _color);
+	void draw(int _type,glm::vec3 _color,GLuint _texture);
 	void update(){};
 
 	Particle() :

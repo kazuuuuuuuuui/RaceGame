@@ -10,7 +10,7 @@ public:
 
 	glm::vec3 m_basePosition;
 
-	void checkCourseOut();
+	//void checkCourseOut();
 	virtual void draw() = 0;
 	virtual void update() = 0;
 

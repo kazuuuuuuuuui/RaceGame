@@ -8,7 +8,7 @@
 //エフェクトを作るパーティクル1枚の描画
 //色を指定して描画する
 
-void Particle::draw(glm::vec3 _color){
+void Particle::draw(int _type,glm::vec3 _color,GLuint _texture){
 
 	glPushMatrix();
 	{
@@ -23,7 +23,7 @@ void Particle::draw(glm::vec3 _color){
 
 		glEnable(GL_TEXTURE_2D);
 
-		glBindTexture(GL_TEXTURE_2D, smoke_handle);
+		glBindTexture(GL_TEXTURE_2D, _texture);
 
 		glTranslatef(m_position.x, m_position.y, m_position.z);
 		
@@ -31,21 +31,45 @@ void Particle::draw(glm::vec3 _color){
 		glMultMatrixf((GLfloat*)&BillboardMatrix);
 		
 		glScalef(m_scale.x, m_scale.y, m_scale.z);
+		
+		if (_type == 0){
 
-		glBegin(GL_QUADS);
-		{
-			glColor4f(_color.x, _color.y, _color.z, m_alpha);
+			glBegin(GL_QUADS);
+			{
+				glColor4f(_color.x, _color.y, _color.z, m_alpha);
 
-			glTexCoord2f(0.f, 0.f);
-			glVertex2f(-1.f, -1.f);
-			glTexCoord2f(0.f, 1.f);
-			glVertex2f(-1.f, 1.f);
-			glTexCoord2f(1.f, 1.f);
-			glVertex2f(1.f, 1.f);
-			glTexCoord2f(1.f, 0.f);
-			glVertex2f(1.f, -1.f);
+				glTexCoord2f(0.f, 0.f);
+				glVertex2f(-1.f, -1.f);
+				glTexCoord2f(0.f, 1.f);
+				glVertex2f(-1.f, 1.f);
+				glTexCoord2f(1.f, 1.f);
+				glVertex2f(1.f, 1.f);
+				glTexCoord2f(1.f, 0.f);
+				glVertex2f(1.f, -1.f);
+			}
+			glEnd();
+
 		}
-		glEnd();
+
+		else if (_type == 1){
+
+			glBegin(GL_QUADS);
+			{
+				glColor4f(_color.x, _color.y, _color.z, m_alpha);
+
+				glTexCoord2f(0.f, 0.f);
+				glVertex2f(0.f, 0.f);
+				glTexCoord2f(0.f, 1.f);
+				glVertex2f(0.f, 1.f);
+				glTexCoord2f(1.f, 1.f);
+				glVertex2f(1.f, 1.f);
+				glTexCoord2f(1.f, 0.f);
+				glVertex2f(1.f, 0.f);
+			}
+			glEnd();
+
+		}
+
 	}
 	glPopMatrix();
 

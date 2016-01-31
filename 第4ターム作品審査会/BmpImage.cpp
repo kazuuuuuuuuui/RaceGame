@@ -324,17 +324,17 @@ void BmpImage::makeBuffer(const char *_bufferName, int _buffer[][COURSE_WIDTH]){
 		for (int t = 0; t < bmpInfoHeader.biWidth; t++){
 
 			//îíÇ»ÇÁìπ
-			if (pixels[t + i*bmpInfoHeader.biWidth].r >= 250 &&
-				pixels[t + i*bmpInfoHeader.biWidth].g >= 250 &&
-				pixels[t + i*bmpInfoHeader.biWidth].b >= 250){
+			if (pixels[t + i*bmpInfoHeader.biWidth].r == 255 &&
+				pixels[t + i*bmpInfoHeader.biWidth].g == 255 &&
+				pixels[t + i*bmpInfoHeader.biWidth].b == 255){
 
 				_buffer[i][t] = PATH;
 			}
 
 			//çïÇ»ÇÁÉ_Å[Ég
-			else if (pixels[t + i*bmpInfoHeader.biWidth].r <= 5 &&
-				pixels[t + i*bmpInfoHeader.biWidth].g <= 5 &&
-				pixels[t + i*bmpInfoHeader.biWidth].b <= 5){
+			else if (pixels[t + i*bmpInfoHeader.biWidth].r == 0 &&
+				pixels[t + i*bmpInfoHeader.biWidth].g == 0 &&
+				pixels[t + i*bmpInfoHeader.biWidth].b == 0){
 				_buffer[i][t] = DART;
 			}
 

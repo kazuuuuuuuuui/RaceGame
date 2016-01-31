@@ -1,11 +1,13 @@
 #define BUTTON_A (1)
 #define BUTTON_X (4)
 #define BUTTON_Y (8)
-#define BUTTON_RB (16)
+#define BUTTON_LB (16)
+#define BUTTON_RB (32)
 
 #include"Player.h"
 #include"Fire.h"
 #include"Blizzard.h"
+#include"Dash.h"
 
 Player *player = nullptr;
 
@@ -27,27 +29,27 @@ void Player::control(unsigned int _pressedKey, unsigned int _downKeys, float _x,
 	}
 
 	//debug
-	float speed = glm::length(m_speed);
+	//float speed = glm::length(m_speed);
 
-	printf("%f\n", speed);
+	//printf("%f\n", speed);
 
 	//正面右に移動
 	if (_x > 0.85){
 		m_rotate.y -= 0.02f;
-		m_rotate.z -= 0.01f*speed;
+		m_rotate.z = (-1)*_x;
 	}
 
 	//正面左に移動
 	else if (_x < -0.85){
 		m_rotate.y += 0.02f;
-		m_rotate.z += 0.01f*speed;
+		m_rotate.z = (-1)*_x;
 	}
 	else{
 		m_rotate.z = 0.f;
 	}
 
 	//アイテムの使用
-	if (_downKeys &  BUTTON_RB){
+	if (_downKeys &  BUTTON_LB){
 
 		if (m_hasItem.size() > 0){
 
@@ -79,6 +81,18 @@ void Player::control(unsigned int _pressedKey, unsigned int _downKeys, float _x,
 			m_hasItem.pop_back();
 
 		}
+
+	}
+
+	//ダッシュ
+	if (_downKeys &  BUTTON_RB){
+
+		m_dashSpeed = glm::vec3(-0.1f*sin(m_rotate.y), 0.f, -0.1f*cos(m_rotate.y));
+
+		m_dash = new Dash();
+		m_dash->m_isActive = true;
+		m_dash->m_basePosition = { m_position.x, 0, m_position.z };
+		effect.push_back(m_dash);
 
 	}
 
