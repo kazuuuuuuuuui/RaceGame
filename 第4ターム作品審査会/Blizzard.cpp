@@ -9,21 +9,18 @@ void Blizzard::update(){
 	//当たったプレイヤーのisHitItemフラグをtrue
 	//当たったアイテムのisActiveフラグをfalseにする
 
-	//for (unsigned int i = 0; i < character.size(); i++){
+	for (unsigned int i = 0; i < character.size(); i++){
 
-	//	if (isHit(character[i]->m_position)){
-	if (isHit(player->m_position)){
+		if (isHit(character[i]->m_position)){
 
-		m_isActive = false;
-		player->m_isHitItem = true;
-		player->m_crashRotate = 360000.f*(M_PI / 180);
+			m_isActive = false;
+			character[i]->m_isHitItem = true;
+			character[i]->m_dashSpeed = { 0.f, 0.f, 0.f };
+			character[i]->m_rotate.z = 0.f;
+			character[i]->m_crashRotate = 360000.f*(M_PI / 180);
 
+		}
 	}
-
-	//		character[i]->m_isHitItem = true;
-
-	//	}
-	//}
 
 }
 

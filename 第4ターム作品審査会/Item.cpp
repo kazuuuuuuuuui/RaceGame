@@ -43,7 +43,7 @@ void Item::update(){
 	move();
 
 	//アイテムの再出現
-	//reCreateItem();
+	reCreateItem();
 
 	//取られたかの判定
 	for (unsigned int i = 0; i < character.size(); i++){
@@ -178,6 +178,7 @@ void Item::draw(){
 void Item::reCreateItem(){
 
 	if (false == m_isActive){
+		m_type = rand() % ITEM_TYPE_MAX;
 		m_isActive = true;
 	}
 

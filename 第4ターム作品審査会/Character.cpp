@@ -41,6 +41,15 @@ void Character::update(){
 		//フレームの管理
 		m_flame++;
 
+		//ダッシュゲージの回復
+		m_dashPower += 0.1f;
+
+		if (m_dashPower >= DASH_GAUGE_MAX){
+
+			m_dashPower = DASH_GAUGE_MAX;
+
+		}
+
 
 		//1周したかの判定
 		if (countLap()){
@@ -120,17 +129,19 @@ void Character::update(){
 	m_speed *= 0.965f;
 
 	//ダッシュの減速処理
-	m_dashSpeed *= 0.95;
+	m_dashSpeed *= 0.96;
 
 	if (m_dash != NULL){
 
-		if (glm::length(m_dashSpeed) <= 0.00001){
+		if (glm::length(m_dashSpeed) <= 0.0001){
+			//ダッシュ状態解除
+			m_isDash = false;
 			m_dash->m_isActive = false;
 		}
 
 	}
 
-	printf("%f\n", glm::length(m_dashSpeed));
+	//printf("%f\n", glm::length(m_dashSpeed));
 
 
 	//車輪の回転スピード更新
@@ -233,36 +244,36 @@ void Character::draw(){
 
 			//マテリアルの設定
 
-		/*	switch (m_type){
+			/*	switch (m_type){
 
-			case PLAYER1:
+				case PLAYER1:
 
 				float diffuse[4] = { 1, 0, 0, 1 };
 				glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
 
 				break;
 
-			case PLAYER2:
+				case PLAYER2:
 
 				float diffuse[4] = { 0, 1, 0, 1 };
 				glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
 
 				break;
 
-			case PLAYER3:
+				case PLAYER3:
 
 				float diffuse[4] = { 0, 0, 1, 1 };
 				glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
 
 				break;
 
-			case PLAYER4:
+				case PLAYER4:
 
 				float diffuse[4] = { 0, 1, 1, 1 };
 				glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
 
 				break;
-			}*/
+				}*/
 
 			/*float specular[] = { 1, 0, 0, 1 };
 			glMaterialfv(GL_FRONT, GL_SPECULAR, specular);

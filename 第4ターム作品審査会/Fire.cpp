@@ -21,6 +21,7 @@ void Fire::update(){
 
 			m_isActive = false;
 			character[i]->m_isHitItem = true;
+			character[i]->m_rotate.z = 0.f;
 			character[i]->m_crashRotate = 360000.f*(M_PI / 180);
 
 		}

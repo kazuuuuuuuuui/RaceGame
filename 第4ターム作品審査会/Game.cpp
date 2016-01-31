@@ -75,8 +75,6 @@ GLuint rank2nd = 0;
 GLuint rank3rd = 0;
 GLuint rank4th = 0;
 
-GLuint dashIcon = 0;
-
 //debug
 float xx = 0.f;
 float yy = 0.f;
@@ -268,37 +266,6 @@ void printRanking(){
 
 }
 
-
-void printDashGage(){
-
-	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glPushMatrix();
-	{
-		glTranslatef(5, 255, 0);
-
-		glBindTexture(GL_TEXTURE_2D, dashIcon);
-
-		glBegin(GL_QUADS);
-		{
-			glColor4f(1, 1, 1, 1);
-			glTexCoord2f(0, 0); glVertex2f(0, 0);
-			glTexCoord2f(1, 0); glVertex2f(40, 0);
-			glTexCoord2f(1, 1); glVertex2f(40, 40);
-			glTexCoord2f(0, 1); glVertex2f(0, 40);
-		}
-		glEnd();
-	}
-	glPopMatrix();
-
-	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_BLEND);
-
-}
-
-
 //-------------------------------------
 //fps計測用変数と関数
 int GLframe = 0; //フレーム数
@@ -329,19 +296,19 @@ void keyboard(unsigned char key, int x, int y){
 	//debug
 	if ('d' == key){
 		//camera->m_position.x += 10.f;
-		xx += 10.f;
+		xx += 1.f;
 	}
 	else if ('a' == key){
 		//camera->m_position.x -= 10.f;
-		xx -= 10.f;
+		xx -= 1.f;
 	}
 	else if ('w' == key){
 		//camera->m_position.y += 10.f;
-		yy += 10.f;
+		yy += 1.f;
 	}
 	else if ('s' == key){
 		//camera->m_position.y -= 10.f;
-		yy -= 10.f;
+		yy -= 1.f;
 	}
 	else if ('r' == key){
 		camera->m_position.z += 10.f;
@@ -490,11 +457,6 @@ xFile body;
 xFile backWheel;
 
 
-
-
-
-
-
 void init(){
 
 	srand(time(NULL));
@@ -610,6 +572,7 @@ void init(){
 	rank4th = BmpImage::loadImage_alpha("bmp/Ranking/4th.bmp");
 
 	dashIcon = BmpImage::loadImage_alpha("bmp/dashIcon.bmp");
+	dashGauge = BmpImage::loadImage_alpha("bmp/gauge.bmp");
 
 	EffectBlizzard = BmpImage::loadImage_alpha("bmp/Effect/blizzard.bmp");
 
@@ -958,7 +921,12 @@ void display() {
 			//debug
 			//if (true == player->m_isGoal){
 
-			printDashGage();
+			player->printDashGauge();
+
+			StrokeString::print("[Control]Stick", { 80, 10, 0 }, 0.1f, { 0, 0, 0 });
+			StrokeString::print("[Item]LB", { 170, 10, 0 }, 0.1f, { 0, 0, 0 });
+			StrokeString::print("[Dash]RB", { 230, 10, 0 }, 0.1f, { 0, 0, 0 });
+
 
 			StrokeString::print("LAP", { 230, 250, 0 }, 0.1f, { 1, 0, 0 });
 			StrokeString::print(str_lapCount, { 260, 250, 0 }, 0.18f, { 1, 0, 0 });
@@ -1005,6 +973,8 @@ void display() {
 //display関数を60F単位で再帰的に呼び出す関数
 
 void timer(int value) {
+
+	//printf("%d\n", flame);
 
 	//debug
 

@@ -24,6 +24,7 @@ void Dash::update(){
 
 void Dash::draw(){
 
+	//¶‰E‘ÎÌ‚Å2‚Â•`‰æ‚µ‚Ä‚¢‚é
 	glPushMatrix();
 	{
 

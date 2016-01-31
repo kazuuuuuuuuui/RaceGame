@@ -14,6 +14,8 @@
 #define SECOND (1)
 #define THIRD (2)
 
+#define DASH_GAUGE_MAX (90)
+
 enum{
 	PLAYER1,
 	PLAYER2,
@@ -56,6 +58,13 @@ public:
 
 	//車体から出る煙
 	Smoke m_smoke;
+
+	//ダッシュ状態かどうかのフラグ
+	bool m_isDash;
+
+	//ダッシュに必要な力
+	//約15秒に1回使えるように溜まっていく
+	float m_dashPower;
 
 	//ダッシュ時のエフェクト
 	Dash *m_dash;
@@ -129,6 +138,8 @@ public:
 	Character() :
 		m_type(0),
 		m_matrix(glm::mat4(1.f)),
+		m_isDash(false),
+		m_dashPower(0),
 		m_dash(nullptr),
 		m_dashSpeed(0,0,0),
 		m_crashRotate(0.f),
