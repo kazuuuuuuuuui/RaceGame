@@ -1,10 +1,6 @@
-
-//カーブにチェックポイントを置く
-
 #define WINDOW_WIDTH (900)
 #define WINDOW_HEIGHT (900)
 
-//#define _CRT_SECURE_NO_WARNINGS
 #include<stdio.h>
 #include<stdlib.h>
 #include<vector>
@@ -26,7 +22,9 @@
 #include"Dash.h"
 #include"StrokeString.h"
 #include"Smoke.h"
+#include"WavFile.h"
 #include"glut.h"
+
 
 /***********debug***********/
 
@@ -60,15 +58,18 @@ int startCount = 6;
 
 //タイトルに使う用
 GLuint titleTexture = 0;
+GLuint pushAnyKeyTexture = 0;
+
+//コース選択画面
+GLuint courseSelectBG = 0;
+GLuint courseSelect = 0;
 
 GLuint threeTexture = 0;
 GLuint twoTexture = 0;
 
-
 GLuint oneTexture = 0;
 GLuint goTexture = 0;
 GLuint goalTexture = 0;
-
 
 GLuint rank1st = 0;
 GLuint rank2nd = 0;
@@ -332,8 +333,6 @@ Course* createCourse(){
 	Course *newCourse = nullptr;
 	newCourse = new Course();
 
-
-
 	//コースによって異なる部分
 	//コース1(仮)
 	//debug
@@ -533,6 +532,14 @@ void init(){
 	com3->m_body = body;
 	com3->m_backWheel = backWheel;
 
+
+
+	
+
+
+
+
+
 	//生成したプレイヤーと敵をベクターで管理
 	character.push_back(player);
 	character.push_back(com1);
@@ -555,8 +562,15 @@ void init(){
 	//テクスチャの読み込み
 	//透過度無し
 	titleTexture = BmpImage::loadImage("bmp/title/title.bmp");
+	courseSelectBG = BmpImage::loadImage("bmp/courseSelect/courseSelectBG.bmp");
+
+
 
 	//透過度有り
+	pushAnyKeyTexture = BmpImage::loadImage_alpha("bmp/title/pushAnyKey.bmp");
+
+	courseSelect = BmpImage::loadImage_alpha("bmp/courseSelect/courseSelect.bmp");
+
 	threeTexture = BmpImage::loadImage_alpha("bmp/start/three.bmp");
 	twoTexture = BmpImage::loadImage_alpha("bmp/start/two.bmp");
 	oneTexture = BmpImage::loadImage_alpha("bmp/start/one.bmp");
@@ -605,6 +619,7 @@ unsigned int changedKeys = 0;//前フレームと現フレームで変化があったキー
 unsigned int downkeys = 0;
 
 void joystick(unsigned int buttonMask, int x, int y, int z){
+
 	//printf("buttonMask:%u, x:%d ,y:%d z:%d\n", buttonMask, x, y, z);
 	pressedKeys = buttonMask;
 	releasedKeys = ~pressedKeys;
@@ -617,7 +632,6 @@ void joystick(unsigned int buttonMask, int x, int y, int z){
 		player->control(pressedKeys, downkeys, (float)x / 1000.f, (float)y / 1000.f, (float)z / 1000.f);
 
 	}
-
 
 	lastkeys = buttonMask;
 }
@@ -693,6 +707,57 @@ bool isHitCharacter(Character *_my, Character *_you){
 
 }
 
+void title(){
+
+	camera->update(TYPE_2D);
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, titleTexture);
+
+	//背景
+	glBegin(GL_QUADS);
+	{
+		glTexCoord2f(0.f, 1.f); glVertex2f(0.f, 0.f);
+
+		glTexCoord2f(1.f, 1.f); glVertex2f(300.f, 0.f);
+
+		glTexCoord2f(1.f, 0.f); glVertex2f(300.f, 300.f);
+
+		glTexCoord2f(0.f, 0.f); glVertex2f(0, 300.f);
+
+	}
+	glEnd();
+
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glBindTexture(GL_TEXTURE_2D, pushAnyKeyTexture);
+
+	glPushMatrix();
+	{
+		glTranslatef(70, 37, 0);
+
+		glBegin(GL_QUADS);
+		{
+			glTexCoord2f(0.f, 0.f); glVertex2f(0.f, 0.f);
+
+			glTexCoord2f(1.f, 0.f); glVertex2f(150.f, 0.f);
+
+			glTexCoord2f(1.f, 1.f); glVertex2f(150.f, 40.f);
+
+			glTexCoord2f(0.f, 1.f); glVertex2f(0, 40.f);
+
+		}
+		glEnd();
+	}
+	glPopMatrix();
+
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_BLEND);
+
+}
+
 
 
 //----------------------------------------
@@ -707,33 +772,111 @@ void display() {
 		camera->update(TYPE_2D);
 
 		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, titleTexture);
+		glBindTexture(GL_TEXTURE_2D, courseSelectBG);
 
+		glColor3f(1, 1, 1);
 
+		//背景
 		glBegin(GL_QUADS);
 		{
-			glTexCoord2f(0.f, 1.f);
-			glVertex2f(0.f, 0.f);
+			glTexCoord2f(0.f, 1.f); glVertex2f(0.f, 0.f);
 
-			glTexCoord2f(1.f, 1.f);
-			glVertex2f(300.f, 0.f);
+			glTexCoord2f(1.f, 1.f); glVertex2f(300.f, 0.f);
 
-			glTexCoord2f(1.f, 0.f);
-			glVertex2f(300.f, 300.f);
+			glTexCoord2f(1.f, 0.f); glVertex2f(300.f, 300.f);
 
-			glTexCoord2f(0.f, 0.f);
-			glVertex2f(0, 300.f);
+			glTexCoord2f(0.f, 0.f); glVertex2f(0, 300.f);
 
 		}
 		glEnd();
 
-		glEnable(GL_TEXTURE_2D);
+
+		//コースセレクト
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		glBindTexture(GL_TEXTURE_2D, courseSelect);
+
+		glColor3f(0, 0, 1);
+
+		glPushMatrix();
+		{
+			glTranslatef(25, 230, 0);
+
+			glBegin(GL_QUADS);
+			{
+				glTexCoord2f(0.f, 0.f); glVertex2f(0.f, 0.f);
+
+				glTexCoord2f(1.f, 0.f); glVertex2f(250.f, 0.f);
+
+				glTexCoord2f(1.f, 1.f); glVertex2f(250.f, 80.f);
+
+				glTexCoord2f(0.f, 1.f); glVertex2f(0, 80.f);
+
+			}
+			glEnd();
+		}
+		glPopMatrix();
+
+		glDisable(GL_TEXTURE_2D);
+		glDisable(GL_BLEND);
+
+
+		glColor3f(1, 1, 1);
+
+		glPushMatrix();
+		{
+
+			glTranslatef(70, 160, 0);
+
+			glScalef(1, 1, 1);
+
+			glBegin(GL_QUADS);
+			{
+				glTexCoord2f(0.f, 1.f); glVertex2f(60.f, -25.f);
+
+				glTexCoord2f(1.f, 1.f); glVertex2f(-60.f, -25.f);
+
+				glTexCoord2f(1.f, 0.f); glVertex2f(-60.f, 25.f);
+
+				glTexCoord2f(0.f, 0.f); glVertex2f(60, 25.f);
+
+			}
+			glEnd();
+		}
+		glPopMatrix();
+
+
+
+		glColor3f(1, 1, 1);
+
+		glPushMatrix();
+		{
+
+			glTranslatef(70, 80, 0);
+
+			glScalef(0.7, 0.7, 0.7);
+
+			glBegin(GL_QUADS);
+			{
+				glTexCoord2f(0.f, 1.f); glVertex2f(60.f, -25.f);
+
+				glTexCoord2f(1.f, 1.f); glVertex2f(-60.f, -25.f);
+
+				glTexCoord2f(1.f, 0.f); glVertex2f(-60.f, 25.f);
+
+				glTexCoord2f(0.f, 0.f); glVertex2f(60, 25.f);
+
+			}
+			glEnd();
+		}
+		glPopMatrix();
+
+
 
 	}
 
 	else{
-
-
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -790,9 +933,9 @@ void display() {
 			minute = getMinute(second);
 			second = second % 60;
 
-			/*com1->control();
+			com1->control();
 			com2->control();
-			com3->control();*/
+			com3->control();
 
 
 			for (unsigned int i = 0; i < character.size(); i++){
@@ -855,13 +998,13 @@ void display() {
 		course->draw();
 
 		//debug
-		//for (int i = 0; i < CHECK_POINT_NUMBER; i++){
-		//course->m_checkPoint[i].draw();
-		//}
+		/*for (int i = 0; i < CHECK_POINT_NUMBER; i++){
+		course->m_checkPoint[i].draw();
+		}*/
 
-		//for (int i = 0; i < AI_POINT_NUMBER; i++){
-		//	course->m_AIPoint[i].draw();
-		//}
+		for (int i = 0; i < AI_POINT_NUMBER; i++){
+			course->m_AIPoint[i].draw();
+		}
 
 		glDisable(GL_LIGHTING);
 
@@ -998,7 +1141,7 @@ void timer(int value) {
 
 	//printf("%d\n", effect.size());
 
-	printf("xx:%f yy:%f\n", xx, yy);
+	//printf("xx:%f yy:%f\n", xx, yy);
 
 	//printf("%d\n", player->m_hasItem.size());
 
@@ -1028,13 +1171,14 @@ void timer(int value) {
 	//printf("x:%f z:%f\n", player->m_position.x, player->m_position.z);
 
 
-	//fps();
+	fps();
 
 	glutPostRedisplay();
 	glutTimerFunc(1000 / 60, timer, 0);
 	glutForceJoystickFunc();
 
 }
+
 
 int main(int argc, char *argv[]) {
 	glutInit(&argc, argv);
@@ -1046,6 +1190,13 @@ int main(int argc, char *argv[]) {
 	glutJoystickFunc(joystick, 0);
 	glutKeyboardFunc(keyboard);
 	glutSpecialFunc(specialkeydown);
+
+	ALuint test;
+	test = loadWavFile("");
+	alSourcePlay(test);
+
+
+	//getchar();
 
 	init();//ゲームの初期化
 

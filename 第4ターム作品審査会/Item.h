@@ -40,6 +40,9 @@ enum {
 class Item : public GameObject{
 public:
 
+	//取り敢えず
+	int m_flame;
+
 	int m_type;
 
 	//使用されたときにfalseになる
@@ -54,6 +57,7 @@ public:
 
 	//コンストラクタ
 	Item() :
+		m_flame(0),
 		m_type(rand() % ITEM_TYPE_MAX),
 		m_isActive(true)
 

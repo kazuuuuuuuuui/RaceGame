@@ -39,11 +39,15 @@ GLuint ItemBlizzard = 0;//ブリザド
 
 void Item::update(){
 
+	m_flame++;
+
 	//動き
 	move();
 
 	//アイテムの再出現
-	reCreateItem();
+	if (0 == m_flame % (60 * 10)){
+		reCreateItem();
+	}
 
 	//取られたかの判定
 	for (unsigned int i = 0; i < character.size(); i++){

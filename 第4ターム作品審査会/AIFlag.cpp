@@ -21,7 +21,7 @@ void AIFlag::draw(){
 }
 
 
-//周回判定をとるためのコースフラグを通っているか判定する
+
 
 
 bool AIFlag::checkPassFlag(glm::vec3 _position){

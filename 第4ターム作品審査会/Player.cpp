@@ -34,18 +34,24 @@ void Player::control(unsigned int _pressedKey, unsigned int _downKeys, float _x,
 		}
 
 		//正面右に移動
-		if (_x > 0.85){
+		if (_x > 0.3){
 			m_rotate.y -= 0.02f;
-			m_rotate.z = (-1)*_x;
+
+			_x = 1.f;
+			m_rotate.z = m_rotate.z + ((-1)*(_x / 2) - m_rotate.z)*0.1f;
 		}
 
 		//正面左に移動
-		else if (_x < -0.85){
+		else if (_x < -0.3){
 			m_rotate.y += 0.02f;
-			m_rotate.z = (-1)*_x;
+
+			_x = -1.f;
+			m_rotate.z = m_rotate.z + ((-1)*(_x / 2) - m_rotate.z)*0.1f;
 		}
 		else{
-			m_rotate.z = 0.f;
+			m_rotate.z = m_rotate.z + ((_x / 2) - m_rotate.z)*0.1f;
+
+			//m_rotate.z = 0.f;
 		}
 
 		//アイテムの使用

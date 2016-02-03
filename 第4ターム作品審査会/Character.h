@@ -29,6 +29,14 @@ enum{
 class Character :public GameObject{
 public:
 
+	glm::vec2 v1;
+	glm::vec2 vv;
+
+	float tt;
+	float rr;
+	float mm;
+
+
 	//種類
 	int m_type;
 
@@ -136,6 +144,12 @@ public:
 
 	//コンストラクタ
 	Character() :
+
+		tt(0.f),
+		rr(0.f),
+		mm(0.f),
+
+
 		m_type(0),
 		m_matrix(glm::mat4(1.f)),
 		m_isDash(false),
