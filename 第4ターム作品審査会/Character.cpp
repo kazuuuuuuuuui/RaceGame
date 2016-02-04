@@ -9,6 +9,7 @@
 #include"camera.h"
 #include"BmpImage.h"
 #include"Material.h"
+#include"joysticManager.h"
 #include"glm\gtc\matrix_transform.hpp"
 #include"glm\gtx\transform.hpp"
 #include"glut.h"
@@ -166,23 +167,6 @@ void Character::update(){
 
 	}
 
-	////敵のAIの挙動制御
-	//for (int i = 0; i < AI_POINT_NUMBER; i++){
-
-	//	if (false == m_passAIPoint[i] && course->m_AIPoint[i].checkPassFlag(m_position)){
-
-	//		m_passAIPoint[i] = true;
-
-	//		m_nextPoint++;
-
-	//		if (AI_POINT_NUMBER == m_nextPoint){
-	//			m_nextPoint = 0;
-	//		}
-
-	//	}
-
-	//}
-
 	//目指しているチェックポイントへの距離の更新
 	m_nextCheckPointLength = checkNextCheckPointLength();
 
@@ -197,6 +181,12 @@ void Character::update(){
 	//ゴールしたかの判定
 	if (checkIsGoal()){
 		m_isGoal = true;
+
+		//何かしらのボタンが押されたら
+		//タイトルシーンに移行
+		if (JoysticManager::getInstance()->m_buttonMask & BUTTON_START){
+			GameManager::getInstance()->_sequence.change(&GameManager::sceneTitle);
+		}
 	}
 
 }
@@ -205,40 +195,6 @@ void Character::update(){
 //自機の描画
 
 void Character::draw(){
-
-
-	//向きベクトルと向けたい方向のベクトルとの差分
-	glm::vec2 vvv = v1 - vv;
-
-	vvv = vvv  * tt;
-
-	glm::vec2 piyo = vv + vvv;
-
-
-	glm::vec2 hoge = { -sin(m_rotate.y), -cos(m_rotate.y)  };
-
-	hoge *= 4.0f;
-
-	glBegin(GL_LINES);
-	{
-		glColor3f(1, 0, 0);
-		glVertex3f(m_position.x, m_position.y, m_position.z);
-		glVertex3f(m_position.x + v1.x, m_position.y, m_position.z + v1.y);
-
-		glColor3f(0, 1, 0);
-		glVertex3f(m_position.x, m_position.y, m_position.z);
-		glVertex3f(m_position.x + vv.x, m_position.y, m_position.z + vv.y);
-
-		//glColor3f(0, 0, 1);
-		//glVertex3f(m_position.x, m_position.y, m_position.z);
-		//glVertex3f(m_position.x + piyo.x, m_position.y, m_position.z + piyo.y);
-
-		glColor3f(0, 0, 1);
-		glVertex3f(m_position.x, m_position.y, m_position.z);
-		glVertex3f(m_position.x + hoge.x, m_position.y, m_position.z + hoge.y);
-
-	}
-	glEnd();
 
 	/*車体描画*/
 	glPushAttrib(GL_ALL_ATTRIB_BITS);

@@ -1,6 +1,7 @@
 #include<stdlib.h>
 #include"camera.h"
 #include"Matrix.h"
+#include"joysticManager.h"
 #include"glm\glm.hpp"
 #include"glut.h"
 
@@ -24,10 +25,22 @@ void Camera::update(const int _type){
 		glLoadIdentity();
 
 		//カメラの座標更新
-		m_position.x = player->m_position.x + sin(player->m_rotate.y) * 8;
-		m_position.y = 3.5f;
-		m_position.z = player->m_position.z + cos(player->m_rotate.y) * 8;
 
+		//バックカメラ
+		if (JoysticManager::getInstance()->m_buttonMask & BUTTON_X){
+			m_position.x = player->m_position.x - sin(player->m_rotate.y) * 8;
+			m_position.y = 3.5f;
+			m_position.z = player->m_position.z - cos(player->m_rotate.y) * 8;
+		}
+
+		//デフォルトカメラ
+		else{
+			m_position.x = player->m_position.x + sin(player->m_rotate.y) * 8;
+			m_position.y = 3.5f;
+			m_position.z = player->m_position.z + cos(player->m_rotate.y) * 8;
+
+		}
+	
 	
 		//カメラの注視座標の更新
 		m_target = player->m_position;

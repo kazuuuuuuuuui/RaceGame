@@ -34,6 +34,15 @@
 #include"glut.h"
 
 //-------------------------------------
+//コースの種類
+enum{
+	COURSE1 = 0,
+	COURSE2,
+	COURSE_NUM_MAX
+};
+
+
+//-------------------------------------
 //コースの各ピクセルの情報
 
 enum {
@@ -82,4 +91,7 @@ public:
 
 };
 
+Course* createCourse();
+extern int selectedCourse;
 extern Course *course;
+

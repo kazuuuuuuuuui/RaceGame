@@ -38,13 +38,16 @@ void Particle::draw(int _type,glm::vec3 _color,GLuint _texture){
 			{
 				glColor4f(_color.x, _color.y, _color.z, m_alpha);
 
-				glTexCoord2f(0.f, 0.f);
-				glVertex2f(-1.f, -1.f);
 				glTexCoord2f(0.f, 1.f);
+				glVertex2f(-1.f, -1.f);
+				
+				glTexCoord2f(0.f, 0.f);
 				glVertex2f(-1.f, 1.f);
-				glTexCoord2f(1.f, 1.f);
-				glVertex2f(1.f, 1.f);
+				
 				glTexCoord2f(1.f, 0.f);
+				glVertex2f(1.f, 1.f);
+				
+				glTexCoord2f(1.f, 1.f);
 				glVertex2f(1.f, -1.f);
 			}
 			glEnd();
@@ -57,13 +60,16 @@ void Particle::draw(int _type,glm::vec3 _color,GLuint _texture){
 			{
 				glColor4f(_color.x, _color.y, _color.z, m_alpha);
 
-				glTexCoord2f(0.f, 0.f);
-				glVertex2f(0.f, 0.f);
 				glTexCoord2f(0.f, 1.f);
+				glVertex2f(0.f, 0.f);
+
+				glTexCoord2f(0.f, 0.f);
 				glVertex2f(0.f, 1.f);
-				glTexCoord2f(1.f, 1.f);
-				glVertex2f(1.f, 1.f);
+
 				glTexCoord2f(1.f, 0.f);
+				glVertex2f(1.f, 1.f);
+
+				glTexCoord2f(1.f, 1.f);
 				glVertex2f(1.f, 0.f);
 			}
 			glEnd();

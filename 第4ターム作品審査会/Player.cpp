@@ -1,13 +1,8 @@
-#define BUTTON_A (1)
-#define BUTTON_X (4)
-#define BUTTON_Y (8)
-#define BUTTON_LB (16)
-#define BUTTON_RB (32)
-
 #include"Player.h"
 #include"Fire.h"
 #include"Blizzard.h"
 #include"Dash.h"
+#include"joysticManager.h"
 
 Player *player = nullptr;
 
@@ -59,7 +54,7 @@ void Player::control(unsigned int _pressedKey, unsigned int _downKeys, float _x,
 
 			if (false == m_isDash){
 
-				if (m_hasItem.size() > 0){
+				if (hasItemNumber() > 0){
 
 					//使ったアイテムの種類によって
 					//応じたエフェクトを出す
@@ -138,10 +133,10 @@ void Player::printDashGauge(){
 		glBegin(GL_QUADS);
 		{
 			glColor4f(1, 1, 1, 1);
-			glTexCoord2f(0, 0); glVertex2f(0, 0);
-			glTexCoord2f(1, 0); glVertex2f(40, 0);
-			glTexCoord2f(1, 1); glVertex2f(40, 40);
-			glTexCoord2f(0, 1); glVertex2f(0, 40);
+			glTexCoord2f(0, 1); glVertex2f(0, 0);
+			glTexCoord2f(1, 1); glVertex2f(40, 0);
+			glTexCoord2f(1, 0); glVertex2f(40, 40);
+			glTexCoord2f(0, 0); glVertex2f(0, 40);
 		}
 		glEnd();
 	}

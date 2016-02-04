@@ -54,6 +54,15 @@ GLuint  BmpImage::loadImage_alpha(const char *_Filename){
 		pixels[i].b = tmp;
 	}
 
+	//ピクセル単位で上下反転
+	for (int i = 0; i < bmpInfoHeader.biWidth; i++){
+		for (int n = 0; n < bmpInfoHeader.biHeight / 2; n++){
+			RGB temp = pixels[bmpInfoHeader.biWidth * n + i];
+			pixels[bmpInfoHeader.biWidth * n + i] = pixels[bmpInfoHeader.biWidth*(bmpInfoHeader.biHeight - n - 1) + i];
+			pixels[bmpInfoHeader.biWidth*(bmpInfoHeader.biHeight - n - 1) + i] = temp;
+		}
+	}
+
 
 	for (int i = 0; i < bmpInfoHeader.biWidth * bmpInfoHeader.biHeight; i++){
 		pixels_alpha[i].r = pixels[i].r;

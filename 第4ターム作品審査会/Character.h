@@ -17,25 +17,24 @@
 #define DASH_GAUGE_MAX (90)
 
 enum{
+	PLAYER0,
 	PLAYER1,
 	PLAYER2,
 	PLAYER3,
-	PLAYER4
 };
-
-
-
 
 class Character :public GameObject{
 public:
 
-	glm::vec2 v1;
-	glm::vec2 vv;
 
-	float tt;
-	float rr;
-	float mm;
+	//自身の向きベクトル
+	glm::vec2 OrientationVector;
 
+	//自身の座標からAIポイントまでのベクトル
+	glm::vec2 m_pos_to_AIpoint;
+
+	//回転の際の補完値
+	float CompletionValue;
 
 	//種類
 	int m_type;
@@ -144,12 +143,7 @@ public:
 
 	//コンストラクタ
 	Character() :
-
-		tt(0.f),
-		rr(0.f),
-		mm(0.f),
-
-
+		CompletionValue(0.f),
 		m_type(0),
 		m_matrix(glm::mat4(1.f)),
 		m_isDash(false),

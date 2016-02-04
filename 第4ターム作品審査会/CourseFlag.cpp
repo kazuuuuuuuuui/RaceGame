@@ -30,7 +30,7 @@ void CourseFlag::draw(){
 	{
 		glTranslatef(m_position.x, m_position.y, m_position.z);
 		glRotatef(90, 1, 0, 0);
-		Circle2D(15, 0, 0);
+		Circle2D(20, 0, 0);
 		glutSolidCube(0.5);
 	}
 	glPopMatrix();
@@ -50,8 +50,7 @@ bool CourseFlag::checkPassFlag(glm::vec3 _position){
 
 	float length = sqrt(distance.x*distance.x + distance.z*distance.z);
 
-	//dedug
-	float rad = 15.f;
+	float rad = 20.f;
 
 	if (length < rad){
 		return true;

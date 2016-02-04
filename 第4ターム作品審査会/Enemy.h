@@ -5,21 +5,18 @@
 class Enemy :public Character{
 public:
 
-	
-
-
-	//“G‚ÌAI
 	void control();
+	void useItem();
 
 	Enemy(){
 	
-
 		//Šp“x‚©‚ç‚ÌŒü‚«ƒxƒNƒgƒ‹
-		vv = { -sin(m_rotate.y), -cos(m_rotate.y) };
-		v1 = vv;
+		OrientationVector = { -sin(m_rotate.y), -cos(m_rotate.y) };
+		m_pos_to_AIpoint = OrientationVector;
 	
 	};
-
-
-
 };
+
+extern Enemy *com1;
+extern Enemy *com2;
+extern Enemy *com3;
