@@ -13,17 +13,13 @@
 #include"camera.h"
 #include"player.h"
 #include"Enemy.h"
-#include"Course.h"
-#include"CourseFlag.h"
 #include"Item.h"
 #include"Effect.h"
-#include"Fire.h"
-#include"Blizzard.h"
 #include"Dash.h"
 #include"Smoke.h"
-#include"WavFile.h"
 #include"moji.h"
 #include"joysticManager.h"
+#include"Sound.h"
 #include"glut.h"
 
 //debug
@@ -104,116 +100,6 @@ void keyboard(unsigned char key, int x, int y){
 //}
 
 
-
-//-------------------------------------
-//ゲームの初期化全般を行う
-
-//後で書き換え
-xFile body;
-xFile backWheel;
-
-
-void init(){
-
-	srand(time(NULL));
-
-
-	pushAnykey = new Moji(150.f, 40.f, { 70, 37 }, { 1, 1, 1 }, "bmp/title/pushAnyKey.bmp");
-
-
-
-	//アイテム生成→コースの生成→アイテムの設置
-	//アイテムの生成
-	for (int i = 0; i < SET_ITEM_NUMBER; i++){
-		item[i] = new Item();
-	}
-
-	//モデルデータの読み込み
-	xFile::loadXfile("xFile/testbike.x", body);
-	xFile::loadXfile("xFile/taiya.x", backWheel);
-
-	//車体のモデルデータの向き修正
-	body.rotate();
-
-	//後で書き換え
-	//プレイヤーの生成
-	player = new Player();
-	player->m_type = PLAYER0;
-	player->m_body = body;
-	player->m_backWheel = backWheel;
-
-	//敵の生成
-	com1 = new Enemy();
-	com1->m_type = PLAYER1;
-	com1->m_body = body;
-	com1->m_backWheel = backWheel;
-
-	//
-	com2 = new Enemy();
-	com2->m_type = PLAYER2;
-	com2->m_body = body;
-	com2->m_backWheel = backWheel;
-
-	//
-	com3 = new Enemy();
-	com3->m_type = PLAYER3;
-	com3->m_body = body;
-	com3->m_backWheel = backWheel;
-
-	//生成したプレイヤーと敵をベクターで管理
-	character.push_back(player);
-	character.push_back(com1);
-	character.push_back(com2);
-	character.push_back(com3);
-
-	//カメラの生成
-	camera = new Camera();
-
-	//テクスチャの読み込み
-	//透過度無し
-
-	titleTexture = BmpImage::loadImage("bmp/title/title.bmp");
-	courseSelectBG = BmpImage::loadImage("bmp/courseSelect/courseSelectBG.bmp");
-
-	threeTexture = BmpImage::loadImage_alpha("bmp/start/three.bmp");
-	twoTexture = BmpImage::loadImage_alpha("bmp/start/two.bmp");
-	oneTexture = BmpImage::loadImage_alpha("bmp/start/one.bmp");
-	goTexture = BmpImage::loadImage_alpha("bmp/start/go.bmp");
-	goalTexture = BmpImage::loadImage_alpha("bmp/goal.bmp");
-
-	smoke_handle = BmpImage::loadImage_alpha("bmp/Effect/smoke.bmp");
-	dash_handle = BmpImage::loadImage_alpha("bmp/Effect/dash.bmp");
-
-	rank1st = BmpImage::loadImage_alpha("bmp/Ranking/1st.bmp");
-	rank2nd = BmpImage::loadImage_alpha("bmp/Ranking/2nd.bmp");
-	rank3rd = BmpImage::loadImage_alpha("bmp/Ranking/3rd.bmp");
-	rank4th = BmpImage::loadImage_alpha("bmp/Ranking/4th.bmp");
-
-	dashIcon = BmpImage::loadImage_alpha("bmp/dashIcon.bmp");
-	dashGauge = BmpImage::loadImage_alpha("bmp/gauge.bmp");
-
-	EffectBlizzard = BmpImage::loadImage_alpha("bmp/Effect/blizzard.bmp");
-
-	//使用する魔石のテクスチャ読み込み
-	ItemFire = BmpImage::loadImage("bmp/MagicStone/ms_fire.bmp");
-	ItemBlizzard = BmpImage::loadImage("bmp/MagicStone/ms_blizzard.bmp");
-
-	//最初の順位設定と順位付与
-	for (unsigned int i = 0; i < character.size(); i++){
-		std::sort(character.begin(), character.end(), checkRanking);
-	}
-
-	for (unsigned int i = 0; i < character.size(); i++){
-		character[i]->m_ranking = i + 1;
-	}
-
-	//後で書き換え
-	sprintf_s(player->m_str_lapTime[FIRST], "%02d:%02d:%03d ", player->m_minute[FIRST], player->m_second[FIRST], player->m_milliSecond[FIRST]);
-	sprintf_s(player->m_str_lapTime[SECOND], "%02d:%02d:%03d ", player->m_minute[SECOND], player->m_second[SECOND], player->m_milliSecond[SECOND]);
-	sprintf_s(player->m_str_lapTime[THIRD], "%02d:%02d:%03d ", player->m_minute[THIRD], player->m_second[THIRD], player->m_milliSecond[THIRD]);
-}
-
-
 //-------------------------------------
 //プレイヤーの制御
 unsigned int pressedKeys = 0;//現フレーム押されているキー
@@ -240,10 +126,6 @@ void joystick(unsigned int buttonMask, int x, int y, int z){
 }
 
 
-
-
-
-
 //----------------------------------------
 //更新と描画
 
@@ -264,7 +146,7 @@ void timer(int value) {
 
 	//printf("x:%f z:%f\n", player->m_position.x, player->m_position.z);
 
-	fps();
+	//fps();
 
 	glutPostRedisplay();
 	glutTimerFunc(1000 / 60, timer, 0);
@@ -278,12 +160,12 @@ int main(int argc, char *argv[]) {
 	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 	glutCreateWindow("第4ターム作品審査会");
 
+	Sound::init();
+
 	glutDisplayFunc(display);
 	glutTimerFunc(0, timer, 0);
 	glutJoystickFunc(joystick, 0);
 	glutKeyboardFunc(keyboard);
-
-	init();//ゲームの初期化
 
 	glutMainLoop();
 }

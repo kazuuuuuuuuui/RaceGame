@@ -17,4 +17,3 @@ public:
 
 };
 
-extern GLuint smoke_handle;

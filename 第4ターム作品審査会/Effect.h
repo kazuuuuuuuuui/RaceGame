@@ -22,4 +22,5 @@ public:
 
 extern std::list<Effect*>effect;
 
+extern GLuint smoke_handle;
 extern GLuint EffectBlizzard;

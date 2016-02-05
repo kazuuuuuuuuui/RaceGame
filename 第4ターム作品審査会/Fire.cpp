@@ -3,9 +3,6 @@
 
 #include"Enemy.h"
 
-GLuint smoke_handle = 0;
-
-extern Enemy *com1;
 
 void Fire::update(){
 
@@ -66,7 +63,7 @@ void Fire::draw(){
 
 bool Fire::isHit(glm::vec3 _position){
 
-	//プレイヤーと設置されたブリザードとのベクトル
+	//プレイヤーとファイアとのベクトル
 	glm::vec3 v;
 
 	v.x = m_basePosition.x - _position.x;
@@ -75,7 +72,6 @@ bool Fire::isHit(glm::vec3 _position){
 
 	float length = glm::length(v);
 
-	//2.fは要修正
 	if (length < 1.5f){
 
 		return true;

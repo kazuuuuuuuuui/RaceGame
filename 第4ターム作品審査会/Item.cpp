@@ -30,6 +30,9 @@ void Circle2DFill(float radius, int x, int y)
 
 Item *item[SET_ITEM_NUMBER] = { nullptr };
 
+//アイテムの添え字に使う
+int itemNum = 0;
+
 //アイテムのテクスチャを格納する
 GLuint ItemFire = 0;//ファイア
 GLuint ItemBlizzard = 0;//ブリザド

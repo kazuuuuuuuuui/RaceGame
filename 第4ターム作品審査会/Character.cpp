@@ -103,14 +103,14 @@ void Character::update(){
 	//前輪と後輪のポジション更新
 
 	//前輪座標
-	m_frontPosition.x = m_position.x - sin(m_rotate.y)*1.55f;
+	m_frontPosition.x = m_position.x - sin(m_rotate.y)*1.1f;
 	m_frontPosition.y = 0.5f;
-	m_frontPosition.z = m_position.z - cos(m_rotate.y)*1.55f;
+	m_frontPosition.z = m_position.z - cos(m_rotate.y)*1.1f;
 
 	//後輪座標
-	m_backPosition.x = m_position.x + sin(m_rotate.y)*1.15f;
+	m_backPosition.x = m_position.x + sin(m_rotate.y)*0.7f;
 	m_backPosition.y = 0.5f;
-	m_backPosition.z = m_position.z + cos(m_rotate.y)*1.15f;
+	m_backPosition.z = m_position.z + cos(m_rotate.y)*0.7f;
 
 
 	//煙の更新
@@ -121,9 +121,9 @@ void Character::update(){
 
 	//ダッシュエフェクトの更新
 	if (nullptr != m_dash){
-		m_dash->m_basePosition.x = m_position.x + sin(m_rotate.y)*0.8;
+		m_dash->m_basePosition.x = m_position.x + sin(m_rotate.y)*0.75;
 		m_dash->m_basePosition.y = -0.2f;
-		m_dash->m_basePosition.z = m_position.z + cos(m_rotate.y)*0.8;
+		m_dash->m_basePosition.z = m_position.z + cos(m_rotate.y)*0.75;
 	}
 
 	//減速させる慣性
@@ -181,12 +181,6 @@ void Character::update(){
 	//ゴールしたかの判定
 	if (checkIsGoal()){
 		m_isGoal = true;
-
-		//何かしらのボタンが押されたら
-		//タイトルシーンに移行
-		if (JoysticManager::getInstance()->m_buttonMask & BUTTON_START){
-			GameManager::getInstance()->_sequence.change(&GameManager::sceneTitle);
-		}
 	}
 
 }
@@ -199,7 +193,6 @@ void Character::draw(){
 	/*車体描画*/
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	{
-
 		glEnable(GL_LIGHTING);
 
 		glEnableClientState(GL_VERTEX_ARRAY);
@@ -423,31 +416,23 @@ void Character::draw(){
 
 	//debug
 	//本体
-	glColor3f(1, 1, 1);
-	glPushMatrix();
-	{
-		glTranslatef(m_position.x, m_position.y, m_position.z);
-		glRotatef(m_rotate.y * 180 / M_PI, 0, 1, 0);
-		glScalef(m_scale.x, m_scale.y, m_scale.z);
-		glutSolidCube(1);
-	}
-	glPopMatrix();
+	glColor3f(1, 0, 0);
 	//前
 	glPushMatrix();
 	{
-		glTranslatef(m_frontPosition.x, m_frontPosition.y - 0.5f, m_frontPosition.z);
+		glTranslatef(m_frontPosition.x, m_frontPosition.y, m_frontPosition.z);
 		glRotatef(m_rotate.y * 180 / M_PI, 0, 1, 0);
 		glScalef(m_scale.x, m_scale.y, m_scale.z);
-		glutSolidCube(1);
+		glutWireSphere(4.8, 10, 10);
 	}
 	glPopMatrix();
 	//後ろ
 	glPushMatrix();
 	{
-		glTranslatef(m_backPosition.x, m_backPosition.y - 0.5f, m_backPosition.z);
+		glTranslatef(m_backPosition.x, m_backPosition.y, m_backPosition.z);
 		glRotatef(m_rotate.y * 180 / M_PI, 0, 1, 0);
 		glScalef(m_scale.x, m_scale.y, m_scale.z);
-		glutSolidCube(1);
+		glutWireSphere(4.8, 10, 10);
 	}
 	glPopMatrix();
 

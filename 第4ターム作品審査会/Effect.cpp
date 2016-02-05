@@ -3,6 +3,8 @@
 #include"Course.h"
 #include"glut.h"
 
+GLuint smoke_handle = 0;
+
 //エフェクトを管理するlist
 std::list<Effect*>effect;
 

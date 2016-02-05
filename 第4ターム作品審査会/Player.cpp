@@ -14,6 +14,12 @@ GLuint dashGauge = 0;
 
 void Player::control(unsigned int _pressedKey, unsigned int _downKeys, float _x, float _y, float _z){
 
+	//エンジン音のピッチ調整
+	alSourcef(
+		m_engine->m_sid,
+		AL_PITCH,
+		pow(2, (glm::length(m_speed)*15.f) / 12));
+
 	if (false == m_isHitItem){
 
 		//前進(Aボタン)
@@ -23,6 +29,7 @@ void Player::control(unsigned int _pressedKey, unsigned int _downKeys, float _x,
 			//-0.005fは補正値
 			glm::vec3 accelIncrement(-0.015*sin(m_rotate.y), 0, -0.015*cos(m_rotate.y));
 			m_accel = accelIncrement;
+
 		}
 		else{
 			m_accel = { 0.f, 0.f, 0.f };

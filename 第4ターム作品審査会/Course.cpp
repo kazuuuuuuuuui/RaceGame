@@ -96,13 +96,12 @@ void Course::setItem(){
 			if (ITEMPOSITION == m_buffer[i][t]){
 
 				//Žæ‚èŠ¸‚¦‚¸
-				static int num = 0;
 
-				item[num]->m_position.x = t;
-				item[num]->m_position.y = 0.5f;
-				item[num]->m_position.z = i - COURSE_HEIGHT;
+				item[itemNum]->m_position.x = t;
+				item[itemNum]->m_position.y = 0.5f;
+				item[itemNum]->m_position.z = i - COURSE_HEIGHT;
 
-				num++;
+				itemNum++;
 
 			}
 

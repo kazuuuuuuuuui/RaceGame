@@ -187,6 +187,9 @@ public:
 		m_scale.z = 0.18f;
 
 	}
+
+	//デストラクタ
+	~Character(){ printf("キャラクターが削除されました\n"); }
 };
 
 extern std::vector<Character*> character;
