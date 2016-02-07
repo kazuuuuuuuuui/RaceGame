@@ -22,10 +22,12 @@ void Enemy::control(){
 
 	v = glm::normalize(v);
 
-	float hoge = 0.012f;
+	//0.`0.018–ÚˆÀ
+	float sp = (((float)rand() / RAND_MAX) / 1000) * 18;
+	printf("%f\n", sp);
 
-	m_accel.x = v.x*hoge;
-	m_accel.z = v.y*hoge;
+	m_accel.x = v.x*sp;
+	m_accel.z = v.y*sp;
 
 	//“G‚ÌAI‚Ì‹““®§Œä
 

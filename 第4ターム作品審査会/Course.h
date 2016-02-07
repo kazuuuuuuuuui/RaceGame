@@ -31,6 +31,7 @@
 #include"BmpImage.h"
 #include"CourseFlag.h"
 #include"AIFlag.h"
+#include"Sound.h"
 #include"glut.h"
 
 //-------------------------------------
@@ -66,6 +67,7 @@ public:
 	GLuint m_handle[COURSE_TEXTURE_NUMBER];//[0]にはコースの[1]には背景のテクスチャを格納する
 	CourseFlag m_checkPoint[CHECK_POINT_NUMBER];//周回判定用のポイント
 	AIFlag m_AIPoint[AI_POINT_NUMBER];//敵AI用のポイント
+	Sound *m_bgm;
 
 
 	void draw();
@@ -74,7 +76,8 @@ public:
 
 	Course() :
 		m_width(COURSE_WIDTH),
-		m_height(COURSE_HEIGHT)
+		m_height(COURSE_HEIGHT),
+		m_bgm(nullptr)
 	{
 		//テクスチャハンドルの初期化
 		for (int i = 0; i < COURSE_TEXTURE_NUMBER; i++){

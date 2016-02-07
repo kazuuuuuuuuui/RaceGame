@@ -53,29 +53,6 @@ void fps(){
 
 void keyboard(unsigned char key, int x, int y){
 
-	//debug
-	if ('d' == key){
-		//camera->m_position.x += 10.f;
-		xx += 1.f;
-	}
-	else if ('a' == key){
-		//camera->m_position.x -= 10.f;
-		xx -= 1.f;
-	}
-	else if ('w' == key){
-		//camera->m_position.y += 10.f;
-		yy += 1.f;
-	}
-	else if ('s' == key){
-		//camera->m_position.y -= 10.f;
-		yy -= 1.f;
-	}
-	else if ('r' == key){
-		//camera->m_position.z += 10.f;
-	}
-	else if ('f' == key){
-		//camera->m_position.z -= 10.f;
-	}
 
 
 }
