@@ -49,6 +49,11 @@ void Character::update(){
 
 			m_dashPower = DASH_GAUGE_MAX;
 
+			if (false == m_isCharged){
+				m_isCharged = true;
+				chargeComplete->play();
+			}
+
 		}
 
 

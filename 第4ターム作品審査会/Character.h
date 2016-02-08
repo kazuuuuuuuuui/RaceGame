@@ -73,6 +73,9 @@ public:
 	//約15秒に1回使えるように溜まっていく
 	float m_dashPower;
 
+	//ダッシュパワーが溜まった際にtrueになる
+	bool m_isCharged;
+
 	//ダッシュ時のエフェクト
 	Dash *m_dash;
 
@@ -148,6 +151,7 @@ public:
 		m_matrix(glm::mat4(1.f)),
 		m_isDash(false),
 		m_dashPower(0),
+		m_isCharged(false),
 		m_dash(nullptr),
 		m_dashSpeed(0,0,0),
 		m_crashRotate(0.f),

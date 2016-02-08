@@ -22,7 +22,7 @@ public:
 	{
 		m_engine = new Sound();
 		m_engine->loadKukeiha(engine_sound, sizeof(engine_sound), 110);
-		m_engine->changeVolume(0.5f);
+		m_engine->changeVolume(0.3f);
 
 		/*	m_slip = new Sound();
 			m_slip->loadWavFile("");*/

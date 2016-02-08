@@ -74,6 +74,7 @@ void Player::control(unsigned int _pressedKey, unsigned int _downKeys, float _x,
 						fire->m_basePosition = { m_position.x - sin(m_rotate.y) * 1.f, 0.5f, m_position.z - cos(m_rotate.y) * 1.f };
 						fire->m_speed = { -sin(m_rotate.y)*1.f, 0.f, -cos(m_rotate.y)*1.f };
 						effect.push_back(fire);
+						fire_ES->play();
 
 					}
 
@@ -99,8 +100,9 @@ void Player::control(unsigned int _pressedKey, unsigned int _downKeys, float _x,
 		//ƒ_ƒbƒVƒ…
 		if (_downKeys &  BUTTON_RB){
 
-			if (m_dashPower == 90){
+			if (true == m_isCharged){
 
+				m_isCharged = false;
 				m_isDash = true;
 
 				m_dashPower = 0.f;

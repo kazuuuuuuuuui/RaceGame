@@ -66,6 +66,11 @@ void Item::update(){
 				//キャラクターに今取得したアイテムを持たせる
 				character[i]->m_hasItem.push_back(m_type);
 
+				//プレイヤーが取得したときのみ効果音を鳴らす
+				if (player == character[i]){
+					getItem->play();
+				}
+
 			}
 		}
 
