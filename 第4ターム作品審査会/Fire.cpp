@@ -55,6 +55,21 @@ void Fire::draw(){
 	}
 	glPopMatrix();
 
+
+	//‰e
+
+	glPushMatrix();
+	{
+
+		glTranslatef(m_basePosition.x, 0.1, m_basePosition.z);
+		glRotatef(90, 1, 0, 0);
+
+		glColor3f(110.f / 255.f, 110.f / 255.f, 110.f / 255.f);
+
+		Circle2DFill(0.3, 0, 0);
+	}
+	glPopMatrix();
+
 }
 
 //-------------------------------------

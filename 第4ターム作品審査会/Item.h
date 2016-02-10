@@ -32,6 +32,8 @@ enum {
 };
 
 
+void Circle2DFill(float radius, int x, int y);
+
 
 //-------------------------------------
 //–‚Î(ƒAƒCƒeƒ€)‚Ìî•ñ

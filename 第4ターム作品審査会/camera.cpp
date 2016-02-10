@@ -24,28 +24,6 @@ void Camera::update(const int _type){
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
-		//カメラの座標更新
-
-		//バックカメラ
-		if (JoysticManager::getInstance()->m_buttonMask & BUTTON_X){
-			m_position.x = player->m_position.x - sin(player->m_rotate.y) * 8;
-			m_position.y = 3.5f;
-			m_position.z = player->m_position.z - cos(player->m_rotate.y) * 8;
-		}
-
-		//デフォルトカメラ
-		else{
-			m_position.x = player->m_position.x + sin(player->m_rotate.y) * 8;
-			m_position.y = 3.5f;
-			m_position.z = player->m_position.z + cos(player->m_rotate.y) * 8;
-
-		}
-	
-	
-		//カメラの注視座標の更新
-		m_target = player->m_position;
-
-
 		//ライトの位置
 		float v[] = { 0, 1, 1, 0 };
 		glLightfv(

@@ -1,7 +1,7 @@
 #define _USE_MATH_DEFINES
 #include<math.h>
 #include"Item.h"
-#include"Player.h"
+#include"Character.h"
 #include"CourseFlag.h"
 #include"glut.h"
 
@@ -67,7 +67,7 @@ void Item::update(){
 				character[i]->m_hasItem.push_back(m_type);
 
 				//ƒvƒŒƒCƒ„[‚ªŽæ“¾‚µ‚½‚Æ‚«‚Ì‚ÝŒø‰Ê‰¹‚ð–Â‚ç‚·
-				if (player == character[i]){
+				if (player1 == character[i]){
 					getItem->play();
 				}
 

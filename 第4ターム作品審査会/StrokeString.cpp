@@ -17,7 +17,6 @@ void StrokeString::print(const char *_character, glm::vec3 _position, float _sca
 
 	
 		for (unsigned int i = 0; i < strlen(_character); i++){
-			glLineWidth(2);
 			glutStrokeCharacter(GLUT_STROKE_ROMAN, _character[i]);
 		}
 

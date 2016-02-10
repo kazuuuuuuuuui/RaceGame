@@ -28,12 +28,13 @@ public:
 		m_zFar(1000),
 		m_position(0, 0, 0),
 		m_rotate(0, 0, 0),
-		m_target(player->m_position.x, player->m_position.y, player->m_position.z),
-
+		m_target(0, 0, 0),
 		m_up(0, 1, 0)
 	{};
 
 	void update(const int _type);
+	void setPosition(glm::vec3 _position){ m_position = _position; }
+	void setTarget(glm::vec3 _target){ m_target = _target; }
 
 };
 

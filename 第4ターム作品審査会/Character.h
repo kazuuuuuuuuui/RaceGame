@@ -9,12 +9,16 @@
 #include"Dash.h"
 #include"xFile.h"
 
+#define PLAYER_MAX_NUMBER (4)
+
 //1周目 2周目 3周目
 #define FIRST (0)
 #define SECOND (1)
 #define THIRD (2)
 
 #define DASH_GAUGE_MAX (90)
+
+extern char str_lapCount[256];
 
 enum{
 	PLAYER0,
@@ -26,6 +30,7 @@ enum{
 class Character :public GameObject{
 public:
 
+	Sound *m_engine;
 
 	//自身の向きベクトル
 	glm::vec2 OrientationVector;
@@ -56,6 +61,9 @@ public:
 
 	//車輪の回転スピード
 	float m_wheelSpeed;
+
+	//人部分
+	//xFile m_rider;
 
 	//車体部分
 	xFile m_body;
@@ -123,9 +131,6 @@ public:
 	//持っているアイテムの種類のみを保持しておく
 	std::vector<int> m_hasItem;
 
-	//ファイアを使ったときのエフェクトを管理
-	//std::vector<FireEffect*> m_useFire;
-
 	void draw();
 	void drawHasItem();
 	void update();
@@ -134,7 +139,16 @@ public:
 	float checkNextCheckPointLength();
 	bool inDart();
 
+	//操作
+	void control(unsigned short _pressedKey, unsigned int _downKeys, float _sThumbLX, float _sThumbLY);
+
+	//敵のAI
+	void control(); void useItem();
+
 	//周回系
+	void printRanking();
+	void printStatus();
+	void printDashGauge();
 	bool countLap();
 	bool checkIsGoal();
 
@@ -153,7 +167,7 @@ public:
 		m_dashPower(0),
 		m_isCharged(false),
 		m_dash(nullptr),
-		m_dashSpeed(0,0,0),
+		m_dashSpeed(0, 0, 0),
 		m_crashRotate(0.f),
 		m_wheelSpeed(0.f),
 		m_lastPosition(0, 0, 0),
@@ -165,6 +179,14 @@ public:
 		m_isGoal(false)
 	{
 
+		m_engine = new Sound();
+		m_engine->loadKukeiha(engine_sound, sizeof(engine_sound), 110);
+		m_engine->changeVolume(0.3f);
+
+		//角度からの向きベクトル
+		OrientationVector = { -sin(m_rotate.y), -cos(m_rotate.y) };
+		m_pos_to_AIpoint = OrientationVector;
+
 		//前輪座標
 		m_frontPosition.x = m_position.x - sin(m_rotate.y)*1.55f;
 		m_frontPosition.y = 0.f;
@@ -175,10 +197,6 @@ public:
 		m_backPosition.y = 0.f;
 		m_backPosition.z = m_position.z + cos(m_rotate.y)*1.15f;
 
-		//煙の座標
-		/*m_smoke.m_basePosition.x = m_position.x + sin(m_rotate.y)*1.3f;
-		m_smoke.m_basePosition.y = 1.f;
-		m_smoke.m_basePosition.z = m_position.x + cos(m_rotate.y)*1.3f;*/
 
 		//ラップタイムの初期化
 		for (int i = 0; i < LAP_MAX; i++){
@@ -186,6 +204,16 @@ public:
 			m_second[i] = 0;
 			m_minute[i] = 0;
 		}
+
+		//毎フレーム
+		sprintf_s(str_lapCount, "%d", m_lapCount);
+
+		//後で書き換え
+		sprintf_s(m_str_lapTime[FIRST], "%02d:%02d:%03d ", m_minute[FIRST], m_second[FIRST], m_milliSecond[FIRST]);
+		sprintf_s(m_str_lapTime[SECOND], "%02d:%02d:%03d ", m_minute[SECOND], m_second[SECOND], m_milliSecond[SECOND]);
+		sprintf_s(m_str_lapTime[THIRD], "%02d:%02d:%03d ", m_minute[THIRD], m_second[THIRD], m_milliSecond[THIRD]);
+
+
 		m_scale.x = 0.18f;
 		m_scale.y = 0.18f;
 		m_scale.z = 0.18f;
@@ -196,4 +224,13 @@ public:
 	~Character(){ printf("キャラクターが削除されました\n"); }
 };
 
+extern GLuint dashIcon;
+extern GLuint dashGauge;
+
+extern Character *player1;
+extern Character *player2;
+extern Character *player3;
+extern Character *player4;
+
 extern std::vector<Character*> character;
+extern std::vector<Character*> g_useController;
