@@ -13,6 +13,7 @@ void Blizzard::update(){
 
 		if (isHit(character[i]->m_position)){
 
+			slip_ES->play();
 			m_isActive = false;
 			character[i]->m_isHitItem = true;
 			character[i]->m_dashSpeed = { 0.f, 0.f, 0.f };

@@ -11,6 +11,7 @@ void StrokeString::print(const char *_character, glm::vec3 _position, float _sca
 	{
 
 		glTranslatef(_position.x, _position.y, _position.z);
+		
 		glScalef(_scale, _scale, _scale);
 
 		glColor3f(_color.x, _color.y, _color.z);

@@ -18,13 +18,16 @@
 
 #define DASH_GAUGE_MAX (90)
 
-extern char str_lapCount[256];
-
 enum{
 	PLAYER0,
 	PLAYER1,
 	PLAYER2,
 	PLAYER3,
+};
+
+enum{
+	COMPUTER,
+	PLAYER
 };
 
 class Character :public GameObject{
@@ -41,8 +44,11 @@ public:
 	//回転の際の補完値
 	float CompletionValue;
 
-	//種類
+	//人が操作するかコンピュータが操作するか
 	int m_type;
+
+	//種類
+	int m_kind;
 
 	//自身の行列
 	glm::mat4 m_matrix;
@@ -87,19 +93,30 @@ public:
 	//ダッシュ時のエフェクト
 	Dash *m_dash;
 
-	//ラップタイム
+	//全体のタイム
 	int m_flame;
-	int m_milliSecond[LAP_MAX];
-	int m_second[LAP_MAX];
-	int m_minute[LAP_MAX];
-	char m_str_lapTime[LAP_MAX][256];
+	int m_milliSecond;
+	int m_second;
+	int m_minute;
+	char m_totalTime[256];
+
+	//ラップタイム
+	int m_lapTimeCounter;
+	int m_lapMilliSecond[3];
+	int m_lapSecond[3];
+	int m_lapMinute[3];
+	char m_lapTime[3][256];
 
 	//周回数
 	//正規の走法でコースを1周したら+1する
 	int m_lapCount;
+	char m_lap[256];
 
 	//順位
 	int m_ranking;
+
+	//レース後の確定順位
+	int m_lastRanking;
 
 	//既定の周回数に達したらtrueになる
 	bool m_isGoal;
@@ -162,6 +179,7 @@ public:
 	Character() :
 		CompletionValue(0.f),
 		m_type(0),
+		m_kind(0),
 		m_matrix(glm::mat4(1.f)),
 		m_isDash(false),
 		m_dashPower(0),
@@ -172,16 +190,19 @@ public:
 		m_wheelSpeed(0.f),
 		m_lastPosition(0, 0, 0),
 		m_flame(0),
+		m_lapTimeCounter(0),
 		m_ranking(0),
+		m_lastRanking(0),
 		m_nowPoint(0),
-		m_lapCount(1),
+		m_lapCount(0),
 		m_isHitItem(false),
 		m_isGoal(false)
 	{
+		printf("プレイヤーが生成されました\n");
 
 		m_engine = new Sound();
 		m_engine->loadKukeiha(engine_sound, sizeof(engine_sound), 110);
-		m_engine->changeVolume(0.3f);
+		m_engine->changeVolume(0.8f);
 
 		//角度からの向きベクトル
 		OrientationVector = { -sin(m_rotate.y), -cos(m_rotate.y) };
@@ -199,19 +220,19 @@ public:
 
 
 		//ラップタイムの初期化
-		for (int i = 0; i < LAP_MAX; i++){
-			m_milliSecond[i] = 0;
-			m_second[i] = 0;
-			m_minute[i] = 0;
+		for (int i = 0; i < 3; i++){
+			m_lapMilliSecond[i] = 0;
+			m_lapSecond[i] = 0;
+			m_lapMinute[i] = 0;
 		}
 
-		//毎フレーム
-		sprintf_s(str_lapCount, "%d", m_lapCount);
+		sprintf_s(m_totalTime, "%02d:%02d:%03d", m_minute, m_second, m_milliSecond);
 
-		//後で書き換え
-		sprintf_s(m_str_lapTime[FIRST], "%02d:%02d:%03d ", m_minute[FIRST], m_second[FIRST], m_milliSecond[FIRST]);
-		sprintf_s(m_str_lapTime[SECOND], "%02d:%02d:%03d ", m_minute[SECOND], m_second[SECOND], m_milliSecond[SECOND]);
-		sprintf_s(m_str_lapTime[THIRD], "%02d:%02d:%03d ", m_minute[THIRD], m_second[THIRD], m_milliSecond[THIRD]);
+		sprintf_s(m_lap, "%d", m_lapCount + 1);
+
+		sprintf_s(m_lapTime[FIRST], "%02d:%02d:%03d ", m_lapMinute[FIRST], m_lapSecond[FIRST], m_lapMilliSecond[FIRST]);
+		sprintf_s(m_lapTime[SECOND], "%02d:%02d:%03d ", m_lapMinute[SECOND], m_lapSecond[SECOND], m_lapMilliSecond[SECOND]);
+		sprintf_s(m_lapTime[THIRD], "%02d:%02d:%03d ", m_lapMinute[THIRD], m_lapSecond[THIRD], m_lapMilliSecond[THIRD]);
 
 
 		m_scale.x = 0.18f;

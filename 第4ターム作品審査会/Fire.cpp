@@ -16,6 +16,7 @@ void Fire::update(){
 
 		if (isHit(character[i]->m_position)){
 
+			slip_ES->play();
 			m_isActive = false;
 			character[i]->m_isHitItem = true;
 			character[i]->m_rotate.z = 0.f;

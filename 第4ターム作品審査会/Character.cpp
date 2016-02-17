@@ -28,12 +28,7 @@ GLuint dashGauge = 0;
 
 //タイヤの位置等を後でいじる
 //取り敢えず
-extern char str_lapCount[256];
-extern int flame;
-extern int milliSecond;
-extern int second;
-extern int minute;
-extern bool startRace;
+extern char str_lapMax[256];
 
 int getMilliSecond(int _flame);
 int getSecond(int _flame);
@@ -56,8 +51,27 @@ void Character::update(){
 		//フレームの管理
 		m_flame++;
 
-		//毎フレーム
-		sprintf_s(str_lapCount, "%d", m_lapCount);
+		m_lapTimeCounter++;
+
+		//ミリ秒
+		m_milliSecond = getMilliSecond(m_flame);
+		m_lapMilliSecond[m_lapCount] = getMilliSecond(m_lapTimeCounter);
+
+		//秒
+		m_second = getSecond(m_flame);
+		m_lapSecond[m_lapCount] = getSecond(m_lapTimeCounter);
+
+		//分
+		m_minute = getMinute(m_second);
+		m_lapMinute[m_lapCount] = getMinute(m_lapSecond[m_lapCount]);
+
+		m_second = m_second % 60;
+		m_lapSecond[m_lapCount] = m_lapSecond[m_lapCount] % 60;
+
+		sprintf_s(m_totalTime, "%02d:%02d:%03d", m_minute, m_second, m_milliSecond);
+
+
+		sprintf_s(m_lap, "%d", (m_lapCount + 1));
 
 		//ダッシュゲージの回復
 		m_dashPower += 0.1f;
@@ -77,19 +91,8 @@ void Character::update(){
 		//1周したかの判定
 		if (countLap()){
 
-			//ミリ秒
-			m_milliSecond[m_lapCount - 1] = getMilliSecond(m_flame);
-
-			//秒
-			m_second[m_lapCount - 1] = getSecond(m_flame);
-
-			//分
-			m_minute[m_lapCount - 1] = getMinute(m_second[m_lapCount - 1]);
-
-			m_second[m_lapCount - 1] = m_second[m_lapCount - 1] % 60;
-
 			//フレームの初期化
-			m_flame = 0;
+			m_lapTimeCounter = 0;
 
 			//チェックポイントの初期化
 			for (int i = 0; i < CHECK_POINT_NUMBER; i++){
@@ -103,16 +106,27 @@ void Character::update(){
 
 			m_nowPoint = 0;
 
+			sprintf_s(m_lapTime[FIRST], "%02d:%02d:%03d ", m_lapMinute[FIRST], m_lapSecond[FIRST], m_lapMilliSecond[FIRST]);
+			sprintf_s(m_lapTime[SECOND], "%02d:%02d:%03d ", m_lapMinute[SECOND], m_lapSecond[SECOND], m_lapMilliSecond[SECOND]);
+			sprintf_s(m_lapTime[THIRD], "%02d:%02d:%03d ", m_lapMinute[THIRD], m_lapSecond[THIRD], m_lapMilliSecond[THIRD]);
+
 			m_lapCount++;
 
+			if (PLAYER == m_type){
+
+				//1周目または2周目の時のみ鳴らす
+				if (1 == m_lapCount){
+					lapCount_ES->play();
+				}
+				else if (2 == m_lapCount){
+					finalLap_ES->play();
+				}
+
+			}
 
 		}
 
 	}
-
-	sprintf_s(m_str_lapTime[FIRST], "%02d:%02d:%03d ", m_minute[FIRST], m_second[FIRST], m_milliSecond[FIRST]);
-	sprintf_s(m_str_lapTime[SECOND], "%02d:%02d:%03d ", m_minute[SECOND], m_second[SECOND], m_milliSecond[SECOND]);
-	sprintf_s(m_str_lapTime[THIRD], "%02d:%02d:%03d ", m_minute[THIRD], m_second[THIRD], m_milliSecond[THIRD]);
 
 	//1フレーム前のポジション更新
 	m_lastPosition = m_position;
@@ -216,8 +230,14 @@ void Character::update(){
 	}
 
 	//ゴールしたかの判定
-	if (checkIsGoal()){
+	if (false == m_isGoal && checkIsGoal()){
 		m_isGoal = true;
+		m_lastRanking = m_ranking;
+
+		if (PLAYER == m_type){
+			goal_ES->play();
+		}
+
 	}
 
 }
@@ -263,28 +283,28 @@ void Character::draw(){
 
 
 			//マテリアルの設定
-			if (PLAYER0 == m_type){
+			if (PLAYER0 == m_kind){
 
 				float diffuse[4] = { 1, 0, 0, 1 };
 				glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
 
 			}
 
-			else if (PLAYER1 == m_type){
+			else if (PLAYER1 == m_kind){
 
 				float diffuse[4] = { 0, 1, 0, 1 };
 				glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
 
 			}
 
-			else if (PLAYER2 == m_type){
+			else if (PLAYER2 == m_kind){
 
 				float diffuse[4] = { 0, 0, 1, 1 };
 				glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
 
 			}
 
-			else if (PLAYER3 == m_type){
+			else if (PLAYER3 == m_kind){
 
 				float diffuse[4] = { 1, 1, 0, 1 };
 				glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
@@ -350,8 +370,20 @@ void Character::draw(){
 
 			std::vector<unsigned short>::iterator itr_i = m_backWheel.m_index.begin();
 
-			float diffuse[] = { 0, 0, 0, 1 };
-			glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
+		/*	float aa[] = { 0.01, 0.01, 0.01, 1 };
+			glMaterialfv(GL_FRONT, GL_AMBIENT, aa);*/
+
+			float dd[] = { 0.00, 0.00, 0.00, 1 };
+			glMaterialfv(GL_FRONT, GL_DIFFUSE, dd);
+
+		/*	float ss[] = { 0.4, 0.4, 0.4, 1 };
+			glMaterialfv(GL_FRONT, GL_SPECULAR, ss);*/
+
+			
+
+
+
+
 
 			/*後輪描画*/
 			glDrawElements(GL_TRIANGLES, m_backWheel.m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));
@@ -725,7 +757,7 @@ void Character::control(){
 	v = glm::normalize(v);
 
 	//0.～0.018目安
-	float sp = (((float)rand() / RAND_MAX) / 1000) * 18;
+	float sp = (((float)rand() / RAND_MAX) / 1000) * 28;
 
 	m_accel.x = v.x*sp;
 	m_accel.z = v.y*sp;
@@ -883,6 +915,7 @@ void Character::slip(){
 	if (m_isHitItem){
 
 		m_speed = { 0.f, 0.f, 0.f };
+		
 
 	}
 
@@ -906,38 +939,69 @@ void Character::printRanking(){
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	//順位に応じて貼るテクスチャを変える
-	switch (m_ranking){
-	case 1:
-		glColor4f(255 / 255.f, 201 / 255.f, 14 / 255.f, 1);
-		glBindTexture(GL_TEXTURE_2D, rank1st);
-		break;
-
-	case 2:
-		glColor4f(255 / 255.f, 255 / 255.f, 255 / 255.f, 1);
-		glBindTexture(GL_TEXTURE_2D, rank2nd);
-		break;
-
-	case 3:
-		glColor4f(188 / 255.f, 126 / 255.f, 92 / 255.f, 1);
-		glBindTexture(GL_TEXTURE_2D, rank3rd);
-		break;
-
-	case 4:
-		glColor4f(0 / 255.f, 255 / 255.f, 0 / 255.f, 1);
-		glBindTexture(GL_TEXTURE_2D, rank4th);
-		break;
-
-	}
-
 	glPushMatrix();
 	{
+
 		if (false == m_isGoal){
+
+			//順位に応じて貼るテクスチャを変える
+			switch (m_ranking){
+			case 1:
+				glColor4f(255 / 255.f, 201 / 255.f, 14 / 255.f, 1);
+				glBindTexture(GL_TEXTURE_2D, rank1st);
+				break;
+
+			case 2:
+				glColor4f(255 / 255.f, 255 / 255.f, 255 / 255.f, 1);
+				glBindTexture(GL_TEXTURE_2D, rank2nd);
+				break;
+
+			case 3:
+				glColor4f(188 / 255.f, 126 / 255.f, 92 / 255.f, 1);
+				glBindTexture(GL_TEXTURE_2D, rank3rd);
+				break;
+
+			case 4:
+				glColor4f(0 / 255.f, 255 / 255.f, 0 / 255.f, 1);
+				glBindTexture(GL_TEXTURE_2D, rank4th);
+				break;
+
+			}
+
 			glTranslatef(0.f, 0.f, 0);
+
 		}
+
 		else{
+
+			//順位に応じて貼るテクスチャを変える
+			switch (m_lastRanking){
+			case 1:
+				glColor4f(255 / 255.f, 201 / 255.f, 14 / 255.f, 1);
+				glBindTexture(GL_TEXTURE_2D, rank1st);
+				break;
+
+			case 2:
+				glColor4f(255 / 255.f, 255 / 255.f, 255 / 255.f, 1);
+				glBindTexture(GL_TEXTURE_2D, rank2nd);
+				break;
+
+			case 3:
+				glColor4f(188 / 255.f, 126 / 255.f, 92 / 255.f, 1);
+				glBindTexture(GL_TEXTURE_2D, rank3rd);
+				break;
+
+			case 4:
+				glColor4f(0 / 255.f, 255 / 255.f, 0 / 255.f, 1);
+				glBindTexture(GL_TEXTURE_2D, rank4th);
+				break;
+
+			}
+
 			glTranslatef(50.f, 193.f, 0);
+
 		}
+
 
 		glBegin(GL_QUADS);
 		{
@@ -1074,7 +1138,10 @@ void Character::printDashGauge(){
 
 }
 
+extern int flame;
+
 //-------------------------------------
+
 //プレイヤーステータスの表示
 
 void Character::printStatus(){
@@ -1085,36 +1152,59 @@ void Character::printStatus(){
 		printDashGauge();
 
 		glLineWidth(2);
-		StrokeString::print("[Stick]Control", { 140, 30, 0 }, 0.1f, { 0, 0, 0 });
-		StrokeString::print("[LB]Item", { 230, 30, 0 }, 0.1f, { 0, 0, 0 });
-		StrokeString::print("[RB]Dash", { 140, 10, 0 }, 0.1f, { 0, 0, 0 });
-		StrokeString::print("[x]BackCamera", { 200, 10, 0 }, 0.1f, { 0, 0, 0 });
+		StrokeString::print("[LB]Item", { 220, 10, 0 }, 0.1f, { 0, 0, 0 });
+		StrokeString::print("[RB]Dash", { 135, 10, 0 }, 0.1f, { 0, 0, 0 });
+		StrokeString::print("[A]Accelerator", { 135, 30, 0 }, 0.1f, { 0, 0, 0 });
+		StrokeString::print("[Stick]Control", { 220, 30, 0 }, 0.1f, { 0, 0, 0 });
 
+		StrokeString::print("LAP", { 230, 250, 0 }, 0.1f, { 1, 0, 0 });
+		StrokeString::print(m_lap, { 260, 250, 0 }, 0.18f, { 1, 0, 0 });
+		StrokeString::print("/", { 275, 250, 0 }, 0.1f, { 1, 0, 0 });
+		StrokeString::print(str_lapMax, { 285, 250, 0 }, 0.1f, { 1, 0, 0 });
+		StrokeString::print("TIME", { 180, 280, 0 }, 0.13f, { 1, 0, 0 });
 
 		StrokeString::print("LAP1", { 220, 230, 0 }, 0.08f, { 1, 0, 0 });
-		StrokeString::print(m_str_lapTime[FIRST], { 250, 230, 0 }, 0.08f, { 1, 0, 0 });
+		StrokeString::print(m_lapTime[FIRST], { 250, 230, 0 }, 0.08f, { 1, 0, 0 });
 
 		StrokeString::print("LAP2", { 220, 215, 0 }, 0.08f, { 1, 0, 0 });
-		StrokeString::print(m_str_lapTime[SECOND], { 250, 215, 0 }, 0.08f, { 1, 0, 0 });
+		StrokeString::print(m_lapTime[SECOND], { 250, 215, 0 }, 0.08f, { 1, 0, 0 });
 
 		StrokeString::print("LAP3", { 220, 200, 0 }, 0.08f, { 1, 0, 0 });
-		StrokeString::print(m_str_lapTime[THIRD], { 250, 200, 0 }, 0.08f, { 1, 0, 0 });
+		StrokeString::print(m_lapTime[THIRD], { 250, 200, 0 }, 0.08f, { 1, 0, 0 });
+
+		StrokeString::print(m_totalTime, { 220, 280, 0 }, 0.13f, { 1, 0, 0 });
 
 	}
 	else{
 		printGoal();
 
-		StrokeString::print("LAP1", { 60, 158, 0 }, 0.2f, { 1, 0, 0 });
-		StrokeString::print(m_str_lapTime[FIRST], { 130, 158, 0 }, 0.2f, { 1, 0, 0 });
+		StrokeString::print("LAP1", { 59, 159, 0 }, 0.2f, { 0, 0, 0 });
+		StrokeString::print(m_lapTime[FIRST], { 129, 159, 0 }, 0.2f, { 0, 0, 0 });
+		StrokeString::print("LAP1", { 60, 158, 0 }, 0.2f, { 1, 1, 1 });
+		StrokeString::print(m_lapTime[FIRST], { 130, 158, 0 }, 0.2f, { 1, 1, 1 });
 
-		StrokeString::print("LAP2", { 60, 114, 0 }, 0.2f, { 1, 0, 0 });
-		StrokeString::print(m_str_lapTime[SECOND], { 130, 114, 0 }, 0.2f, { 1, 0, 0 });
 
-		StrokeString::print("LAP3", { 60, 72, 0 }, 0.2f, { 1, 0, 0 });
-		StrokeString::print(m_str_lapTime[THIRD], { 130, 72, 0 }, 0.2f, { 1, 0, 0 });
+		StrokeString::print("LAP2", { 59, 115, 0 }, 0.2f, { 0, 0, 0 });
+		StrokeString::print(m_lapTime[SECOND], { 129, 115, 0 }, 0.2f, { 0, 0, 0 });
+		StrokeString::print("LAP2", { 60, 114, 0 }, 0.2f, { 1, 1, 1 });
+		StrokeString::print(m_lapTime[SECOND], { 130, 114, 0 }, 0.2f, { 1, 1, 1 });
 
+		StrokeString::print("LAP3", { 59, 73, 0 }, 0.2f, { 0, 0, 0 });
+		StrokeString::print(m_lapTime[THIRD], { 129, 73, 0 }, 0.2f, { 0, 0, 0 });
+		StrokeString::print("LAP3", { 60, 72, 0 }, 0.2f, { 1, 1, 1 });
+		StrokeString::print(m_lapTime[THIRD], { 130, 72, 0 }, 0.2f, { 1, 1, 1 });
+
+		StrokeString::print("TOTALTIME", { 23, 31, 0 }, 0.15f, { 0, 0, 0 });
+		StrokeString::print(m_totalTime, { 130, 31, 0 }, 0.2f, { 0, 0, 0 });
 		StrokeString::print("TOTALTIME", { 24, 30, 0 }, 0.15f, { 1, 0, 0 });
-		//StrokeString::print(str_time, { 131, 30, 0 }, 0.2f, { 1, 0, 0 });
+		StrokeString::print(m_totalTime, { 131, 30, 0 }, 0.2f, { 1, 0, 0 });
+
+		if (true == (character[0]->m_isGoal && character[1]->m_isGoal && character[2]->m_isGoal && character[3]->m_isGoal)){
+			if ((flame % 60) < 30){
+				StrokeString::print("PushStartButton!!", { 219, 11, 0 }, 0.08f, { 0, 0, 0 });
+				StrokeString::print("PushStartButton!!", { 220, 10, 0 }, 0.08f, { 1, 0, 0 });
+			}
+		}
 
 	}
 }
@@ -1156,7 +1246,7 @@ bool Character::countLap(){
 
 bool Character::checkIsGoal(){
 
-	if (LAP_MAX < m_lapCount){
+	if (3 == m_lapCount){
 
 		return true;
 

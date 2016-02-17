@@ -23,9 +23,6 @@
 //敵キャラAI用のポイントの個数
 #define AI_POINT_NUMBER (25)
 
-//ゴールに必要なコースの周回数
-#define LAP_MAX (3)
-
 #include<stdlib.h>
 #include"Item.h"
 #include"BmpImage.h"

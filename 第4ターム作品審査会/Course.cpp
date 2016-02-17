@@ -2,6 +2,7 @@
 #include"Course.h"
 #include"CourseFlag.h"
 
+
 Course *course = nullptr;
 
 //選択されてるコース
