@@ -129,37 +129,37 @@ void Character::update(){
 	}
 
 	//1フレーム前のポジション更新
-	m_lastPosition = m_position;
+	m_lastPosition = transform.m_position;
 
 	//スピード・ポジションの更新
 	m_speed += (m_dashSpeed + m_accel);
 
-	m_position += m_speed;
+	transform.m_position += m_speed;
 
 	//前輪と後輪のポジション更新
 
 	//前輪座標
-	m_frontPosition.x = m_position.x - sin(m_rotate.y)*1.1f;
+	m_frontPosition.x = transform.m_position.x - sin(transform.m_rotate.y)*1.1f;
 	m_frontPosition.y = 0.5f;
-	m_frontPosition.z = m_position.z - cos(m_rotate.y)*1.1f;
+	m_frontPosition.z = transform.m_position.z - cos(transform.m_rotate.y)*1.1f;
 
 	//後輪座標
-	m_backPosition.x = m_position.x + sin(m_rotate.y)*0.7f;
+	m_backPosition.x = transform.m_position.x + sin(transform.m_rotate.y)*0.7f;
 	m_backPosition.y = 0.5f;
-	m_backPosition.z = m_position.z + cos(m_rotate.y)*0.7f;
+	m_backPosition.z = transform.m_position.z + cos(transform.m_rotate.y)*0.7f;
 
 
 	//煙の更新
 	m_smoke.update();
-	m_smoke.m_basePosition.x = m_position.x + sin(m_rotate.y)*1.7f;
+	m_smoke.m_basePosition.x = transform.m_position.x + sin(transform.m_rotate.y)*1.7f;
 	m_smoke.m_basePosition.y = 0.5f;
-	m_smoke.m_basePosition.z = m_position.z + cos(m_rotate.y)*1.7f;
+	m_smoke.m_basePosition.z = transform.m_position.z + cos(transform.m_rotate.y)*1.7f;
 
 	//ダッシュエフェクトの更新
 	if (nullptr != m_dash){
-		m_dash->m_basePosition.x = m_position.x + sin(m_rotate.y)*0.75;
+		m_dash->m_basePosition.x = transform.m_position.x + sin(transform.m_rotate.y)*0.75;
 		m_dash->m_basePosition.y = -0.2f;
-		m_dash->m_basePosition.z = m_position.z + cos(m_rotate.y)*0.75;
+		m_dash->m_basePosition.z = transform.m_position.z + cos(transform.m_rotate.y)*0.75;
 	}
 
 	//減速させる慣性
@@ -194,7 +194,7 @@ void Character::update(){
 
 		if (0 == i){
 
-			if (false == m_passCheckPoint[i] && course->m_checkPoint[i].checkPassFlag(m_position)){
+			if (false == m_passCheckPoint[i] && course->m_checkPoint[i].checkPassFlag(transform.m_position)){
 
 				m_passCheckPoint[i] = true;
 				m_nowPoint++;
@@ -207,7 +207,7 @@ void Character::update(){
 
 			if (true == m_passCheckPoint[i - 1]){
 
-				if (false == m_passCheckPoint[i] && course->m_checkPoint[i].checkPassFlag(m_position)){
+				if (false == m_passCheckPoint[i] && course->m_checkPoint[i].checkPassFlag(transform.m_position)){
 
 					m_passCheckPoint[i] = true;
 					m_nowPoint++;
@@ -259,13 +259,13 @@ void Character::draw(){
 		{
 
 			//行列計算
-			glm::mat4 translate = glm::translate(glm::vec3(m_position.x, m_position.y, m_position.z));
+			glm::mat4 translate = glm::translate(glm::vec3(transform.m_position.x, transform.m_position.y, transform.m_position.z));
 
-			glm::mat4 rotate = glm::rotate(m_rotate.y + m_crashRotate, glm::vec3(0, 1, 0))*
-				glm::rotate(m_rotate.z, glm::vec3(0, 0, 1));
+			glm::mat4 rotate = glm::rotate(transform.m_rotate.y + m_crashRotate, glm::vec3(0, 1, 0))*
+				glm::rotate(transform.m_rotate.z, glm::vec3(0, 0, 1));
 
 
-			glm::mat4 scale = glm::scale(glm::vec3(m_scale.x, m_scale.y, m_scale.z));
+			glm::mat4 scale = glm::scale(glm::vec3(transform.m_scale.x, transform.m_scale.y, transform.m_scale.z));
 
 			//親の行列
 			m_matrix = translate *rotate *scale;
@@ -466,11 +466,11 @@ void Character::draw(){
 	{
 
 		//行列計算
-		glm::mat4 parentTranslate = glm::translate(glm::vec3(m_position.x, 0.01f, m_position.z));
+		glm::mat4 parentTranslate = glm::translate(glm::vec3(transform.m_position.x, 0.01f, transform.m_position.z));
 
-		glm::mat4 parentRotate = glm::rotate(m_rotate.y + m_crashRotate, glm::vec3(0, 1, 0));
+		glm::mat4 parentRotate = glm::rotate(transform.m_rotate.y + m_crashRotate, glm::vec3(0, 1, 0));
 
-		glm::mat4 parentScale = glm::scale(glm::vec3(m_scale.x, 0, m_scale.z));
+		glm::mat4 parentScale = glm::scale(glm::vec3(transform.m_scale.x, 0, transform.m_scale.z));
 
 		//親の行列
 		m_matrix = parentTranslate *parentRotate * parentScale;
@@ -574,9 +574,9 @@ void Character::drawHasItem(){
 
 		glPushMatrix();
 		{
-			glTranslatef(m_position.x + sin(m_rotate.y) * 2.8 + sin(m_rotate.y)*i,
+			glTranslatef(transform.m_position.x + sin(transform.m_rotate.y) * 2.8 + sin(transform.m_rotate.y)*i,
 				0.5f,
-				m_position.z + cos(m_rotate.y) * 2.8 + cos(m_rotate.y)*i);
+				transform.m_position.z + cos(transform.m_rotate.y) * 2.8 + cos(transform.m_rotate.y)*i);
 
 			glColor3f(1, 1, 1);
 
@@ -646,7 +646,7 @@ void Character::control(unsigned short _pressedKey, unsigned int _downKeys, floa
 
 			//加速度の設定
 			//-0.005fは補正値
-			glm::vec3 accelIncrement(-0.015*sin(m_rotate.y), 0, -0.015*cos(m_rotate.y));
+			glm::vec3 accelIncrement(-0.015*sin(transform.m_rotate.y), 0, -0.015*cos(transform.m_rotate.y));
 			m_accel = accelIncrement;
 
 		}
@@ -656,21 +656,21 @@ void Character::control(unsigned short _pressedKey, unsigned int _downKeys, floa
 
 		//正面右に移動
 		if (_sThumbLX > 0.3){
-			m_rotate.y -= 0.02f;
+			transform.m_rotate.y -= 0.02f;
 
 			_sThumbLX = 1.f;
-			m_rotate.z = m_rotate.z + ((-1)*(_sThumbLX / 2) - m_rotate.z)*0.1f;
+			transform.m_rotate.z = transform.m_rotate.z + ((-1)*(_sThumbLX / 2) - transform.m_rotate.z)*0.1f;
 		}
 
 		//正面左に移動
 		else if (_sThumbLX < -0.3){
-			m_rotate.y += 0.02f;
+			transform.m_rotate.y += 0.02f;
 
 			_sThumbLX = -1.f;
-			m_rotate.z = m_rotate.z + ((-1)*(_sThumbLX / 2) - m_rotate.z)*0.1f;
+			transform.m_rotate.z = transform.m_rotate.z + ((-1)*(_sThumbLX / 2) - transform.m_rotate.z)*0.1f;
 		}
 		else{
-			m_rotate.z = m_rotate.z + ((_sThumbLX / 2) - m_rotate.z)*0.1f;
+			transform.m_rotate.z = transform.m_rotate.z + ((_sThumbLX / 2) - transform.m_rotate.z)*0.1f;
 
 			//m_rotate.z = 0.f;
 		}
@@ -690,8 +690,8 @@ void Character::control(unsigned short _pressedKey, unsigned int _downKeys, floa
 
 						Fire *fire = new Fire();
 						fire->m_isActive = true;
-						fire->m_basePosition = { m_position.x - sin(m_rotate.y) * 1.f, 0.5f, m_position.z - cos(m_rotate.y) * 1.f };
-						fire->m_speed = { -sin(m_rotate.y)*1.f, 0.f, -cos(m_rotate.y)*1.f };
+						fire->m_basePosition = { transform.m_position.x - sin(transform.m_rotate.y) * 1.f, 0.5f,transform.m_position.z - cos(transform.m_rotate.y) * 1.f };
+						fire->m_speed = { -sin(transform.m_rotate.y)*1.f, 0.f, -cos(transform.m_rotate.y)*1.f };
 						effect.push_back(fire);
 						fire_ES->play();
 
@@ -702,7 +702,7 @@ void Character::control(unsigned short _pressedKey, unsigned int _downKeys, floa
 
 						Blizzard *blizzard = new Blizzard();
 						blizzard->m_isActive = true;
-						blizzard->m_basePosition = { m_position.x + sin(m_rotate.y)*2.5f, 0.01f, m_position.z + cos(m_rotate.y)*2.5f };
+						blizzard->m_basePosition = { transform.m_position.x + sin(transform.m_rotate.y)*2.5f, 0.01f, transform.m_position.z + cos(transform.m_rotate.y)*2.5f };
 						effect.push_back(blizzard);
 
 
@@ -726,11 +726,11 @@ void Character::control(unsigned short _pressedKey, unsigned int _downKeys, floa
 
 				m_dashPower = 0.f;
 
-				m_dashSpeed = glm::vec3(-0.09f*sin(m_rotate.y), 0.f, -0.09f*cos(m_rotate.y));
+				m_dashSpeed = glm::vec3(-0.09f*sin(transform.m_rotate.y), 0.f, -0.09f*cos(transform.m_rotate.y));
 
 				m_dash = new Dash();
 				m_dash->m_isActive = true;
-				m_dash->m_basePosition = { m_position.x, 0, m_position.z };
+				m_dash->m_basePosition = { transform.m_position.x, 0, transform.m_position.z };
 				effect.push_back(m_dash);
 
 			}
@@ -752,7 +752,7 @@ void Character::control(){
 	//コースのAIポイントのx - 敵のx
 	//コースのAIのz - 敵のz
 
-	glm::vec2 v = { course->m_AIPoint[m_nextPoint].m_position.x - m_position.x, course->m_AIPoint[m_nextPoint].m_position.z - m_position.z };
+	glm::vec2 v = { course->m_AIPoint[m_nextPoint].m_position.x - transform.m_position.x, course->m_AIPoint[m_nextPoint].m_position.z - transform.m_position.z };
 
 	v = glm::normalize(v);
 
@@ -764,7 +764,7 @@ void Character::control(){
 
 	//敵のAIの挙動制御
 
-	if (course->m_AIPoint[m_nextPoint].checkPassFlag(m_position)){
+	if (course->m_AIPoint[m_nextPoint].checkPassFlag(transform.m_position)){
 
 		m_passAIPoint[m_nextPoint] = true;
 
@@ -774,11 +774,11 @@ void Character::control(){
 			m_nextPoint = 0;
 		}
 
-		m_pos_to_AIpoint = { course->m_AIPoint[m_nextPoint].m_position.x - m_position.x, course->m_AIPoint[m_nextPoint].m_position.z - m_position.z };
+		m_pos_to_AIpoint = { course->m_AIPoint[m_nextPoint].m_position.x - transform.m_position.x, course->m_AIPoint[m_nextPoint].m_position.z - transform.m_position.z };
 		m_pos_to_AIpoint = glm::normalize(m_pos_to_AIpoint);
 
 		//角度からの向きベクトル
-		OrientationVector = { -sin(m_rotate.y), -cos(m_rotate.y) };
+		OrientationVector = { -sin(transform.m_rotate.y), -cos(transform.m_rotate.y) };
 
 		CompletionValue = 0.f;
 
@@ -792,7 +792,7 @@ void Character::control(){
 	//自身の向きベクトルに差分を足したベクトル
 	glm::vec2 OrientationVectorPulsDif = OrientationVector + dif;
 
-	m_rotate.y = atan2f(-OrientationVectorPulsDif.x, -OrientationVectorPulsDif.y);
+	transform.m_rotate.y = atan2f(-OrientationVectorPulsDif.x, -OrientationVectorPulsDif.y);
 
 	//インクリメントする値によって
 	//補完の滑らかさが変わる
@@ -823,8 +823,8 @@ void Character::useItem(){
 
 				Fire *fire = new Fire();
 				fire->m_isActive = true;
-				fire->m_basePosition = { m_position.x - sin(m_rotate.y) * 1.f, 0.5f, m_position.z - cos(m_rotate.y) * 1.f };
-				fire->m_speed = { -sin(m_rotate.y)*1.f, 0.f, -cos(m_rotate.y)*1.f };
+				fire->m_basePosition = { transform.m_position.x - sin(transform.m_rotate.y) * 1.f, 0.5f, transform.m_position.z - cos(transform.m_rotate.y) * 1.f };
+				fire->m_speed = { -sin(transform.m_rotate.y)*1.f, 0.f, -cos(transform.m_rotate.y)*1.f };
 				effect.push_back(fire);
 
 			}
@@ -834,7 +834,7 @@ void Character::useItem(){
 
 				Blizzard *blizzard = new Blizzard();
 				blizzard->m_isActive = true;
-				blizzard->m_basePosition = { m_position.x + sin(m_rotate.y)*2.5f, 0.01f, m_position.z + cos(m_rotate.y)*2.5f };
+				blizzard->m_basePosition = { transform.m_position.x + sin(transform.m_rotate.y)*2.5f, 0.01f, transform.m_position.z + cos(transform.m_rotate.y)*2.5f };
 				effect.push_back(blizzard);
 
 
@@ -854,21 +854,21 @@ void Character::useItem(){
 
 void Character::checkCourseOut(){
 
-	if (m_position.x < 0.f){
-		m_position.x = 0.f;
+	if (transform.m_position.x < 0.f){
+		transform.m_position.x = 0.f;
 	}
 
-	if (m_position.x > COURSE_WIDTH){
-		m_position.x = COURSE_WIDTH;
+	if (transform.m_position.x > COURSE_WIDTH){
+		transform.m_position.x = COURSE_WIDTH;
 	}
 
-	if (m_position.z > 0){
-		m_position.z = 0.f;
+	if (transform.m_position.z > 0){
+		transform.m_position.z = 0.f;
 	}
 
 	//256のままだと256番目のピクセル情報にアクセスしてしまうので補正値+1してある
-	if (m_position.z < -COURSE_HEIGHT + 1){
-		m_position.z = -COURSE_HEIGHT + 1;
+	if (transform.m_position.z < -COURSE_HEIGHT + 1){
+		transform.m_position.z = -COURSE_HEIGHT + 1;
 	}
 
 }
@@ -881,7 +881,7 @@ float Character::checkNextCheckPointLength(){
 
 	glm::vec3 v;
 
-	v = m_position - course->m_checkPoint[m_nowPoint].m_position;
+	v = transform.m_position - course->m_checkPoint[m_nowPoint].m_position;
 
 	return glm::length(v);
 }
@@ -895,7 +895,7 @@ bool Character::inDart(){
 	//プレイヤーがどのピクセル上にいるか判断し
 	//直下のピクセル情報によって判定する
 
-	if (course->m_buffer[COURSE_HEIGHT - 1 + (int)m_position.z][(int)m_position.x] == DART){
+	if (course->m_buffer[COURSE_HEIGHT - 1 + (int)transform.m_position.z][(int)transform.m_position.x] == DART){
 
 		return true;
 
@@ -1061,6 +1061,7 @@ void printGoal(){
 }
 
 //-------------------------------------
+
 //-------------------------------------
 //ダッシュゲージのインターフェイス
 
@@ -1138,7 +1139,7 @@ void Character::printDashGauge(){
 
 }
 
-extern int flame;
+//extern int flame;
 
 //-------------------------------------
 
@@ -1200,7 +1201,7 @@ void Character::printStatus(){
 		StrokeString::print(m_totalTime, { 131, 30, 0 }, 0.2f, { 1, 0, 0 });
 
 		if (true == (character[0]->m_isGoal && character[1]->m_isGoal && character[2]->m_isGoal && character[3]->m_isGoal)){
-			if ((flame % 60) < 30){
+			if ((GameManager::getInstance()->m_flame % 60) < 30){
 				StrokeString::print("PushStartButton!!", { 219, 11, 0 }, 0.08f, { 0, 0, 0 });
 				StrokeString::print("PushStartButton!!", { 220, 10, 0 }, 0.08f, { 1, 0, 0 });
 			}
@@ -1217,7 +1218,7 @@ void Character::printStatus(){
 
 bool Character::countLap(){
 
-	if (course->m_buffer[COURSE_HEIGHT - 1 + (int)m_position.z][(int)m_position.x] == GOAL){
+	if (course->m_buffer[COURSE_HEIGHT - 1 + (int)transform.m_position.z][(int)transform.m_position.x] == GOAL){
 
 		bool fg = true;
 

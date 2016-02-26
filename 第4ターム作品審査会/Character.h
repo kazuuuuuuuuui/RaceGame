@@ -205,18 +205,18 @@ public:
 		m_engine->changeVolume(0.8f);
 
 		//角度からの向きベクトル
-		OrientationVector = { -sin(m_rotate.y), -cos(m_rotate.y) };
+		OrientationVector = { -sin(transform.m_rotate.y), -cos(transform.m_rotate.y) };
 		m_pos_to_AIpoint = OrientationVector;
 
 		//前輪座標
-		m_frontPosition.x = m_position.x - sin(m_rotate.y)*1.55f;
+		m_frontPosition.x = transform.m_position.x - sin(transform.m_rotate.y)*1.55f;
 		m_frontPosition.y = 0.f;
-		m_frontPosition.z = m_position.z - cos(m_rotate.y)*1.55f;
+		m_frontPosition.z = transform.m_position.z - cos(transform.m_rotate.y)*1.55f;
 
 		//後輪座標
-		m_backPosition.x = m_position.x + sin(m_rotate.y)*1.15f;
+		m_backPosition.x = transform.m_position.x + sin(transform.m_rotate.y)*1.15f;
 		m_backPosition.y = 0.f;
-		m_backPosition.z = m_position.z + cos(m_rotate.y)*1.15f;
+		m_backPosition.z = transform.m_position.z + cos(transform.m_rotate.y)*1.15f;
 
 
 		//ラップタイムの初期化
@@ -235,9 +235,9 @@ public:
 		sprintf_s(m_lapTime[THIRD], "%02d:%02d:%03d ", m_lapMinute[THIRD], m_lapSecond[THIRD], m_lapMilliSecond[THIRD]);
 
 
-		m_scale.x = 0.18f;
-		m_scale.y = 0.18f;
-		m_scale.z = 0.18f;
+		transform.m_scale.x = 0.18f;
+		transform.m_scale.y = 0.18f;
+		transform.m_scale.z = 0.18f;
 
 	}
 

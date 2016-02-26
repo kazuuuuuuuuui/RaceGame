@@ -10,11 +10,11 @@ void Dash::update(){
 
 		m_particle[i].m_alpha -= 0.05f;
 
-		m_particle[i].m_scale += 0.1f;
+		m_particle[i].transform.m_scale += 0.1f;
 
 		if (m_particle[i].m_alpha <= 0.f){
 			m_particle[i].m_alpha = (float)rand() / RAND_MAX;
-			m_particle[i].m_scale = { 0.f, 0.f, 0.f };
+			m_particle[i].transform.m_scale = { 0.f, 0.f, 0.f };
 		}
 
 

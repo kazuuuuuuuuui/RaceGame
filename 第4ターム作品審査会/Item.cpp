@@ -55,7 +55,7 @@ void Item::update(){
 	//取られたかの判定
 	for (unsigned int i = 0; i < character.size(); i++){
 
-		if (true == m_isActive && checkIsGotten(character[i]->m_position)){
+		if (true == m_isActive && checkIsGotten(character[i]->transform.m_position)){
 
 			m_isActive = false;
 
@@ -89,7 +89,7 @@ void Item::move(){
 	ag += 0.001;
 
 	//0.5～1
-	m_position.y = ((sin(ag) + 1) / 4) + 0.5f;
+	transform.m_position.y = ((sin(ag) + 1) / 4) + 0.5f;
 
 }
 
@@ -120,9 +120,9 @@ void Item::draw(){
 
 		glPushMatrix();
 		{
-			glTranslatef(m_position.x, m_position.y, m_position.z);
-			glRotatef(0, m_rotate.x, m_rotate.y, m_rotate.z);
-			glScalef(m_scale.x, m_scale.y, m_scale.z);
+			glTranslatef(transform.m_position.x, transform.m_position.y, transform.m_position.z);
+			glRotatef(0, transform.m_rotate.x, transform.m_rotate.y, transform.m_rotate.z);
+			glScalef(transform.m_scale.x, transform.m_scale.y, transform.m_scale.z);
 
 			glColor3f(1, 1, 1);
 
@@ -173,7 +173,7 @@ void Item::draw(){
 		//アイテムの影
 		glPushMatrix();
 		{
-			glTranslatef(m_position.x, 0.1, m_position.z);
+			glTranslatef(transform.m_position.x, 0.1, transform.m_position.z);
 			glRotatef(90, 1, 0, 0);
 			glColor3f(110.f / 255.f, 110.f / 255.f, 110.f / 255.f);
 			Circle2DFill(0.3, 0, 0);
@@ -203,9 +203,9 @@ bool Item::checkIsGotten(glm::vec3 _position){
 
 	//プレイヤーと魔石との距離
 	glm::vec3 distance;
-	distance.x = (m_position.x - _position.x);
-	distance.y = (m_position.y - _position.y);
-	distance.z = (m_position.z - _position.z);
+	distance.x = (transform.m_position.x - _position.x);
+	distance.y = (transform.m_position.y - _position.y);
+	distance.z = (transform.m_position.z - _position.z);
 
 	float length = sqrt(distance.x*distance.x + distance.y*distance.y + distance.z*distance.z);
 

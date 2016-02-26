@@ -4,10 +4,6 @@
 #define COURSE_WIDTH (256)
 #define COURSE_HEIGHT (256)
 
-//コース生成に必要なテクスチャの枚数
-//コース自体のテクスチャと背景のテクスチャの2枚
-#define COURSE_TEXTURE_NUMBER (2)
-
 //テクスチャハンドルアクセス時に使用
 #define COUSE_TEXTURE (0)
 #define BACKGROUND_TEXTURE (1)
@@ -52,7 +48,6 @@ enum {
 };
 
 
-
 //-------------------------------------
 //コースの情報
 
@@ -60,27 +55,26 @@ class Course{
 public:
 	int m_width;
 	int m_height;
-	int m_buffer[COURSE_HEIGHT][COURSE_WIDTH];//各コースの各ピクセルの情報を格納するバッファ
-	GLuint m_handle[COURSE_TEXTURE_NUMBER];//[0]にはコースの[1]には背景のテクスチャを格納する
-	CourseFlag m_checkPoint[CHECK_POINT_NUMBER];//周回判定用のポイント
-	AIFlag m_AIPoint[AI_POINT_NUMBER];//敵AI用のポイント
-	Sound *m_bgm;
-
+	int m_buffer[COURSE_HEIGHT][COURSE_WIDTH];   //各コースの各ピクセルの情報を格納するバッファ
+	GLuint m_handle;							 //コースのテクスチャ
+	CourseFlag m_checkPoint[CHECK_POINT_NUMBER]; //周回判定用のポイント
+	AIFlag m_AIPoint[AI_POINT_NUMBER];			 //敵AI用のポイント
+	Sound *m_bgm;								 //レース中のBGM
 
 	void draw();
 	void update();
 	void setItem();
+	void setCheckPoint(const char *_txtName);
+	void setAIPoint(const char *_txtName);
 
 	Course() :
 		m_width(COURSE_WIDTH),
 		m_height(COURSE_HEIGHT),
+		m_handle(0),
 		m_bgm(nullptr)
-	{
-		//テクスチャハンドルの初期化
-		for (int i = 0; i < COURSE_TEXTURE_NUMBER; i++){
-			m_handle[i] = 0;
-		}
 
+	{
+		
 		//コースバッファの初期化
 		for (int i = 0; i < COURSE_HEIGHT; i++){
 			for (int t = 0; t < COURSE_WIDTH; t++){

@@ -14,12 +14,12 @@ void Fire::update(){
 
 	for (unsigned int i = 0; i < character.size(); i++){
 
-		if (isHit(character[i]->m_position)){
+		if (isHit(character[i]->transform.m_position)){
 
 			slip_ES->play();
 			m_isActive = false;
 			character[i]->m_isHitItem = true;
-			character[i]->m_rotate.z = 0.f;
+			character[i]->transform.m_rotate.z = 0.f;
 			character[i]->m_crashRotate = 360000.f*(M_PI / 180);
 
 		}
@@ -28,12 +28,12 @@ void Fire::update(){
 	for (int i = 0; i < FIRE_PARTICLE_NUMBER; i++){
 		m_particle[i].m_alpha -= 0.025f;
 
-		m_particle[i].m_scale += 0.04f;
-		m_particle[i].m_position += m_particle[i].m_speed*m_particle[i].m_alpha;
+		m_particle[i].transform.m_scale += 0.04f;
+		m_particle[i].transform.m_position += m_particle[i].m_speed*m_particle[i].m_alpha;
 
 		if (m_particle[i].m_alpha <= 0.f){
 			m_particle[i].m_alpha = (float)rand() / RAND_MAX;
-			m_particle[i].m_scale = { 0.f, 0.f, 0.f };
+			m_particle[i].transform.m_scale = { 0.f, 0.f, 0.f };
 
 			m_particle[i].m_speed.x = ((float)rand() / RAND_MAX - 0.5)*0.01f;//-0.05‚©‚ç0.05‚Ì’l
 			m_particle[i].m_speed.y = (((float)rand() / RAND_MAX - 0.5)*.5) *.04;

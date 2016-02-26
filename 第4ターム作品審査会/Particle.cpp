@@ -25,12 +25,12 @@ void Particle::draw(int _type,glm::vec3 _color,GLuint _texture){
 
 		glBindTexture(GL_TEXTURE_2D, _texture);
 
-		glTranslatef(m_position.x, m_position.y, m_position.z);
+		glTranslatef(transform.m_position.x, transform.m_position.y, transform.m_position.z);
 		
 		//ビルボード回転行列適用
 		glMultMatrixf((GLfloat*)&BillboardMatrix);
 		
-		glScalef(m_scale.x, m_scale.y, m_scale.z);
+		glScalef(transform.m_scale.x, transform.m_scale.y, transform.m_scale.z);
 		
 		if (_type == 0){
 
