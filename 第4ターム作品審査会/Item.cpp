@@ -3,6 +3,7 @@
 #include"Item.h"
 #include"Character.h"
 #include"CourseFlag.h"
+#include"SoundManager.h"
 #include"glut.h"
 
 //debug
@@ -68,7 +69,9 @@ void Item::update(){
 
 				//ƒvƒŒƒCƒ„[‚ªŽæ“¾‚µ‚½‚Æ‚«‚Ì‚ÝŒø‰Ê‰¹‚ð–Â‚ç‚·
 				if (player1 == character[i]){
-					getItem->play();
+	
+					SoundManager::getInstance()->m_sounds["getItem"]->play();
+	
 				}
 
 			}

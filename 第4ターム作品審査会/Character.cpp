@@ -13,6 +13,7 @@
 #include"Fire.h"
 #include"Blizzard.h"
 #include"StrokeString.h"
+#include"SoundManager.h"
 #include"joysticManager.h"
 #include"glm\gtc\matrix_transform.hpp"
 #include"glm\gtx\transform.hpp"
@@ -82,7 +83,7 @@ void Character::update(){
 
 			if (false == m_isCharged){
 				m_isCharged = true;
-				chargeComplete->play();
+				SoundManager::getInstance()->m_sounds["chargeComplete"]->play();
 			}
 
 		}
@@ -116,10 +117,14 @@ void Character::update(){
 
 				//1周目または2周目の時のみ鳴らす
 				if (1 == m_lapCount){
-					lapCount_ES->play();
+
+					SoundManager::getInstance()->m_sounds["lapCountSE"]->play();
+			
 				}
 				else if (2 == m_lapCount){
-					finalLap_ES->play();
+
+					SoundManager::getInstance()->m_sounds["finalLapSE"]->play();
+			
 				}
 
 			}
@@ -171,15 +176,13 @@ void Character::update(){
 	if (m_dash != NULL){
 
 		if (glm::length(m_dashSpeed) <= 0.0001){
+
 			//ダッシュ状態解除
 			m_isDash = false;
 			m_dash->m_isActive = false;
 		}
 
 	}
-
-	//printf("%f\n", glm::length(m_dashSpeed));
-
 
 	//車輪の回転スピード更新
 	//*100は補正値
@@ -235,7 +238,9 @@ void Character::update(){
 		m_lastRanking = m_ranking;
 
 		if (PLAYER == m_type){
-			goal_ES->play();
+
+			SoundManager::getInstance()->m_sounds["goalSE"]->play();
+	
 		}
 
 	}
@@ -693,7 +698,7 @@ void Character::control(unsigned short _pressedKey, unsigned int _downKeys, floa
 						fire->m_basePosition = { transform.m_position.x - sin(transform.m_rotate.y) * 1.f, 0.5f,transform.m_position.z - cos(transform.m_rotate.y) * 1.f };
 						fire->m_speed = { -sin(transform.m_rotate.y)*1.f, 0.f, -cos(transform.m_rotate.y)*1.f };
 						effect.push_back(fire);
-						fire_ES->play();
+						SoundManager::getInstance()->m_sounds["fireSE"]->play();
 
 					}
 

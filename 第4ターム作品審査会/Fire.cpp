@@ -1,8 +1,6 @@
+#include"SoundManager.h"
 #include"Fire.h"
 #include"Character.h"
-
-#include"Enemy.h"
-
 
 void Fire::update(){
 
@@ -16,7 +14,7 @@ void Fire::update(){
 
 		if (isHit(character[i]->transform.m_position)){
 
-			slip_ES->play();
+			SoundManager::getInstance()->m_sounds["slipSE"]->play();
 			m_isActive = false;
 			character[i]->m_isHitItem = true;
 			character[i]->transform.m_rotate.z = 0.f;

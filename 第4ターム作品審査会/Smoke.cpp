@@ -1,6 +1,5 @@
 #include"Smoke.h"
 #include"Fire.h"
-#include"Player.h"
 #include"Character.h"
 
 void Smoke::update(){

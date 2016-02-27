@@ -5,6 +5,7 @@
 #include<stdlib.h>
 #include"GameManager.h"
 #include"joysticManager.h"
+#include"SoundManager.h"
 #include"Sound.h"
 #include"controller.h"
 #include"glut.h"
@@ -35,7 +36,7 @@ void display() {
 
 	JoysticManager::getInstance()->update();
 	GameManager::getInstance()->updata();
-
+	
 
 }
 
@@ -69,10 +70,11 @@ int main(int argc, char *argv[])
 {
 	glutInit(&argc, argv);
 	glutInitWindowSize(g_window_width, g_window_height);
-	glutCreateWindow("第4ターム作品審査会");
+	glutCreateWindow("BikeRacing");
 
-	Sound::init();
 	JoysticManager::getInstance();
+	GameManager::getInstance();
+	SoundManager::getInstance();
 
 	//コールバック関数の登録
 	glutReshapeFunc(reshape);

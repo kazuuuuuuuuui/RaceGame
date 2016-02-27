@@ -1,6 +1,6 @@
+#include"SoundManager.h"
 #include"Blizzard.h"
 #include"Character.h"
-#include"Player.h"
 #include"glut.h"
 
 void Blizzard::update(){
@@ -13,7 +13,7 @@ void Blizzard::update(){
 
 		if (isHit(character[i]->transform.m_position)){
 
-			slip_ES->play();
+			SoundManager::getInstance()->m_sounds["slipSE"]->play();
 			m_isActive = false;
 			character[i]->m_isHitItem = true;
 			character[i]->m_dashSpeed = { 0.f, 0.f, 0.f };

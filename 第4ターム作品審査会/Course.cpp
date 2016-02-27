@@ -161,32 +161,6 @@ Course* createCourse(){
 		//AIポイントの位置設定
 		newCourse->setAIPoint("txt/course2_AIp.txt");
 
-	/*	newCourse->m_AIPoint[0].m_position = { 31.5f, 0.5f, -143.f };
-		newCourse->m_AIPoint[1].m_position = { 32.f, 0.5f, -181.5f };
-		newCourse->m_AIPoint[2].m_position = { 42.f, 0.5f, -206.5f };
-		newCourse->m_AIPoint[3].m_position = { 54.5f, 0.5f, -216.5f };
-		newCourse->m_AIPoint[4].m_position = { 70.5f, 0.5f, -222.5f };
-		newCourse->m_AIPoint[5].m_position = { 100.f, 0.5f, -216.f };
-		newCourse->m_AIPoint[6].m_position = { 137.5f, 0.5f, -203.f };
-		newCourse->m_AIPoint[7].m_position = { 195.f, 0.5f, -194.f };
-		newCourse->m_AIPoint[8].m_position = { 215.f, 0.5f, -180.f };
-		newCourse->m_AIPoint[9].m_position = { 224.f, 0.5f, -164.5f };
-		newCourse->m_AIPoint[10].m_position = { 226.f, 0.5f, -113.f };
-		newCourse->m_AIPoint[11].m_position = { 230.f, 0.5f, -96.5f };
-		newCourse->m_AIPoint[12].m_position = { 229.f, 0.5f, -45.f };
-		newCourse->m_AIPoint[13].m_position = { 200.f, 0.5f, -25.5f };
-		newCourse->m_AIPoint[14].m_position = { 163.f, 0.5f, -33.5f };
-		newCourse->m_AIPoint[15].m_position = { 147.f, 0.5f, -54.f };
-		newCourse->m_AIPoint[16].m_position = { 136.f, 0.5f, -75.5f };
-		newCourse->m_AIPoint[17].m_position = { 121.f, 0.5f, -85.5f };
-		newCourse->m_AIPoint[18].m_position = { 105.f, 0.5f, -81.5f };
-		newCourse->m_AIPoint[19].m_position = { 84.f, 0.5f, -60.f };
-		newCourse->m_AIPoint[20].m_position = { 85.f, 0.5f, -54.5f };
-		newCourse->m_AIPoint[21].m_position = { 65.f, 0.5f, -29.f };
-		newCourse->m_AIPoint[22].m_position = { 45.f, 0.5f, -16.5f };
-		newCourse->m_AIPoint[23].m_position = { 31.f, 0.5f, -28.5f };
-		newCourse->m_AIPoint[24].m_position = { 30.f, 0.5f, -80.5f };*/
-
 		//使用するテクスチャの読み込み
 		newCourse->m_handle = BmpImage::loadImage("bmp/course2/course2.bmp");
 		
