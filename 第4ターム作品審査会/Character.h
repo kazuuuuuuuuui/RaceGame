@@ -30,220 +30,220 @@ enum{
 	PLAYER
 };
 
-class Character :public GameObject{
-public:
+	class Character :public oka::GameObject {
+	public:
 
-	Sound *m_engine;
+		Sound *m_engine;
 
-	//自身の向きベクトル
-	glm::vec2 OrientationVector;
+		//自身の向きベクトル
+		glm::vec2 OrientationVector;
 
-	//自身の座標からAIポイントまでのベクトル
-	glm::vec2 m_pos_to_AIpoint;
+		//自身の座標からAIポイントまでのベクトル
+		glm::vec2 m_pos_to_AIpoint;
 
-	//回転の際の補完値
-	float CompletionValue;
+		//回転の際の補完値
+		float CompletionValue;
 
-	//人が操作するかコンピュータが操作するか
-	int m_type;
+		//人が操作するかコンピュータが操作するか
+		int m_type;
 
-	//種類
-	int m_kind;
+		//種類
+		int m_kind;
 
-	//自身の行列
-	glm::mat4 m_matrix;
+		//自身の行列
+		glm::mat4 m_matrix;
 
-	//1フレーム前のポジション
-	glm::vec3 m_lastPosition;
+		//1フレーム前のポジション
+		oka::Vec3 m_lastPosition;
 
-	//前輪と後輪のポジション
-	glm::vec3 m_frontPosition;
-	glm::vec3 m_backPosition;
+		//前輪と後輪のポジション
+		oka::Vec3 m_frontPosition;
+		oka::Vec3 m_backPosition;
 
-	glm::vec3 m_dashSpeed;
+		oka::Vec3 m_dashSpeed;
 
-	//アイテムに当たった時の回転値
-	float m_crashRotate;
+		//アイテムに当たった時の回転値
+		float m_crashRotate;
 
-	//車輪の回転スピード
-	float m_wheelSpeed;
+		//車輪の回転スピード
+		float m_wheelSpeed;
 
-	//人部分
-	//xFile m_rider;
+		//人部分
+		//xFile m_rider;
 
-	//車体部分
-	xFile m_body;
+		//車体部分
+		xFile m_body;
 
-	//後輪部分
-	xFile m_backWheel;
+		//後輪部分
+		xFile m_backWheel;
 
-	//車体から出る煙
-	Smoke m_smoke;
+		//車体から出る煙
+		Smoke m_smoke;
 
-	//ダッシュ状態かどうかのフラグ
-	bool m_isDash;
+		//ダッシュ状態かどうかのフラグ
+		bool m_isDash;
 
-	//ダッシュに必要な力
-	//約15秒に1回使えるように溜まっていく
-	float m_dashPower;
+		//ダッシュに必要な力
+		//約15秒に1回使えるように溜まっていく
+		float m_dashPower;
 
-	//ダッシュパワーが溜まった際にtrueになる
-	bool m_isCharged;
+		//ダッシュパワーが溜まった際にtrueになる
+		bool m_isCharged;
 
-	//ダッシュ時のエフェクト
-	Dash *m_dash;
+		//ダッシュ時のエフェクト
+		Dash *m_dash;
 
-	//全体のタイム
-	int m_flame;
-	int m_milliSecond;
-	int m_second;
-	int m_minute;
-	char m_totalTime[256];
+		//全体のタイム
+		int m_flame;
+		int m_milliSecond;
+		int m_second;
+		int m_minute;
+		char m_totalTime[256];
 
-	//ラップタイム
-	int m_lapTimeCounter;
-	int m_lapMilliSecond[3];
-	int m_lapSecond[3];
-	int m_lapMinute[3];
-	char m_lapTime[3][256];
+		//ラップタイム
+		int m_lapTimeCounter;
+		int m_lapMilliSecond[3];
+		int m_lapSecond[3];
+		int m_lapMinute[3];
+		char m_lapTime[3][256];
 
-	//周回数
-	//正規の走法でコースを1周したら+1する
-	int m_lapCount;
-	char m_lap[256];
+		//周回数
+		//正規の走法でコースを1周したら+1する
+		int m_lapCount;
+		char m_lap[256];
 
-	//順位
-	int m_ranking;
+		//順位
+		int m_ranking;
 
-	//レース後の確定順位
-	int m_lastRanking;
+		//レース後の確定順位
+		int m_lastRanking;
 
-	//既定の周回数に達したらtrueになる
-	bool m_isGoal;
-
-
-	//各チェックポイントを通ったかのフラグ
-	bool m_passCheckPoint[CHECK_POINT_NUMBER];
-
-	//敵のみに使用
-	//各AIポイントを通ったかのフラグ
-	bool m_passAIPoint[AI_POINT_NUMBER];
-
-	//順位判定に使用する
-	//今どのチェックポイントまで通ったか
-	int m_nowPoint;
-
-	//AIに使用する
-	//次にどのチェックポイントを目指すか
-	//チェックポイントの添え字
-	int m_nextPoint;
-
-	//今目指しているチェックポイントまでの距離
-	float m_nextCheckPointLength;
-
-	//攻撃系アイテムに当たったかのフラグ
-	bool m_isHitItem;
-
-	//所持しているアイテム情報
-	//持っているアイテムの種類のみを保持しておく
-	std::vector<int> m_hasItem;
-
-	void draw();
-	void drawHasItem();
-	void update();
-
-	void checkCourseOut();
-	float checkNextCheckPointLength();
-	bool inDart();
-
-	//操作
-	void control(unsigned short _pressedKey, unsigned int _downKeys, float _sThumbLX, float _sThumbLY);
-
-	//敵のAI
-	void control(); void useItem();
-
-	//周回系
-	void printRanking();
-	void printStatus();
-	void printDashGauge();
-	bool countLap();
-	bool checkIsGoal();
-
-	void slip();
-
-	//アイテム系
-	int hasItemNumber();
-	int hasItemLast();
-
-	//コンストラクタ
-	Character() :
-		CompletionValue(0.f),
-		m_type(0),
-		m_kind(0),
-		m_matrix(glm::mat4(1.f)),
-		m_isDash(false),
-		m_dashPower(0),
-		m_isCharged(false),
-		m_dash(nullptr),
-		m_dashSpeed(0, 0, 0),
-		m_crashRotate(0.f),
-		m_wheelSpeed(0.f),
-		m_lastPosition(0, 0, 0),
-		m_flame(0),
-		m_lapTimeCounter(0),
-		m_ranking(0),
-		m_lastRanking(0),
-		m_nowPoint(0),
-		m_lapCount(0),
-		m_isHitItem(false),
-		m_isGoal(false)
-	{
-		printf("プレイヤーが生成されました\n");
-
-		m_engine = new Sound();
-		m_engine->loadKukeiha(engine_sound, sizeof(engine_sound), 110);
-		m_engine->changeVolume(0.8f);
-
-		//角度からの向きベクトル
-		OrientationVector = { -sin(transform.m_rotate.y), -cos(transform.m_rotate.y) };
-		m_pos_to_AIpoint = OrientationVector;
-
-		//前輪座標
-		m_frontPosition.x = transform.m_position.x - sin(transform.m_rotate.y)*1.55f;
-		m_frontPosition.y = 0.f;
-		m_frontPosition.z = transform.m_position.z - cos(transform.m_rotate.y)*1.55f;
-
-		//後輪座標
-		m_backPosition.x = transform.m_position.x + sin(transform.m_rotate.y)*1.15f;
-		m_backPosition.y = 0.f;
-		m_backPosition.z = transform.m_position.z + cos(transform.m_rotate.y)*1.15f;
+		//既定の周回数に達したらtrueになる
+		bool m_isGoal;
 
 
-		//ラップタイムの初期化
-		for (int i = 0; i < 3; i++){
-			m_lapMilliSecond[i] = 0;
-			m_lapSecond[i] = 0;
-			m_lapMinute[i] = 0;
+		//各チェックポイントを通ったかのフラグ
+		bool m_passCheckPoint[CHECK_POINT_NUMBER];
+
+		//敵のみに使用
+		//各AIポイントを通ったかのフラグ
+		bool m_passAIPoint[AI_POINT_NUMBER];
+
+		//順位判定に使用する
+		//今どのチェックポイントまで通ったか
+		int m_nowPoint;
+
+		//AIに使用する
+		//次にどのチェックポイントを目指すか
+		//チェックポイントの添え字
+		int m_nextPoint;
+
+		//今目指しているチェックポイントまでの距離
+		float m_nextCheckPointLength;
+
+		//攻撃系アイテムに当たったかのフラグ
+		bool m_isHitItem;
+
+		//所持しているアイテム情報
+		//持っているアイテムの種類のみを保持しておく
+		std::vector<int> m_hasItem;
+
+		void draw();
+		void drawHasItem();
+		void update();
+
+		void checkCourseOut();
+		float checkNextCheckPointLength();
+		bool inDart();
+
+		//操作
+		void control(unsigned short _pressedKey, unsigned int _downKeys, float _sThumbLX, float _sThumbLY);
+
+		//敵のAI
+		void control(); void useItem();
+
+		//周回系
+		void printRanking();
+		void printStatus();
+		void printDashGauge();
+		bool countLap();
+		bool checkIsGoal();
+
+		void slip();
+
+		//アイテム系
+		int hasItemNumber();
+		int hasItemLast();
+
+		//コンストラクタ
+		Character() :
+			CompletionValue(0.f),
+			m_type(0),
+			m_kind(0),
+			m_matrix(glm::mat4(1.f)),
+			m_isDash(false),
+			m_dashPower(0),
+			m_isCharged(false),
+			m_dash(nullptr),
+			m_dashSpeed(0, 0, 0),
+			m_crashRotate(0.f),
+			m_wheelSpeed(0.f),
+			m_lastPosition(0, 0, 0),
+			m_flame(0),
+			m_lapTimeCounter(0),
+			m_ranking(0),
+			m_lastRanking(0),
+			m_nowPoint(0),
+			m_lapCount(0),
+			m_isHitItem(false),
+			m_isGoal(false)
+		{
+			printf("プレイヤーが生成されました\n");
+
+			m_engine = new Sound();
+			m_engine->loadKukeiha(engine_sound, sizeof(engine_sound), 110);
+			m_engine->changeVolume(0.8f);
+
+			//角度からの向きベクトル
+			OrientationVector = { -sin(transform.m_rotate.m_y), -cos(transform.m_rotate.m_y) };
+			m_pos_to_AIpoint = OrientationVector;
+
+			//前輪座標
+			m_frontPosition.m_x = transform.m_position.m_x - sin(transform.m_rotate.m_y)*1.55f;
+			m_frontPosition.m_y = 0.f;
+			m_frontPosition.m_z = transform.m_position.m_z - cos(transform.m_rotate.m_y)*1.55f;
+
+			//後輪座標
+			m_backPosition.m_x = transform.m_position.m_x + sin(transform.m_rotate.m_y)*1.15f;
+			m_backPosition.m_y = 0.f;
+			m_backPosition.m_z = transform.m_position.m_z + cos(transform.m_rotate.m_y)*1.15f;
+
+
+			//ラップタイムの初期化
+			for (int i = 0; i < 3; i++) {
+				m_lapMilliSecond[i] = 0;
+				m_lapSecond[i] = 0;
+				m_lapMinute[i] = 0;
+			}
+
+			sprintf_s(m_totalTime, "%02d:%02d:%03d", m_minute, m_second, m_milliSecond);
+
+			sprintf_s(m_lap, "%d", m_lapCount + 1);
+
+			sprintf_s(m_lapTime[FIRST], "%02d:%02d:%03d ", m_lapMinute[FIRST], m_lapSecond[FIRST], m_lapMilliSecond[FIRST]);
+			sprintf_s(m_lapTime[SECOND], "%02d:%02d:%03d ", m_lapMinute[SECOND], m_lapSecond[SECOND], m_lapMilliSecond[SECOND]);
+			sprintf_s(m_lapTime[THIRD], "%02d:%02d:%03d ", m_lapMinute[THIRD], m_lapSecond[THIRD], m_lapMilliSecond[THIRD]);
+
+
+			transform.m_scale.m_x = 0.18f;
+			transform.m_scale.m_y = 0.18f;
+			transform.m_scale.m_z = 0.18f;
+
 		}
 
-		sprintf_s(m_totalTime, "%02d:%02d:%03d", m_minute, m_second, m_milliSecond);
-
-		sprintf_s(m_lap, "%d", m_lapCount + 1);
-
-		sprintf_s(m_lapTime[FIRST], "%02d:%02d:%03d ", m_lapMinute[FIRST], m_lapSecond[FIRST], m_lapMilliSecond[FIRST]);
-		sprintf_s(m_lapTime[SECOND], "%02d:%02d:%03d ", m_lapMinute[SECOND], m_lapSecond[SECOND], m_lapMilliSecond[SECOND]);
-		sprintf_s(m_lapTime[THIRD], "%02d:%02d:%03d ", m_lapMinute[THIRD], m_lapSecond[THIRD], m_lapMilliSecond[THIRD]);
-
-
-		transform.m_scale.x = 0.18f;
-		transform.m_scale.y = 0.18f;
-		transform.m_scale.z = 0.18f;
-
-	}
-
-	//デストラクタ
-	~Character(){ printf("キャラクターが削除されました\n"); }
-};
+		//デストラクタ
+		~Character() { printf("キャラクターが削除されました\n"); }
+	};
 
 extern GLuint dashIcon;
 extern GLuint dashGauge;

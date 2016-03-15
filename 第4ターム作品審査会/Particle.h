@@ -4,7 +4,7 @@
 #include"glm\glm.hpp"
 #include"glut.h"
 
-class Particle :public GameObject{
+class Particle :public oka::GameObject{
 public:
 
 	float m_alpha;

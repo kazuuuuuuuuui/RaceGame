@@ -13,7 +13,7 @@ public:
 
 	void draw();
 	void update();
-	bool isHit(glm::vec3 _position);
+	bool isHit(oka::Vec3 _position);
 
 };
 

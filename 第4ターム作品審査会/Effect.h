@@ -4,11 +4,11 @@
 #include"GameObject.h"
 #include"glut.h"
 
-class Effect :public GameObject{
+class Effect :public oka::GameObject{
 public:
 	bool m_isActive;
 
-	glm::vec3 m_basePosition;
+	oka::Vec3 m_basePosition;
 
 	void checkCourseOut();
 	virtual void draw() = 0;

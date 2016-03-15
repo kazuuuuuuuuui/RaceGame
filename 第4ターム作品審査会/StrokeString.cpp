@@ -7,6 +7,7 @@
 //文字・描画位置・文字の大きさ・色を指定して出力
 
 void StrokeString::print(const char *_character, glm::vec3 _position, float _scale, glm::vec3 _color){
+
 	glPushMatrix();
 	{
 

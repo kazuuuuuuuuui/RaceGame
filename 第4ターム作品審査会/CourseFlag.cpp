@@ -28,7 +28,7 @@ void Circle2D(float radius, int x, int y)
 void CourseFlag::draw(){
 	glPushMatrix();
 	{
-		glTranslatef(m_position.x, m_position.y, m_position.z);
+		glTranslatef(m_position.m_x, m_position.m_y, m_position.m_z);
 		glRotatef(90, 1, 0, 0);
 		Circle2D(20, 0, 0);
 		glutSolidCube(0.5);
@@ -40,15 +40,15 @@ void CourseFlag::draw(){
 //周回判定をとるためのコースフラグを通っているか判定する
 
 
-bool CourseFlag::checkPassFlag(glm::vec3 _position){
+bool CourseFlag::checkPassFlag(oka::Vec3 _position){
 
-	glm::vec3 distance;
+	oka::Vec3 distance;
 
-	distance.x = (m_position.x - _position.x);
-	distance.y=0;
-	distance.z = (m_position.z - _position.z);
+	distance.m_x = (m_position.m_x - _position.m_x);
+	distance.m_y=0;
+	distance.m_z = (m_position.m_z - _position.m_z);
 
-	float length = sqrt(distance.x*distance.x + distance.z*distance.z);
+	float length = sqrt(distance.m_x*distance.m_x + distance.m_z*distance.m_z);
 
 	float rad = 20.f;
 

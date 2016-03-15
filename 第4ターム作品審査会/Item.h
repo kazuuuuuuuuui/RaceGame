@@ -39,7 +39,7 @@ void Circle2DFill(float radius, int x, int y);
 //魔石(アイテム)の情報
 
 
-class Item : public GameObject{
+class Item : public oka::GameObject{
 public:
 
 	//取り敢えず
@@ -55,7 +55,7 @@ public:
 	void reCreateItem();
 
 	//プレイヤーにとられたかどうかを判定する
-	bool checkIsGotten( glm::vec3 _position);
+	bool checkIsGotten(oka::Vec3 _position);
 
 	//コンストラクタ
 	Item() :

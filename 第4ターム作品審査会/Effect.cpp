@@ -14,7 +14,7 @@ std::list<Effect*>effect;
 
 void Effect::checkCourseOut(){
 
-	if (m_basePosition.x < -100.f || m_basePosition.x > COURSE_WIDTH + 100.f){
+	if (m_basePosition.m_x < -100.f || m_basePosition.m_x > COURSE_WIDTH + 100.f){
 
 		m_isActive = false;
 
@@ -22,7 +22,7 @@ void Effect::checkCourseOut(){
 
 
 
-	if (m_basePosition.z > 100.f || m_basePosition.z < -COURSE_HEIGHT-100.f){
+	if (m_basePosition.m_z > 100.f || m_basePosition.m_z < -COURSE_HEIGHT-100.f){
 
 		m_isActive = false;
 

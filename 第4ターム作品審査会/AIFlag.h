@@ -1,5 +1,6 @@
 #pragma once
 
+#include"Vec3.h"
 #include"glm\glm.hpp"
 #include"glut.h"
 
@@ -8,10 +9,10 @@
 
 class AIFlag{
 public:
-	glm::vec3 m_position;
+	oka::Vec3 m_position;
 
 	void draw();
-	bool checkPassFlag(glm::vec3 _position);
+	bool checkPassFlag(oka::Vec3 _position);
 
 	AIFlag() :
 		m_position(0, 0, 0)

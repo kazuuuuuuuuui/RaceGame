@@ -69,9 +69,9 @@ void Course::setItem(){
 
 				//Žæ‚èŠ¸‚¦‚¸
 
-				item[itemNum]->transform.m_position.x = t;
-				item[itemNum]->transform.m_position.y = 0.5f;
-				item[itemNum]->transform.m_position.z = i - COURSE_HEIGHT;
+				item[itemNum]->transform.m_position.m_x = t;
+				item[itemNum]->transform.m_position.m_y = 0.5f;
+				item[itemNum]->transform.m_position.m_z = i - COURSE_HEIGHT;
 
 				itemNum++;
 
@@ -93,8 +93,8 @@ void Course::setCheckPoint(const char *_txtName) {
 
 	for (int i = 0; i < CHECK_POINT_NUMBER; i++) {
 
-		glm::vec3 pos;
-		fscanf(fp, "(%f,%f,%f)", &pos.x, &pos.y, &pos.z);
+		oka::Vec3 pos;
+		fscanf(fp, "(%f,%f,%f)", &pos.m_x, &pos.m_y, &pos.m_z);
 		fscanf(fp, "%*c"); //‰üs•¶Žš“Ç‚Ý”ò‚Î‚µ
 
 		m_checkPoint[i].m_position = pos;
@@ -114,8 +114,8 @@ void Course::setAIPoint(const char *_txtName) {
 
 	for (int i = 0; i < AI_POINT_NUMBER; i++) {
 
-		glm::vec3 pos;
-		fscanf(fp, "(%f,%f,%f)", &pos.x, &pos.y, &pos.z);
+		oka::Vec3 pos;
+		fscanf(fp, "(%f,%f,%f)", &pos.m_x, &pos.m_y, &pos.m_z);
 		fscanf(fp, "%*c"); //‰üs•¶Žš“Ç‚Ý”ò‚Î‚µ
 
 		m_AIPoint[i].m_position = pos;

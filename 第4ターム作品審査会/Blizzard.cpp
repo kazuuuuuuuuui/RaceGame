@@ -17,7 +17,7 @@ void Blizzard::update(){
 			m_isActive = false;
 			character[i]->m_isHitItem = true;
 			character[i]->m_dashSpeed = { 0.f, 0.f, 0.f };
-			character[i]->transform.m_rotate.z = 0.f;
+			character[i]->transform.m_rotate.m_z = 0.f;
 			character[i]->m_crashRotate = 360000.f*(M_PI / 180);
 
 		}
@@ -37,7 +37,7 @@ void Blizzard::draw(){
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-		glTranslatef(m_basePosition.x, m_basePosition.y, m_basePosition.z);
+		glTranslatef(m_basePosition.m_x, m_basePosition.m_y, m_basePosition.m_z);
 		glRotatef(90, 1, 0, 0);
 
 		glBegin(GL_QUADS);
@@ -68,16 +68,16 @@ void Blizzard::draw(){
 //全プレイヤーの座標を受け取って当たり判定を取る
 //既定の範囲内まで近付いたらtrue そうでなければfalseを返す
 
-bool Blizzard::isHit(glm::vec3 _position){
+bool Blizzard::isHit(oka::Vec3 _position){
 
 	//プレイヤーと設置されたブリザードとのベクトル
-	glm::vec3 v;
+	oka::Vec3 v;
 
-	v.x = m_basePosition.x - _position.x;
-	v.y = 0;
-	v.z = m_basePosition.z - _position.z;
+	v.m_x = m_basePosition.m_x - _position.m_x;
+	v.m_y = 0;
+	v.m_z = m_basePosition.m_z - _position.m_z;
 
-	float length = glm::length(v);
+	float length = v.length();
 
 	//範囲は要修正
 	if (length < 2.f){

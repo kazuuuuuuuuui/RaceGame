@@ -28,7 +28,7 @@ void Dash::draw(){
 	glPushMatrix();
 	{
 
-		glTranslatef(m_basePosition.x, m_basePosition.y, m_basePosition.z);
+		glTranslatef(m_basePosition.m_x, m_basePosition.m_y, m_basePosition.m_z);
 
 		for (int i = 0; i < DASH_PARTICLE_NUMBER; i++){
 			m_particle[i].draw(1, { 1.f, 1.f, 1.f }, dash_handle);

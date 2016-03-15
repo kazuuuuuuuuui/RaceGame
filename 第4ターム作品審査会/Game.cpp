@@ -1,8 +1,8 @@
-
 //#pragma comment(linker, "/subsystem:\"windows\" /entry:\"mainCRTStartup\"")
 
 #include<stdio.h>
 #include<stdlib.h>
+#include"Camera.h"
 #include"GameManager.h"
 #include"joysticManager.h"
 #include"SoundManager.h"
@@ -37,16 +37,13 @@ void display() {
 	JoysticManager::getInstance()->update();
 	GameManager::getInstance()->updata();
 	
-
 }
 
 //----------------------------------------
 //display関数を60F単位で再帰的に呼び出す関数
 
 void timer(int value) {
-
-	//fps();
-
+	
 	glutPostRedisplay();
 	glutTimerFunc(1000 / 60, timer, 0);
 	glutForceJoystickFunc();
