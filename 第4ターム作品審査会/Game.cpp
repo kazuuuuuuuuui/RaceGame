@@ -43,6 +43,18 @@ void display() {
 //display関数を60F単位で再帰的に呼び出す関数
 
 void timer(int value) {
+
+	if (player1 != nullptr) {
+		printf("%f ", player1->m_transform.GetPosition().m_x);
+		printf("%f ", player1->m_transform.GetPosition().m_y);
+		printf("%f\n", player1->m_transform.GetPosition().m_z);
+	}
+
+	/*if (player1 != nullptr) {
+		printf("%f ", player1->m_speed.m_x);
+		printf("%f ", player1->m_speed.m_y);
+		printf("%f\n", player1->m_speed.m_z);
+	}*/
 	
 	glutPostRedisplay();
 	glutTimerFunc(1000 / 60, timer, 0);

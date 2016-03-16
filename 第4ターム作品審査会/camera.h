@@ -2,42 +2,33 @@
 #define _OKA_CAMERA_H_
 
 #include"Vec3.h"
+#include"Mat4Å~4.h"
 #include"glm\glm.hpp"
-
-enum {
-	TYPE_2D,
-	TYPE_3D
-};
 
 namespace oka 
 {
 	class Camera
 	{
-	public:
-		double m_angle;
+	private:
+		Vec3 m_position;
+		Vec3 m_target;
+		Vec3 m_up;
+		glm::mat4 m_viewMatrix;
+		double m_fovy;//ìxêî Ç≈ä«óù
 		double m_aspect;
 		double m_zNear;
 		double m_zFar;
-		Vec3 m_position;
-		Vec3 m_rotate;
-		Vec3 m_target;
-		Vec3 m_up;
 
-		Camera() :
-			m_angle(60),
-			m_aspect(1),
-			m_zNear(0.1),
-			m_zFar(1000),
-			m_position(0, 0, 0),
-			m_rotate(0, 0, 0),
-			m_target(0, 0, 10),
-			m_up(0, 1, 0)
-		{};
+	public:
+		Camera();
+		~Camera() {};
 
-		void update(const int _type);
-		void SetPosition(Vec3 _position) { m_position = _position; }
-		void SetTarget(Vec3 _target) { m_target = _target; }
+		void Perspective();
+		void SetViewMatrix(const Vec3 _eye,const Vec3 _target,const Vec3 _up);
+		void MultViewMatrix();
+		void Ortho(const float _left, const float _right, const float _bottom, const float _top, const float _near, const float _far);
 
+		glm::mat4 GetViewMatrix()const;	
 	};
 
 }//namespace oka

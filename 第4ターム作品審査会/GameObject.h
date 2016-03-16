@@ -10,7 +10,7 @@ namespace oka
 	class GameObject {
 
 	public:
-		Transform transform;
+		Transform m_transform;
 		Vec3 m_speed;
 		Vec3 m_accel;
 

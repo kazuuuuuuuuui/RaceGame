@@ -56,7 +56,7 @@ void Item::update(){
 	//取られたかの判定
 	for (unsigned int i = 0; i < character.size(); i++){
 
-		if (true == m_isActive && checkIsGotten(character[i]->transform.m_position)){
+		if (true == m_isActive && checkIsGotten(character[i]->m_transform.GetPosition())){
 
 			m_isActive = false;
 
@@ -92,7 +92,7 @@ void Item::move(){
 	ag += 0.001;
 
 	//0.5～1
-	transform.m_position.m_y = ((sin(ag) + 1) / 4) + 0.5f;
+	m_transform.SetPositionY(((sin(ag) + 1) / 4) + 0.5f);
 
 }
 
@@ -123,9 +123,9 @@ void Item::draw(){
 
 		glPushMatrix();
 		{
-			glTranslatef(transform.m_position.m_x, transform.m_position.m_y, transform.m_position.m_z);
-			glRotatef(0, transform.m_rotate.m_x, transform.m_rotate.m_y, transform.m_rotate.m_z);
-			glScalef(transform.m_scale.m_x, transform.m_scale.m_y, transform.m_scale.m_z);
+			glTranslatef(m_transform.GetPosition().m_x, m_transform.GetPosition().m_y, m_transform.GetPosition().m_z);
+			glRotatef(0, m_transform.GetRotation().m_x, m_transform.GetRotation().m_y, m_transform.GetRotation().m_z);
+			glScalef(m_transform.GetScale().m_x, m_transform.GetScale().m_y, m_transform.GetScale().m_z);
 
 			glColor3f(1, 1, 1);
 
@@ -176,7 +176,7 @@ void Item::draw(){
 		//アイテムの影
 		glPushMatrix();
 		{
-			glTranslatef(transform.m_position.m_x, 0.1, transform.m_position.m_z);
+			glTranslatef(m_transform.GetPosition().m_x, 0.1, m_transform.GetPosition().m_z);
 			glRotatef(90, 1, 0, 0);
 			glColor3f(110.f / 255.f, 110.f / 255.f, 110.f / 255.f);
 			Circle2DFill(0.3, 0, 0);
@@ -206,9 +206,9 @@ bool Item::checkIsGotten(oka::Vec3 _position){
 
 	//プレイヤーと魔石との距離
 	glm::vec3 distance;
-	distance.x = (transform.m_position.m_x - _position.m_x);
-	distance.y = (transform.m_position.m_y - _position.m_y);
-	distance.z = (transform.m_position.m_z - _position.m_z);
+	distance.x = (m_transform.GetPosition().m_x - _position.m_x);
+	distance.y = (m_transform.GetPosition().m_y - _position.m_y);
+	distance.z = (m_transform.GetPosition().m_z - _position.m_z);
 
 	float length = sqrt(distance.x*distance.x + distance.y*distance.y + distance.z*distance.z);
 

@@ -11,13 +11,13 @@ void Blizzard::update(){
 
 	for (unsigned int i = 0; i < character.size(); i++){
 
-		if (isHit(character[i]->transform.m_position)){
+		if (isHit(character[i]->m_transform.GetPosition())){
 
 			SoundManager::getInstance()->m_sounds["slipSE"]->play();
 			m_isActive = false;
 			character[i]->m_isHitItem = true;
 			character[i]->m_dashSpeed = { 0.f, 0.f, 0.f };
-			character[i]->transform.m_rotate.m_z = 0.f;
+			character[i]->m_transform.SetRotationZ(0.0f);
 			character[i]->m_crashRotate = 360000.f*(M_PI / 180);
 
 		}

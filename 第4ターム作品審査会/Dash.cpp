@@ -2,24 +2,21 @@
 
 GLuint dash_handle = 0;
 
-void Dash::update(){
-
-
+void Dash::update()
+{
 	//パーティクルの更新
-	for (int i = 0; i < DASH_PARTICLE_NUMBER; i++){
+	for (int i = 0; i < DASH_PARTICLE_NUMBER; i++)
+	{
 
 		m_particle[i].m_alpha -= 0.05f;
 
-		m_particle[i].transform.m_scale += 0.1f;
+		m_particle[i].m_transform.SetScale(m_particle[i].m_transform.GetScale()+0.1f);
 
 		if (m_particle[i].m_alpha <= 0.f){
 			m_particle[i].m_alpha = (float)rand() / RAND_MAX;
-			m_particle[i].transform.m_scale = { 0.f, 0.f, 0.f };
+			m_particle[i].m_transform.SetScale(oka::Vec3(0.0f, 0.0f, 0.0f));
 		}
-
-
 	}
-
 }
 
 void Dash::draw(){

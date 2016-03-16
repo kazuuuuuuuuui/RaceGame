@@ -15,7 +15,7 @@ namespace oka {
 	//ˆø”‚Æ‚µ‚Äó‚¯æ‚Á‚½’l‚Åƒƒ“ƒo‚ğ‰Šú‰»
 
 	Vec3::Vec3(const float _x, const float _y, const float _z):
-		m_x(_x), m_y(_x), m_z(_z)
+		m_x(_x), m_y(_y), m_z(_z)
 	{}
 
 	//-------------------------------------
@@ -28,6 +28,7 @@ namespace oka {
 		out.m_x = this->m_x + _v.m_x;
 		out.m_y = this->m_y + _v.m_y;
 		out.m_z = this->m_z + _v.m_z;
+
 		return out;
 	}
 
@@ -150,6 +151,7 @@ namespace oka {
 		this->m_x += _s;
 		this->m_y += _s;
 		this->m_z += _s;
+
 		return *this;
 	}
 
@@ -158,6 +160,7 @@ namespace oka {
 		this->m_x -= _s;
 		this->m_y -= _s;
 		this->m_z -= _s;
+
 		return *this;
 	}
 
@@ -166,6 +169,7 @@ namespace oka {
 		this->m_x *= _s;
 		this->m_y *= _s;
 		this->m_z *= _s;
+
 		return *this;
 	}
 

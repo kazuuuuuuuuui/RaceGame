@@ -53,9 +53,6 @@ enum{
 		//自身の行列
 		glm::mat4 m_matrix;
 
-		//1フレーム前のポジション
-		oka::Vec3 m_lastPosition;
-
 		//前輪と後輪のポジション
 		oka::Vec3 m_frontPosition;
 		oka::Vec3 m_backPosition;
@@ -188,7 +185,6 @@ enum{
 			m_dashSpeed(0, 0, 0),
 			m_crashRotate(0.f),
 			m_wheelSpeed(0.f),
-			m_lastPosition(0, 0, 0),
 			m_flame(0),
 			m_lapTimeCounter(0),
 			m_ranking(0),
@@ -205,18 +201,18 @@ enum{
 			m_engine->changeVolume(0.8f);
 
 			//角度からの向きベクトル
-			OrientationVector = { -sin(transform.m_rotate.m_y), -cos(transform.m_rotate.m_y) };
+			OrientationVector = { -sin(m_transform.GetRotation().m_y), -cos(m_transform.GetRotation().m_y) };
 			m_pos_to_AIpoint = OrientationVector;
 
 			//前輪座標
-			m_frontPosition.m_x = transform.m_position.m_x - sin(transform.m_rotate.m_y)*1.55f;
+			m_frontPosition.m_x = m_transform.GetPosition().m_x - sin(m_transform.GetRotation().m_y)*1.55f;
 			m_frontPosition.m_y = 0.f;
-			m_frontPosition.m_z = transform.m_position.m_z - cos(transform.m_rotate.m_y)*1.55f;
+			m_frontPosition.m_z = m_transform.GetPosition().m_z - cos(m_transform.GetRotation().m_y)*1.55f;
 
 			//後輪座標
-			m_backPosition.m_x = transform.m_position.m_x + sin(transform.m_rotate.m_y)*1.15f;
+			m_backPosition.m_x = m_transform.GetPosition().m_x + sin(m_transform.GetRotation().m_y)*1.15f;
 			m_backPosition.m_y = 0.f;
-			m_backPosition.m_z = transform.m_position.m_z + cos(transform.m_rotate.m_y)*1.15f;
+			m_backPosition.m_z = m_transform.GetPosition().m_z + cos(m_transform.GetRotation().m_y)*1.15f;
 
 
 			//ラップタイムの初期化
@@ -234,10 +230,7 @@ enum{
 			sprintf_s(m_lapTime[SECOND], "%02d:%02d:%03d ", m_lapMinute[SECOND], m_lapSecond[SECOND], m_lapMilliSecond[SECOND]);
 			sprintf_s(m_lapTime[THIRD], "%02d:%02d:%03d ", m_lapMinute[THIRD], m_lapSecond[THIRD], m_lapMilliSecond[THIRD]);
 
-
-			transform.m_scale.m_x = 0.18f;
-			transform.m_scale.m_y = 0.18f;
-			transform.m_scale.m_z = 0.18f;
+			m_transform.SetScale(oka::Vec3(0.18f, 0.18f, 0.18f));
 
 		}
 

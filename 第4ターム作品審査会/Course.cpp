@@ -68,10 +68,12 @@ void Course::setItem(){
 			if (ITEMPOSITION == m_buffer[i][t]){
 
 				//Žæ‚èŠ¸‚¦‚¸
+				oka::Vec3 position;
+				position.m_x = t;
+				position.m_y = 0.5f;
+				position.m_z = i - COURSE_HEIGHT;
 
-				item[itemNum]->transform.m_position.m_x = t;
-				item[itemNum]->transform.m_position.m_y = 0.5f;
-				item[itemNum]->transform.m_position.m_z = i - COURSE_HEIGHT;
+				item[itemNum]->m_transform.SetPosition(position);
 
 				itemNum++;
 

@@ -1,6 +1,7 @@
 #include"Particle.h"
 #include"Fire.h"
-#include"Matrix.h"
+#include"Camera.h"
+#include"Mat4×4.h"
 #include"glm\glm.hpp"
 #include"glut.h"
 
@@ -12,7 +13,7 @@ void Particle::draw(int _type,glm::vec3 _color,GLuint _texture){
 
 	glPushMatrix();
 	{
-		BillboardMatrix = glm::inverse(viewMatrix);
+		BillboardMatrix = glm::inverse(g_camera->GetViewMatrix());
 		BillboardMatrix[3][0] = 0;
 		BillboardMatrix[3][1] = 0;
 		BillboardMatrix[3][2] = 0;
@@ -25,12 +26,12 @@ void Particle::draw(int _type,glm::vec3 _color,GLuint _texture){
 
 		glBindTexture(GL_TEXTURE_2D, _texture);
 
-		glTranslatef(transform.m_position.m_x, transform.m_position.m_y, transform.m_position.m_z);
+		glTranslatef(m_transform.GetPosition().m_x, m_transform.GetPosition().m_y, m_transform.GetPosition().m_z);
 		
 		//ビルボード回転行列適用
 		glMultMatrixf((GLfloat*)&BillboardMatrix);
 		
-		glScalef(transform.m_scale.m_x, transform.m_scale.m_y, transform.m_scale.m_z);
+		glScalef(m_transform.GetScale().m_x, m_transform.GetScale().m_y, m_transform.GetScale().m_z);
 		
 		if (_type == 0){
 

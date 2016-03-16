@@ -133,38 +133,37 @@ void Character::update(){
 
 	}
 
-	//1フレーム前のポジション更新
-	m_lastPosition = transform.m_position;
 
 	//スピード・ポジションの更新
 	m_speed += (m_dashSpeed + m_accel);
 
-	transform.m_position += m_speed;
+	//m_transform.GetPosition() += m_speed;
+	m_transform.SetPosition(m_transform.GetPosition() + m_speed);
 
 	//前輪と後輪のポジション更新
 
 	//前輪座標
-	m_frontPosition.m_x = transform.m_position.m_x - sin(transform.m_rotate.m_y)*1.1f;
+	m_frontPosition.m_x = m_transform.GetPosition().m_x - sin(m_transform.GetRotation().m_y)*1.1f;
 	m_frontPosition.m_y = 0.5f;
-	m_frontPosition.m_z = transform.m_position.m_z - cos(transform.m_rotate.m_y)*1.1f;
+	m_frontPosition.m_z = m_transform.GetPosition().m_z - cos(m_transform.GetRotation().m_y)*1.1f;
 
 	//後輪座標
-	m_backPosition.m_x = transform.m_position.m_x + sin(transform.m_rotate.m_y)*0.7f;
+	m_backPosition.m_x = m_transform.GetPosition().m_x + sin(m_transform.GetRotation().m_y)*0.7f;
 	m_backPosition.m_y = 0.5f;
-	m_backPosition.m_z = transform.m_position.m_z + cos(transform.m_rotate.m_y)*0.7f;
+	m_backPosition.m_z = m_transform.GetPosition().m_z + cos(m_transform.GetRotation().m_y)*0.7f;
 
 
 	//煙の更新
 	m_smoke.update();
-	m_smoke.m_basePosition.m_x = transform.m_position.m_x + sin(transform.m_rotate.m_y)*1.7f;
+	m_smoke.m_basePosition.m_x = m_transform.GetPosition().m_x + sin(m_transform.GetRotation().m_y)*1.7f;
 	m_smoke.m_basePosition.m_y = 0.5f;
-	m_smoke.m_basePosition.m_z = transform.m_position.m_z + cos(transform.m_rotate.m_y)*1.7f;
+	m_smoke.m_basePosition.m_z = m_transform.GetPosition().m_z + cos(m_transform.GetRotation().m_y)*1.7f;
 
 	//ダッシュエフェクトの更新
 	if (nullptr != m_dash){
-		m_dash->m_basePosition.m_x = transform.m_position.m_x + sin(transform.m_rotate.m_y)*0.75;
+		m_dash->m_basePosition.m_x = m_transform.GetPosition().m_x + sin(m_transform.GetRotation().m_y)*0.75;
 		m_dash->m_basePosition.m_y = -0.2f;
-		m_dash->m_basePosition.m_z = transform.m_position.m_z + cos(transform.m_rotate.m_y)*0.75;
+		m_dash->m_basePosition.m_z = m_transform.GetPosition().m_z + cos(m_transform.GetRotation().m_y)*0.75;
 	}
 
 	//減速させる慣性
@@ -197,7 +196,7 @@ void Character::update(){
 
 		if (0 == i){
 
-			if (false == m_passCheckPoint[i] && course->m_checkPoint[i].checkPassFlag(transform.m_position)){
+			if (false == m_passCheckPoint[i] && course->m_checkPoint[i].checkPassFlag(m_transform.GetPosition())){
 
 				m_passCheckPoint[i] = true;
 				m_nowPoint++;
@@ -210,7 +209,7 @@ void Character::update(){
 
 			if (true == m_passCheckPoint[i - 1]){
 
-				if (false == m_passCheckPoint[i] && course->m_checkPoint[i].checkPassFlag(transform.m_position)){
+				if (false == m_passCheckPoint[i] && course->m_checkPoint[i].checkPassFlag(m_transform.GetPosition())){
 
 					m_passCheckPoint[i] = true;
 					m_nowPoint++;
@@ -264,13 +263,13 @@ void Character::draw(){
 		{
 
 			//行列計算
-			glm::mat4 translate = glm::translate(glm::vec3(transform.m_position.m_x, transform.m_position.m_y, transform.m_position.m_z));
+			glm::mat4 translate = glm::translate(glm::vec3(m_transform.GetPosition().m_x, m_transform.GetPosition().m_y, m_transform.GetPosition().m_z));
 
-			glm::mat4 rotate = glm::rotate(transform.m_rotate.m_y + m_crashRotate, glm::vec3(0, 1, 0))*
-				glm::rotate(transform.m_rotate.m_z, glm::vec3(0, 0, 1));
+			glm::mat4 rotate = glm::rotate(m_transform.GetRotation().m_y + m_crashRotate, glm::vec3(0, 1, 0))*
+				glm::rotate(m_transform.GetRotation().m_z, glm::vec3(0, 0, 1));
 
 
-			glm::mat4 scale = glm::scale(glm::vec3(transform.m_scale.m_x, transform.m_scale.m_y, transform.m_scale.m_z));
+			glm::mat4 scale = glm::scale(glm::vec3(m_transform.GetScale().m_x, m_transform.GetScale().m_y, m_transform.GetScale().m_z));
 
 			//親の行列
 			m_matrix = translate *rotate *scale;
@@ -441,11 +440,11 @@ void Character::draw(){
 	{
 
 		//行列計算
-		glm::mat4 parentTranslate = glm::translate(glm::vec3(transform.m_position.m_x, 0.01f, transform.m_position.m_z));
+		glm::mat4 parentTranslate = glm::translate(glm::vec3(m_transform.GetPosition().m_x, 0.01f, m_transform.GetPosition().m_z));
 
-		glm::mat4 parentRotate = glm::rotate(transform.m_rotate.m_y + m_crashRotate, glm::vec3(0, 1, 0));
+		glm::mat4 parentRotate = glm::rotate(m_transform.GetRotation().m_y + m_crashRotate, glm::vec3(0, 1, 0));
 
-		glm::mat4 parentScale = glm::scale(glm::vec3(transform.m_scale.m_x, 0, transform.m_scale.m_z));
+		glm::mat4 parentScale = glm::scale(glm::vec3(m_transform.GetScale().m_x, 0, m_transform.GetScale().m_z));
 
 		//親の行列
 		m_matrix = parentTranslate *parentRotate * parentScale;
@@ -526,9 +525,9 @@ void Character::drawHasItem(){
 
 		glPushMatrix();
 		{
-			glTranslatef(transform.m_position.m_x + sin(transform.m_rotate.m_y) * 2.8 + sin(transform.m_rotate.m_y)*i,
+			glTranslatef(m_transform.GetPosition().m_x + sin(m_transform.GetRotation().m_y) * 2.8 + sin(m_transform.GetRotation().m_y)*i,
 				0.5f,
-				transform.m_position.m_z + cos(transform.m_rotate.m_y) * 2.8 + cos(transform.m_rotate.m_y)*i);
+				m_transform.GetPosition().m_z + cos(m_transform.GetRotation().m_y) * 2.8 + cos(m_transform.GetRotation().m_y)*i);
 
 			glColor3f(1, 1, 1);
 
@@ -583,7 +582,8 @@ void Character::drawHasItem(){
 //-------------------------------------
 //自機の制御
 
-void Character::control(unsigned short _pressedKey, unsigned int _downKeys, float _sThumbLX, float _sThumbLY){
+void Character::control(unsigned short _pressedKey, unsigned int _downKeys, float _sThumbLX, float _sThumbLY)
+{
 
 	//エンジン音のピッチ調整
 	alSourcef(
@@ -591,59 +591,68 @@ void Character::control(unsigned short _pressedKey, unsigned int _downKeys, floa
 		AL_PITCH,
 		pow(2, (m_speed.length()*15.f) / 12));
 
-	if (false == m_isHitItem){
+	if (false == m_isHitItem)
+	{
 
 		//前進(Aボタン)
-		if (_pressedKey & XINPUT_GAMEPAD_A){
+		if (_pressedKey & XINPUT_GAMEPAD_A)
+		{
 
 			//加速度の設定
 			//-0.005fは補正値
-			oka::Vec3 accelIncrement(-0.015*sin(transform.m_rotate.m_y), 0, -0.015*cos(transform.m_rotate.m_y));
+			oka::Vec3 accelIncrement(-0.015*sin(m_transform.GetRotation().m_y), 0.f, -0.015*cos(m_transform.GetRotation().m_y));
 			m_accel = accelIncrement;
-
+	
 		}
-		else{
+		else
+		{
 			m_accel = { 0.f, 0.f, 0.f };
 		}
 
 		//正面右に移動
-		if (_sThumbLX > 0.3){
-			transform.m_rotate.m_y -= 0.02f;
+		if (_sThumbLX > 0.3)
+		{
+			m_transform.SetRotationY(m_transform.GetRotation().m_y-0.02f);
 
 			_sThumbLX = 1.f;
-			transform.m_rotate.m_z = transform.m_rotate.m_z + ((-1)*(_sThumbLX / 2) - transform.m_rotate.m_z)*0.1f;
+			m_transform.SetRotationZ(m_transform.GetRotation().m_z + ((-1)*(_sThumbLX / 2) - m_transform.GetRotation().m_z)*0.1f);
 		}
 
 		//正面左に移動
-		else if (_sThumbLX < -0.3){
-			transform.m_rotate.m_y += 0.02f;
+		else if (_sThumbLX < -0.3)
+		{
+	
+			m_transform.SetRotationY(m_transform.GetRotation().m_y + 0.02f);
 
 			_sThumbLX = -1.f;
-			transform.m_rotate.m_z = transform.m_rotate.m_z + ((-1)*(_sThumbLX / 2) - transform.m_rotate.m_z)*0.1f;
+			m_transform.SetRotationZ(m_transform.GetRotation().m_z + ((-1)*(_sThumbLX / 2) - m_transform.GetRotation().m_z)*0.1f);
 		}
-		else{
-			transform.m_rotate.m_z = transform.m_rotate.m_z + ((_sThumbLX / 2) - transform.m_rotate.m_z)*0.1f;
-
-			//m_rotate.z = 0.f;
+		else
+		{
+			m_transform.SetRotationZ(m_transform.GetRotation().m_z + ((_sThumbLX / 2) - m_transform.GetRotation().m_z)*0.1f);
 		}
 
 		//アイテムの使用
-		if (_downKeys &  XINPUT_GAMEPAD_LEFT_SHOULDER){
+		if (_downKeys &  XINPUT_GAMEPAD_LEFT_SHOULDER)
+		{
 
-			if (false == m_isDash){
+			if (false == m_isDash)
+			{
 
-				if (hasItemNumber() > 0){
+				if (hasItemNumber() > 0)
+				{
 
 					//使ったアイテムの種類によって
 					//応じたエフェクトを出す
 
 					//ファイアを使用した
-					if (FIRE == hasItemLast()){
+					if (FIRE == hasItemLast())
+					{
 
 						Fire *fire = new Fire();
 						fire->m_isActive = true;
-						fire->m_basePosition = { transform.m_position.m_x - sin(transform.m_rotate.m_y) * 1.f, 0.5f,transform.m_position.m_z - cos(transform.m_rotate.m_y) * 1.f };
-						fire->m_speed = { -sin(transform.m_rotate.m_y)*1.f, 0.f, -cos(transform.m_rotate.m_y)*1.f };
+						fire->m_basePosition = { m_transform.GetPosition().m_x - sin(m_transform.GetRotation().m_y) * 1.f, 0.5f,m_transform.GetPosition().m_z - cos(m_transform.GetRotation().m_y) * 1.f };
+						fire->m_speed = { -sin(m_transform.GetRotation().m_y)*1.f, 0.f, -cos(m_transform.GetRotation().m_y)*1.f };
 						effect.push_back(fire);
 						SoundManager::getInstance()->m_sounds["fireSE"]->play();
 
@@ -654,7 +663,7 @@ void Character::control(unsigned short _pressedKey, unsigned int _downKeys, floa
 
 						Blizzard *blizzard = new Blizzard();
 						blizzard->m_isActive = true;
-						blizzard->m_basePosition = { transform.m_position.m_x + sin(transform.m_rotate.m_y)*2.5f, 0.01f, transform.m_position.m_z + cos(transform.m_rotate.m_y)*2.5f };
+						blizzard->m_basePosition = { m_transform.GetPosition().m_x + sin(m_transform.GetRotation().m_y)*2.5f, 0.01f, m_transform.GetPosition().m_z + cos(m_transform.GetRotation().m_y)*2.5f };
 						effect.push_back(blizzard);
 
 
@@ -678,11 +687,11 @@ void Character::control(unsigned short _pressedKey, unsigned int _downKeys, floa
 
 				m_dashPower = 0.f;
 
-				m_dashSpeed = oka::Vec3(-0.09f*sin(transform.m_rotate.m_y), 0.f, -0.09f*cos(transform.m_rotate.m_y));
+				m_dashSpeed = oka::Vec3(-0.09f*sin(m_transform.GetRotation().m_y), 0.f, -0.09f*cos(m_transform.GetRotation().m_y));
 
 				m_dash = new Dash();
 				m_dash->m_isActive = true;
-				m_dash->m_basePosition = { transform.m_position.m_x, 0, transform.m_position.m_z };
+				m_dash->m_basePosition = { m_transform.GetPosition().m_x, 0, m_transform.GetPosition().m_z };
 				effect.push_back(m_dash);
 
 			}
@@ -704,7 +713,7 @@ void Character::control(){
 	//コースのAIポイントのx - 敵のx
 	//コースのAIのz - 敵のz
 
-	glm::vec2 v = { course->m_AIPoint[m_nextPoint].m_position.m_x - transform.m_position.m_x, course->m_AIPoint[m_nextPoint].m_position.m_z - transform.m_position.m_z };
+	glm::vec2 v = { course->m_AIPoint[m_nextPoint].m_position.m_x - m_transform.GetPosition().m_x, course->m_AIPoint[m_nextPoint].m_position.m_z - m_transform.GetPosition().m_z };
 
 	v = glm::normalize(v);
 
@@ -716,7 +725,7 @@ void Character::control(){
 
 	//敵のAIの挙動制御
 
-	if (course->m_AIPoint[m_nextPoint].checkPassFlag(transform.m_position)){
+	if (course->m_AIPoint[m_nextPoint].checkPassFlag(m_transform.GetPosition())){
 
 		m_passAIPoint[m_nextPoint] = true;
 
@@ -726,11 +735,11 @@ void Character::control(){
 			m_nextPoint = 0;
 		}
 
-		m_pos_to_AIpoint = { course->m_AIPoint[m_nextPoint].m_position.m_x - transform.m_position.m_x, course->m_AIPoint[m_nextPoint].m_position.m_z - transform.m_position.m_z };
+		m_pos_to_AIpoint = { course->m_AIPoint[m_nextPoint].m_position.m_x - m_transform.GetPosition().m_x, course->m_AIPoint[m_nextPoint].m_position.m_z - m_transform.GetPosition().m_z };
 		m_pos_to_AIpoint = glm::normalize(m_pos_to_AIpoint);
 
 		//角度からの向きベクトル
-		OrientationVector = { -sin(transform.m_rotate.m_y), -cos(transform.m_rotate.m_y) };
+		OrientationVector = { -sin(m_transform.GetRotation().m_y), -cos(m_transform.GetRotation().m_y) };
 
 		CompletionValue = 0.f;
 
@@ -744,7 +753,7 @@ void Character::control(){
 	//自身の向きベクトルに差分を足したベクトル
 	glm::vec2 OrientationVectorPulsDif = OrientationVector + dif;
 
-	transform.m_rotate.m_y = atan2f(-OrientationVectorPulsDif.x, -OrientationVectorPulsDif.y);
+	m_transform.SetRotationY(atan2f(-OrientationVectorPulsDif.x, -OrientationVectorPulsDif.y));
 
 	//インクリメントする値によって
 	//補完の滑らかさが変わる
@@ -775,8 +784,8 @@ void Character::useItem(){
 
 				Fire *fire = new Fire();
 				fire->m_isActive = true;
-				fire->m_basePosition = { transform.m_position.m_x - sin(transform.m_rotate.m_y) * 1.f, 0.5f, transform.m_position.m_z - cos(transform.m_rotate.m_y) * 1.f };
-				fire->m_speed = { -sin(transform.m_rotate.m_y)*1.f, 0.f, -cos(transform.m_rotate.m_y)*1.f };
+				fire->m_basePosition = { m_transform.GetPosition().m_x - sin(m_transform.GetRotation().m_y) * 1.f, 0.5f, m_transform.GetPosition().m_z - cos(m_transform.GetRotation().m_y) * 1.f };
+				fire->m_speed = { -sin(m_transform.GetRotation().m_y)*1.f, 0.f, -cos(m_transform.GetRotation().m_y)*1.f };
 				effect.push_back(fire);
 
 			}
@@ -786,7 +795,7 @@ void Character::useItem(){
 
 				Blizzard *blizzard = new Blizzard();
 				blizzard->m_isActive = true;
-				blizzard->m_basePosition = { transform.m_position.m_x + sin(transform.m_rotate.m_y)*2.5f, 0.01f, transform.m_position.m_z + cos(transform.m_rotate.m_y)*2.5f };
+				blizzard->m_basePosition = { m_transform.GetPosition().m_x + sin(m_transform.GetRotation().m_y)*2.5f, 0.01f, m_transform.GetPosition().m_z + cos(m_transform.GetRotation().m_y)*2.5f };
 				effect.push_back(blizzard);
 
 
@@ -806,21 +815,21 @@ void Character::useItem(){
 
 void Character::checkCourseOut(){
 
-	if (transform.m_position.m_x < 0.f){
-		transform.m_position.m_x = 0.f;
+	if (m_transform.GetPosition().m_x < 0.0f){
+		m_transform.SetPositionX(0.0f);
 	}
 
-	if (transform.m_position.m_x > COURSE_WIDTH){
-		transform.m_position.m_x = COURSE_WIDTH;
+	if (m_transform.GetPosition().m_x > COURSE_WIDTH){
+		m_transform.SetPositionX(COURSE_WIDTH);
 	}
 
-	if (transform.m_position.m_z > 0){
-		transform.m_position.m_z = 0.f;
+	if (m_transform.GetPosition().m_z > 0.0f){
+		m_transform.SetPositionZ(0.0f);
 	}
 
 	//256のままだと256番目のピクセル情報にアクセスしてしまうので補正値+1してある
-	if (transform.m_position.m_z < -COURSE_HEIGHT + 1){
-		transform.m_position.m_z = -COURSE_HEIGHT + 1;
+	if (m_transform.GetPosition().m_z < 1-COURSE_HEIGHT){
+		m_transform.SetPositionZ(1 - COURSE_HEIGHT);
 	}
 
 }
@@ -833,7 +842,7 @@ float Character::checkNextCheckPointLength(){
 
 	oka::Vec3 v;
 
-	v = transform.m_position - course->m_checkPoint[m_nowPoint].m_position;
+	v = m_transform.GetPosition() - course->m_checkPoint[m_nowPoint].m_position;
 
 	return v.length();
 }
@@ -847,7 +856,7 @@ bool Character::inDart(){
 	//プレイヤーがどのピクセル上にいるか判断し
 	//直下のピクセル情報によって判定する
 
-	if (course->m_buffer[COURSE_HEIGHT - 1 + (int)transform.m_position.m_z][(int)transform.m_position.m_x] == DART){
+	if (course->m_buffer[COURSE_HEIGHT - 1 + (int)m_transform.GetPosition().m_z][(int)m_transform.GetPosition().m_x] == DART){
 
 		return true;
 
@@ -1170,7 +1179,7 @@ void Character::printStatus(){
 
 bool Character::countLap(){
 
-	if (course->m_buffer[COURSE_HEIGHT - 1 + (int)transform.m_position.m_z][(int)transform.m_position.m_x] == GOAL){
+	if (course->m_buffer[COURSE_HEIGHT - 1 + (int)m_transform.GetPosition().m_z][(int)m_transform.GetPosition().m_x] == GOAL){
 
 		bool fg = true;
 
