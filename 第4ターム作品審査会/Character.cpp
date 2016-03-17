@@ -14,6 +14,7 @@
 #include"Blizzard.h"
 #include"StrokeString.h"
 #include"SoundManager.h"
+#include"ImageManager.h"
 #include"joysticManager.h"
 #include"glm\gtc\matrix_transform.hpp"
 #include"glm\gtx\transform.hpp"
@@ -24,8 +25,10 @@ Character *player2 = nullptr;
 Character *player3 = nullptr;
 Character *player4 = nullptr;
 
-GLuint dashIcon = 0;
-GLuint dashGauge = 0;
+
+
+unsigned int dashIcon = 0;
+unsigned int dashGauge = 0;
 
 //タイヤの位置等を後でいじる
 //取り敢えず
@@ -81,9 +84,10 @@ void Character::update(){
 
 			m_dashPower = DASH_GAUGE_MAX;
 
-			if (false == m_isCharged){
+			if (false == m_isCharged)
+			{
 				m_isCharged = true;
-				SoundManager::getInstance()->m_sounds["chargeComplete"]->play();
+				oka::SoundManager::getInstance()->Play("chargeComplete");
 			}
 
 		}
@@ -113,17 +117,17 @@ void Character::update(){
 
 			m_lapCount++;
 
-			if (PLAYER == m_type){
+			if (PLAYER == m_type)
+			{
 
 				//1周目または2周目の時のみ鳴らす
-				if (1 == m_lapCount){
-
-					SoundManager::getInstance()->m_sounds["lapCountSE"]->play();
-			
+				if (1 == m_lapCount)
+				{
+					oka::SoundManager::getInstance()->Play("lapCountSE");
 				}
-				else if (2 == m_lapCount){
-
-					SoundManager::getInstance()->m_sounds["finalLapSE"]->play();
+				else if (2 == m_lapCount)
+				{
+					oka::SoundManager::getInstance()->Play("finalLapSE");
 			
 				}
 
@@ -238,7 +242,7 @@ void Character::update(){
 
 		if (PLAYER == m_type){
 
-			SoundManager::getInstance()->m_sounds["goalSE"]->play();
+			oka::SoundManager::getInstance()->Play("goalSE");
 	
 		}
 
@@ -510,13 +514,13 @@ void Character::drawHasItem(){
 		switch (m_hasItem[i]){
 		case FIRE:
 
-			glBindTexture(GL_TEXTURE_2D, ItemFire);
+			glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("ItemFire"));
 
 			break;
 
 		case BLIZZARD:
 
-			glBindTexture(GL_TEXTURE_2D, ItemBlizzard);
+			glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("ItemBlizzard"));
 
 			break;
 
@@ -586,10 +590,13 @@ void Character::control(unsigned short _pressedKey, unsigned int _downKeys, floa
 {
 
 	//エンジン音のピッチ調整
-	alSourcef(
+
+	oka::SoundManager::getInstance()->ChangeVolume("Engine", pow(2, (m_speed.length()*15.f) / 12));
+
+	/*alSourcef(
 		m_engine->m_sid,
 		AL_PITCH,
-		pow(2, (m_speed.length()*15.f) / 12));
+		pow(2, (m_speed.length()*15.f) / 12));*/
 
 	if (false == m_isHitItem)
 	{
@@ -654,7 +661,7 @@ void Character::control(unsigned short _pressedKey, unsigned int _downKeys, floa
 						fire->m_basePosition = { m_transform.GetPosition().m_x - sin(m_transform.GetRotation().m_y) * 1.f, 0.5f,m_transform.GetPosition().m_z - cos(m_transform.GetRotation().m_y) * 1.f };
 						fire->m_speed = { -sin(m_transform.GetRotation().m_y)*1.f, 0.f, -cos(m_transform.GetRotation().m_y)*1.f };
 						effect.push_back(fire);
-						SoundManager::getInstance()->m_sounds["fireSE"]->play();
+						oka::SoundManager::getInstance()->Play("fireSE");
 
 					}
 
@@ -1106,26 +1113,44 @@ void Character::printDashGauge(){
 
 //プレイヤーステータスの表示
 
-void Character::printStatus(){
+void Character::printStatus()
+{
 
 	if (false == m_isGoal){
 
 		//ダッシュゲージの描画
 		printDashGauge();
 
-		glLineWidth(2);
-		StrokeString::print("[LB]Item", { 220, 10, 0 }, 0.1f, { 0, 0, 0 });
-		StrokeString::print("[RB]Dash", { 135, 10, 0 }, 0.1f, { 0, 0, 0 });
-		StrokeString::print("[A]Accelerator", { 135, 30, 0 }, 0.1f, { 0, 0, 0 });
-		StrokeString::print("[Stick]Control", { 220, 30, 0 }, 0.1f, { 0, 0, 0 });
+		oka::SetLineWidth(2.0f);
+		oka::DrawString("[LB] Item", 220.0f, 10.0f, 0.1f);
+		oka::DrawString("[RB]Dash", 135.0f, 10.0f, 0.1f);
+		oka::DrawString("[A]Accelerator", 135.0f, 30.0f, 0.1f);
+		oka::DrawString("[Stick]Control", 220.0f, 30.0f, 0.1f);
+		
+		oka::DrawString("LAP", 230.0f, 250.0f, 0.1f);
+		oka::DrawString(m_lap, 260.0f, 250.0f, 0.18f);
+		oka::DrawString("/", 275.0f, 250.0f, 0.1f);
+		oka::DrawString(str_lapMax, 285.0f, 250.0f, 0.1f);
+		oka::DrawString("TIME", 180.0f, 280.0f, 0.13f);
 
-		StrokeString::print("LAP", { 230, 250, 0 }, 0.1f, { 1, 0, 0 });
+		oka::DrawString("LAP1", 220.0f, 230.0f, 0.08f);
+		oka::DrawString(m_lapTime[FIRST], 250.0f, 230.0f, 0.08f);
+
+		oka::DrawString("LAP2", 220.0f, 215.0f, 0.08f);
+		oka::DrawString(m_lapTime[SECOND], 250.0f, 215.0f, 0.08f);
+
+		oka::DrawString("LAP3", 220.0f, 200.0f, 0.08f);
+		oka::DrawString(m_lapTime[THIRD], 250.0f, 200.0f, 0.08f);
+
+		oka::DrawString(m_totalTime, 220.0f, 280.0f, 0.13f);
+
+		/*StrokeString::print("LAP", { 230, 250, 0 }, 0.1f, { 1, 0, 0 });
 		StrokeString::print(m_lap, { 260, 250, 0 }, 0.18f, { 1, 0, 0 });
 		StrokeString::print("/", { 275, 250, 0 }, 0.1f, { 1, 0, 0 });
 		StrokeString::print(str_lapMax, { 285, 250, 0 }, 0.1f, { 1, 0, 0 });
-		StrokeString::print("TIME", { 180, 280, 0 }, 0.13f, { 1, 0, 0 });
+		StrokeString::print("TIME", { 180, 280, 0 }, 0.13f, { 1, 0, 0 });*/
 
-		StrokeString::print("LAP1", { 220, 230, 0 }, 0.08f, { 1, 0, 0 });
+	/*	StrokeString::print("LAP1", { 220, 230, 0 }, 0.08f, { 1, 0, 0 });
 		StrokeString::print(m_lapTime[FIRST], { 250, 230, 0 }, 0.08f, { 1, 0, 0 });
 
 		StrokeString::print("LAP2", { 220, 215, 0 }, 0.08f, { 1, 0, 0 });
@@ -1134,37 +1159,49 @@ void Character::printStatus(){
 		StrokeString::print("LAP3", { 220, 200, 0 }, 0.08f, { 1, 0, 0 });
 		StrokeString::print(m_lapTime[THIRD], { 250, 200, 0 }, 0.08f, { 1, 0, 0 });
 
-		StrokeString::print(m_totalTime, { 220, 280, 0 }, 0.13f, { 1, 0, 0 });
+		StrokeString::print(m_totalTime, { 220, 280, 0 }, 0.13f, { 1, 0, 0 });*/
 
 	}
-	else{
+	else
+	{
 		printGoal();
 
-		StrokeString::print("LAP1", { 59, 159, 0 }, 0.2f, { 0, 0, 0 });
-		StrokeString::print(m_lapTime[FIRST], { 129, 159, 0 }, 0.2f, { 0, 0, 0 });
-		StrokeString::print("LAP1", { 60, 158, 0 }, 0.2f, { 1, 1, 1 });
-		StrokeString::print(m_lapTime[FIRST], { 130, 158, 0 }, 0.2f, { 1, 1, 1 });
+		oka::DrawString("LAP1", 60.0f, 160.0f, 0.2f);
+		oka::DrawString(m_lapTime[FIRST], 130.0f, 115.0f, 0.2f);
 
+		oka::DrawString("LAP2", 60.0f, 115.0f, 0.2f);
+		oka::DrawString(m_lapTime[SECOND], 130.0f, 115.0f, 0.2f);
 
-		StrokeString::print("LAP2", { 59, 115, 0 }, 0.2f, { 0, 0, 0 });
-		StrokeString::print(m_lapTime[SECOND], { 129, 115, 0 }, 0.2f, { 0, 0, 0 });
-		StrokeString::print("LAP2", { 60, 114, 0 }, 0.2f, { 1, 1, 1 });
-		StrokeString::print(m_lapTime[SECOND], { 130, 114, 0 }, 0.2f, { 1, 1, 1 });
+		oka::DrawString("LAP3", 60.0f, 75.0f, 0.2f);
+		oka::DrawString(m_lapTime[THIRD], 130.0f, 75.0f, 0.2f);
 
-		StrokeString::print("LAP3", { 59, 73, 0 }, 0.2f, { 0, 0, 0 });
-		StrokeString::print(m_lapTime[THIRD], { 129, 73, 0 }, 0.2f, { 0, 0, 0 });
-		StrokeString::print("LAP3", { 60, 72, 0 }, 0.2f, { 1, 1, 1 });
-		StrokeString::print(m_lapTime[THIRD], { 130, 72, 0 }, 0.2f, { 1, 1, 1 });
+		oka::DrawString("TOTALTIME", 25.0f, 30.0f, 0.15f);
+		oka::DrawString(m_totalTime, 130.0f, 30.0f, 0.2f);
 
-		StrokeString::print("TOTALTIME", { 23, 31, 0 }, 0.15f, { 0, 0, 0 });
-		StrokeString::print(m_totalTime, { 130, 31, 0 }, 0.2f, { 0, 0, 0 });
-		StrokeString::print("TOTALTIME", { 24, 30, 0 }, 0.15f, { 1, 0, 0 });
-		StrokeString::print(m_totalTime, { 131, 30, 0 }, 0.2f, { 1, 0, 0 });
+		/*StrokeString::print("LAP1", { 59, 159, 0 }, 0.2f, { 0, 0, 0 });
+		StrokeString::print(m_lapTime[FIRST], { 129, 159, 0 }, 0.2f, { 0, 0, 0 });*/
+		
 
-		if (true == (character[0]->m_isGoal && character[1]->m_isGoal && character[2]->m_isGoal && character[3]->m_isGoal)){
-			if ((GameManager::getInstance()->m_flame % 60) < 30){
-				StrokeString::print("PushStartButton!!", { 219, 11, 0 }, 0.08f, { 0, 0, 0 });
-				StrokeString::print("PushStartButton!!", { 220, 10, 0 }, 0.08f, { 1, 0, 0 });
+		/*StrokeString::print("LAP2", { 59, 115, 0 }, 0.2f, { 0, 0, 0 });
+		StrokeString::print(m_lapTime[SECOND], { 129, 115, 0 }, 0.2f, { 0, 0, 0 });*/
+		
+
+		/*StrokeString::print("LAP3", { 59, 73, 0 }, 0.2f, { 0, 0, 0 });
+		StrokeString::print(m_lapTime[THIRD], { 129, 73, 0 }, 0.2f, { 0, 0, 0 });*/
+		
+
+		/*StrokeString::print("TOTALTIME", { 23, 31, 0 }, 0.15f, { 0, 0, 0 });
+		StrokeString::print(m_totalTime, { 130, 31, 0 }, 0.2f, { 0, 0, 0 });*/
+		
+
+		if (true == (character[0]->m_isGoal && character[1]->m_isGoal && character[2]->m_isGoal && character[3]->m_isGoal))
+		{
+			if ((GameManager::getInstance()->m_flame % 60) < 30)
+			{
+				oka::DrawString("PushStartButton!!", 220.0f, 10.0f, 0.08f);
+				
+				//StrokeString::print("PushStartButton!!", { 219, 11, 0 }, 0.08f, { 0, 0, 0 });
+			
 			}
 		}
 

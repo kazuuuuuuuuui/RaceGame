@@ -56,10 +56,9 @@ public:
 	int m_width;
 	int m_height;
 	int m_buffer[COURSE_HEIGHT][COURSE_WIDTH];   //各コースの各ピクセルの情報を格納するバッファ
-	GLuint m_handle;							 //コースのテクスチャ
+	unsigned int m_handle;							 //コースのテクスチャ
 	CourseFlag m_checkPoint[CHECK_POINT_NUMBER]; //周回判定用のポイント
 	AIFlag m_AIPoint[AI_POINT_NUMBER];			 //敵AI用のポイント
-	Sound *m_bgm;								 //レース中のBGM
 
 	void draw();
 	void update();
@@ -70,11 +69,8 @@ public:
 	Course() :
 		m_width(COURSE_WIDTH),
 		m_height(COURSE_HEIGHT),
-		m_handle(0),
-		m_bgm(nullptr)
-
-	{
-		
+		m_handle(0)
+	{	
 		//コースバッファの初期化
 		for (int i = 0; i < COURSE_HEIGHT; i++){
 			for (int t = 0; t < COURSE_WIDTH; t++){

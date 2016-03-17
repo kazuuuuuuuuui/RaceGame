@@ -14,7 +14,6 @@ namespace oka
 		Vec3 m_speed;
 		Vec3 m_accel;
 
-
 		//初期化リストで各メンバ初期化
 		GameObject() :
 			m_speed(0, 0, 0),

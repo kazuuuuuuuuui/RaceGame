@@ -9,7 +9,7 @@
 //エフェクトを作るパーティクル1枚の描画
 //色を指定して描画する
 
-void Particle::draw(int _type,glm::vec3 _color,GLuint _texture){
+void Particle::draw(int _type,glm::vec3 _color,unsigned int _texture){
 
 	glPushMatrix();
 	{

@@ -2,19 +2,20 @@
 #include"Fire.h"
 #include"Character.h"
 
-void Fire::update(){
-
+void Fire::update()
+{
 	m_basePosition += m_speed;
 
 	//接触判定
 	//当たったプレイヤーのisHitItemフラグをtrue
 	//当たったアイテムのisActiveフラグをfalseにする
 
-	for (unsigned int i = 0; i < character.size(); i++){
+	for (unsigned int i = 0; i < character.size(); i++)
+	{
 
 		if (isHit(character[i]->m_transform.GetPosition())){
 
-			SoundManager::getInstance()->m_sounds["slipSE"]->play();
+			oka::SoundManager::getInstance()->Play("slipSE");
 			m_isActive = false;
 			character[i]->m_isHitItem = true;
 			character[i]->m_transform.SetRotationZ(0.0f);

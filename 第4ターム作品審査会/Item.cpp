@@ -3,6 +3,7 @@
 #include"Item.h"
 #include"Character.h"
 #include"CourseFlag.h"
+#include"ImageManager.h"
 #include"SoundManager.h"
 #include"glut.h"
 
@@ -34,10 +35,6 @@ Item *item[SET_ITEM_NUMBER] = { nullptr };
 //アイテムの添え字に使う
 int itemNum = 0;
 
-//アイテムのテクスチャを格納する
-GLuint ItemFire = 0;//ファイア
-GLuint ItemBlizzard = 0;//ブリザド
-
 //-------------------------------------
 //アイテムの更新
 
@@ -49,29 +46,30 @@ void Item::update(){
 	move();
 
 	//アイテムの再出現
-	if (0 == m_flame % (60 * 10)){
+	if (0 == m_flame % (60 * 10))
+	{
 		reCreateItem();
 	}
 
 	//取られたかの判定
-	for (unsigned int i = 0; i < character.size(); i++){
-
-		if (true == m_isActive && checkIsGotten(character[i]->m_transform.GetPosition())){
+	for (unsigned int i = 0; i < character.size(); i++)
+	{
+		if (true == m_isActive && checkIsGotten(character[i]->m_transform.GetPosition()))
+		{
 
 			m_isActive = false;
 
 
 			//所持アイテムが3つ以下だったらアイテムを所持させる
-			if (character[i]->hasItemNumber() < HAS_ITEM_MAX){
-
+			if (character[i]->hasItemNumber() < HAS_ITEM_MAX)
+			{
 				//キャラクターに今取得したアイテムを持たせる
 				character[i]->m_hasItem.push_back(m_type);
 
 				//プレイヤーが取得したときのみ効果音を鳴らす
-				if (player1 == character[i]){
-	
-					SoundManager::getInstance()->m_sounds["getItem"]->play();
-	
+				if (player1 == character[i])
+				{
+					oka::SoundManager::getInstance()->Play("getItem");
 				}
 
 			}
@@ -100,7 +98,9 @@ void Item::move(){
 //魔石の描画
 //スフィアマッピングをするための拾い物関数なので後で要理解
 
-void Item::draw(){
+
+void Item::draw()
+{
 
 	if (true == m_isActive){
 
@@ -109,13 +109,15 @@ void Item::draw(){
 		switch (m_type){
 		case FIRE:
 
-			glBindTexture(GL_TEXTURE_2D, ItemFire);
+			//glBindTexture(GL_TEXTURE_2D, ItemFire);
+			glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("ItemFire"));
+
 
 			break;
 
 		case BLIZZARD:
 
-			glBindTexture(GL_TEXTURE_2D, ItemBlizzard);
+			glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("ItemBlizzard"));
 
 			break;
 

@@ -1,14 +1,12 @@
-#ifndef STROKESTRING_H_
-#define STROKESTRING_H_
+#ifndef _OKA_STROKESTRING_H_
+#define _OKA_STROKESTRING_H_
 
-#include"glm\glm.hpp"
+namespace oka
+{
+	void SetLineWidth(const float _width);
+	void SetDefaultLineWidth();
+	void DrawString(const char *_str, const float _x, const float _y, const float _scale);
 
-class StrokeString{
-public:
-	char *m_character;
-	void *font;
-
-	static void print(const char *_character, glm::vec3 _position, float _scale,glm::vec3 _color);
-};
+}
 
 #endif

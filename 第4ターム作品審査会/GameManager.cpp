@@ -20,6 +20,7 @@
 #include"moji.h"
 #include"Vec3.h"
 #include"joysticManager.h"
+#include"ImageManager.h"
 #include"SoundManager.h"
 #include"Sound.h"
 #include"glut.h"
@@ -45,7 +46,9 @@ GameManager* GameManager::getInstance() {
 
 
 //-------------------------------------------------------------------------------------------------------
-void GameManager::updata() {
+
+void GameManager::updata() 
+{
 
 	m_flame++;
 	_sequence.run(this, 1.0f / 60.0f);
@@ -56,17 +59,17 @@ void GameManager::updata() {
 //取り敢えず
 //コース選択画面
 
-GLuint threeTexture = 0;
-GLuint twoTexture = 0;
+unsigned int threeTexture = 0;
+unsigned int twoTexture = 0;
 
-GLuint oneTexture = 0;
-GLuint goTexture = 0;
-GLuint goalTexture = 0;
+unsigned int oneTexture = 0;
+unsigned int goTexture = 0;
+unsigned int goalTexture = 0;
 
-GLuint rank1st = 0;
-GLuint rank2nd = 0;
-GLuint rank3rd = 0;
-GLuint rank4th = 0;
+unsigned int rank1st = 0;
+unsigned int rank2nd = 0;
+unsigned int rank3rd = 0;
+unsigned int rank4th = 0;
 
 
 
@@ -79,15 +82,18 @@ int startCount = 6;
 //周回数表示に使う
 char str_lapMax[256];
 
-int getMilliSecond(int _flame){
+int getMilliSecond(int _flame)
+{
 	return ((_flame * 1000) / 60) % 1000;
 }
 
-int getSecond(int _flame){
+int getSecond(int _flame)
+{
 	return _flame / 60;
 }
 
-int getMinute(int _second){
+int getMinute(int _second)
+{
 	return _second / 60;
 }
 
@@ -110,30 +116,36 @@ bool isHitCharacter(oka::Vec3 _myPos, oka::Vec3 _youPos){
 
 //順位判定用の関数
 //順位の判定のみする
-bool checkRanking(Character *_character1, Character *_character2){
+bool checkRanking(Character *_character1, Character *_character2)
+{
 
 	//周回数での判定
-	if (_character1->m_lapCount > _character2->m_lapCount){
+	if (_character1->m_lapCount > _character2->m_lapCount)
+	{
 		return true;
 	}
-	else if (_character1->m_lapCount < _character2->m_lapCount){
+	else if (_character1->m_lapCount < _character2->m_lapCount)
+	{
 		return false;
 	}
 
 	//チェックポイントの進み具合での判定
-	if (_character1->m_nowPoint > _character2->m_nowPoint){
+	if (_character1->m_nowPoint > _character2->m_nowPoint)
+	{
 		return true;
 	}
-	else if (_character1->m_nowPoint < _character2->m_nowPoint){
-		//return true;
+	else if (_character1->m_nowPoint < _character2->m_nowPoint)
+	{
 		return false;
 	}
 
 	//目指しているチェックポイントへの距離での判定
-	if (_character1->m_nextCheckPointLength > _character2->m_nextCheckPointLength){
+	if (_character1->m_nextCheckPointLength > _character2->m_nextCheckPointLength)
+	{
 		return false;
 	}
-	else if (_character1->m_nextCheckPointLength < _character2->m_nextCheckPointLength){
+	else if (_character1->m_nextCheckPointLength < _character2->m_nextCheckPointLength)
+	{
 		return true;
 	}
 
@@ -145,7 +157,8 @@ bool checkRanking(Character *_character1, Character *_character2){
 
 //-------------------------------------
 //レーススタートのカウントダウン
-void countRaceStart(){
+void countRaceStart()
+{
 
 	startFrame++; //フレーム数を＋１
 
@@ -168,37 +181,43 @@ void countRaceStart(){
 	}
 
 	//カウントダウンの音
-	if (3 == startCount && startFrame == 0){
-		startCountDown->play();
+	if (3 == startCount && startFrame == 0)
+	{
+		oka::SoundManager::getInstance()->Play("CountDown");
 	}
-	if (3 == startCount && startFrame == 30){
-		startCountDown->stop();
-	}
-
-	if (2 == startCount && startFrame == 0){
-		startCountDown->play();
-	}
-	if (2 == startCount && startFrame == 30){
-		startCountDown->stop();
+	if (3 == startCount && startFrame == 30)
+	{
+		oka::SoundManager::getInstance()->Stop("CountDown");
 	}
 
-	if (1 == startCount && startFrame == 0){
-		startCountDown->play();
+	if (2 == startCount && startFrame == 0)
+	{
+		oka::SoundManager::getInstance()->Play("CountDown");
 	}
-	if (1 == startCount && startFrame == 30){
-		startCountDown->stop();
-
-		alSourcef(startCountDown->m_sid, AL_PITCH, 2);
-
-	}
-
-	if (0 == startCount && startFrame == 0){
-		startCountDown->play();
+	if (2 == startCount && startFrame == 30)
+	{
+		oka::SoundManager::getInstance()->Stop("CountDown");
 	}
 
-	if (-1 == startCount && startFrame == 10){
-		startCountDown->stop();
-		course->m_bgm->play();
+	if (1 == startCount && startFrame == 0)
+	{
+		oka::SoundManager::getInstance()->Play("CountDown");
+	}
+	if (1 == startCount && startFrame == 30)
+	{
+		oka::SoundManager::getInstance()->Stop("CountDown");
+	}
+
+	if (0 == startCount && startFrame == 0)
+	{
+		oka::SoundManager::getInstance()->ChangePitch("CountDown", 2.0f);
+		oka::SoundManager::getInstance()->Play("CountDown");
+	}
+
+	if (-1 == startCount && startFrame == 10)
+	{
+		oka::SoundManager::getInstance()->Stop("CountDown");
+		//course->m_bgm->play();
 	}
 
 
@@ -289,10 +308,8 @@ void printRaceStart(){
 //-------------------------------------
 //ゲームの初期化全般を行う
 
-void init(){
-
-	srand(time(NULL));
-
+void init()
+{
 	//後で書き換え
 	//xFile rider;
 	xFile body;
@@ -345,45 +362,47 @@ void init(){
 	g_camera = new oka::Camera();
 
 	//テクスチャの読み込み
-	threeTexture = BmpImage::loadImage_alpha("bmp/start/three.bmp");
-	twoTexture = BmpImage::loadImage_alpha("bmp/start/two.bmp");
-	oneTexture = BmpImage::loadImage_alpha("bmp/start/one.bmp");
-	goTexture = BmpImage::loadImage_alpha("bmp/start/go.bmp");
-	goalTexture = BmpImage::loadImage_alpha("bmp/goal.bmp");
-
-	smoke_handle = BmpImage::loadImage_alpha("bmp/Effect/smoke.bmp");
-	dash_handle = BmpImage::loadImage_alpha("bmp/Effect/dash.bmp");
-
-	rank1st = BmpImage::loadImage_alpha("bmp/Ranking/1st.bmp");
-	rank2nd = BmpImage::loadImage_alpha("bmp/Ranking/2nd.bmp");
-	rank3rd = BmpImage::loadImage_alpha("bmp/Ranking/3rd.bmp");
-	rank4th = BmpImage::loadImage_alpha("bmp/Ranking/4th.bmp");
-
-	dashIcon = BmpImage::loadImage_alpha("bmp/dashIcon.bmp");
-	dashGauge = BmpImage::loadImage_alpha("bmp/gauge.bmp");
-
-	EffectBlizzard = BmpImage::loadImage_alpha("bmp/Effect/blizzard.bmp");
 
 	//使用する魔石のテクスチャ読み込み
-	ItemFire = BmpImage::loadImage("bmp/MagicStone/ms_fire.bmp");
-	ItemBlizzard = BmpImage::loadImage("bmp/MagicStone/ms_blizzard.bmp");
+	oka::ImageManager::GetInstance()->SetHandle("ItemFire", oka::BmpImage::LoadImage3f("bmp/getItem/fire.bmp"));
+	oka::ImageManager::GetInstance()->SetHandle("ItemBlizzard", oka::BmpImage::LoadImage3f("bmp/getItem/blizzard.bmp"));
+
+	threeTexture = oka::BmpImage::LoadImage4f("bmp/start/three.bmp");
+	twoTexture = oka::BmpImage::LoadImage4f("bmp/start/two.bmp");
+	oneTexture = oka::BmpImage::LoadImage4f("bmp/start/one.bmp");
+	goTexture = oka::BmpImage::LoadImage4f("bmp/start/go.bmp");
+	goalTexture = oka::BmpImage::LoadImage4f("bmp/goal.bmp");
+
+	smoke_handle = oka::BmpImage::LoadImage4f("bmp/Effect/smoke.bmp");
+	dash_handle = oka::BmpImage::LoadImage4f("bmp/Effect/dash.bmp");
+
+	rank1st = oka::BmpImage::LoadImage4f("bmp/Ranking/1st.bmp");
+	rank2nd = oka::BmpImage::LoadImage4f("bmp/Ranking/2nd.bmp");
+	rank3rd = oka::BmpImage::LoadImage4f("bmp/Ranking/3rd.bmp");
+	rank4th = oka::BmpImage::LoadImage4f("bmp/Ranking/4th.bmp");
+
+	dashIcon = oka::BmpImage::LoadImage4f("bmp/dashIcon.bmp");
+	dashGauge = oka::BmpImage::LoadImage4f("bmp/gauge.bmp");
+
+	EffectBlizzard = oka::BmpImage::LoadImage4f("bmp/Effect/blizzard.bmp");
+
+	
 
 	//使用する音読み込み	
-	SoundManager::getInstance()->addSound("pushStartButtonSE", new Sound("wav/pushStartButton.wav"));
-	SoundManager::getInstance()->addSound("TitleBGM", new Sound("wav/titleBGM.wav"));	
-	SoundManager::getInstance()->addSound("cursorMoveSE", new Sound("wav/cursorMove.wav"));
-	SoundManager::getInstance()->addSound("modeDecision", new Sound("wav/modeDecision.wav"));
-	SoundManager::getInstance()->addSound("courseDecision", new Sound("wav/courseDecision.wav"));
-	SoundManager::getInstance()->addSound("slipSE", new Sound("wav/slip.wav"));	
-	SoundManager::getInstance()->addSound("fireSE", new Sound("wav/fire.wav"));
-	SoundManager::getInstance()->addSound("chargeComplete", new Sound("wav/chargeComplete.wav"));
-	SoundManager::getInstance()->addSound("getItem", new Sound("wav/getItem.wav"));
-	SoundManager::getInstance()->addSound("lapCountSE", new Sound("wav/lapCount.wav"));
-	SoundManager::getInstance()->addSound("finalLapSE", new Sound("wav/finalLap.wav"));
-	SoundManager::getInstance()->addSound("goalSE", new Sound("wav/goal.wav"));
+	oka::SoundManager::getInstance()->AddSound("pushStartButtonSE",oka::Sound::LoadWavFile("wav/pushStartButton.wav"));
+	oka::SoundManager::getInstance()->AddSound("TitleBGM", oka::Sound::LoadWavFile("wav/titleBGM.wav"));
+	oka::SoundManager::getInstance()->AddSound("cursorMoveSE", oka::Sound::LoadWavFile("wav/cursorMove.wav"));
+	oka::SoundManager::getInstance()->AddSound("modeDecision", oka::Sound::LoadWavFile("wav/modeDecision.wav"));
+	oka::SoundManager::getInstance()->AddSound("courseDecision", oka::Sound::LoadWavFile("wav/courseDecision.wav"));
+	oka::SoundManager::getInstance()->AddSound("slipSE", oka::Sound::LoadWavFile("wav/slip.wav"));
+	oka::SoundManager::getInstance()->AddSound("fireSE", oka::Sound::LoadWavFile("wav/fire.wav"));
+	oka::SoundManager::getInstance()->AddSound("chargeComplete", oka::Sound::LoadWavFile("wav/chargeComplete.wav"));
+	oka::SoundManager::getInstance()->AddSound("getItem", oka::Sound::LoadWavFile("wav/getItem.wav"));
+	oka::SoundManager::getInstance()->AddSound("lapCountSE", oka::Sound::LoadWavFile("wav/lapCount.wav"));
+	oka::SoundManager::getInstance()->AddSound("finalLapSE", oka::Sound::LoadWavFile("wav/finalLap.wav"));
+	oka::SoundManager::getInstance()->AddSound("goalSE", oka::Sound::LoadWavFile("wav/goal.wav"));
 
-	startCountDown = new Sound();
-	startCountDown->loadKukeiha(count_sound, sizeof(count_sound), 440);
+	oka::SoundManager::getInstance()->AddSound("CountDown", oka::Sound::LoadSquareWave(count_sound, sizeof(count_sound), 440));
 
 
 	//最初の順位設定と順位付与
@@ -410,7 +429,8 @@ enum{
 bool title_pushAnyKey = false;
 int modeCommand = SINGLE_MODE;
 
-void GameManager::sceneTitle(float delta) {
+void GameManager::sceneTitle(float delta) 
+{
 
 	if (0.0f == _sequence.getTime()){
 
@@ -421,7 +441,7 @@ void GameManager::sceneTitle(float delta) {
 
 		title = new Moji(250.f, 250.f, { 20.f, 50.f }, { 1, 1, 1 }, "bmp/title/title.bmp");
 
-		SoundManager::getInstance()->m_sounds["TitleBGM"]->play();
+		oka::SoundManager::getInstance()->Play("TitleBGM");
 
 	}
 
@@ -440,83 +460,91 @@ void GameManager::sceneTitle(float delta) {
 		title->changeColor();
 	}
 
-	glLineWidth(5);
-	StrokeString::print("Bike", { 105, 180, 0 }, 0.3f, { 1, 1, 1 });
-	StrokeString::print("Racing", { 85, 135, 0 }, 0.3f, { 1, 1, 1 });
-
+	oka::SetLineWidth(5.0f);
+	oka::DrawString("Bike", 105.0f, 180.0f, 0.3f);
+	oka::DrawString("Racing", 85.0f, 135.0f, 0.3f);
 
 	//シーンの遷移
 	if (false == title_pushAnyKey && JoysticManager::getInstance()->m_contoroller[0].m_downkey & XINPUT_GAMEPAD_START){
 
 		title_pushAnyKey = true;
-		SoundManager::getInstance()->m_sounds["pushStartButtonSE"]->play();
+		oka::SoundManager::getInstance()->Play("pushStartButtonSE");
 
 	}
 
 	if (false == title_pushAnyKey){
 
-		if ((GameManager::m_flame % 60) < 30){
-			glLineWidth(4);
-			StrokeString::print("PUSH START BUTTON", { 75, 40, 0 }, 0.1f, { 1, 1, 1 });
+		if ((GameManager::m_flame % 60) < 30)
+		{
+			oka::SetLineWidth(4.0f);
+			oka::DrawString("PUSH START BUTTON", 75.0f, 40.0f, 0.1f);
 		}
 
 	}
-	else{
-
-		if (JoysticManager::getInstance()->m_contoroller[0].m_yTopDown){
-
+	else
+	{
+		if (JoysticManager::getInstance()->m_contoroller[0].m_yTopDown)
+		{
 			modeCommand++;
 			modeCommand = (modeCommand + TITLE_MAX) % TITLE_MAX;
-			SoundManager::getInstance()->m_sounds["cursorMoveSE"]->play();
+			oka::SoundManager::getInstance()->Play("cursorMoveSE");
 
 		}
 
-		if (JoysticManager::getInstance()->m_contoroller[0].m_yBottomDown){
-
+		if (JoysticManager::getInstance()->m_contoroller[0].m_yBottomDown)
+		{
 			modeCommand--;
 			modeCommand = (modeCommand + TITLE_MAX) % TITLE_MAX;
-			SoundManager::getInstance()->m_sounds["cursorMoveSE"]->play();
+			oka::SoundManager::getInstance()->Play("cursorMoveSE");
 
 		}
 
 
-		if (JoysticManager::getInstance()->m_contoroller[0].m_downkey & XINPUT_GAMEPAD_A){
-
+		if (JoysticManager::getInstance()->m_contoroller[0].m_downkey & XINPUT_GAMEPAD_A)
+		{
 			if (SINGLE_MODE == modeCommand){
 				g_useController[0]->m_type = PLAYER;
 			}
 
-			else if (VS_MODE == modeCommand){
-
-				for (int i = 0; i < JoysticManager::getInstance()->connectingNum(); i++){
+			else if (VS_MODE == modeCommand)
+			{
+				for (int i = 0; i < JoysticManager::getInstance()->connectingNum(); i++)
+				{
 					g_useController[i]->m_type = PLAYER;
 				}
 
 			}
 
 			GameManager::getInstance()->_sequence.change(&GameManager::sceneCourseSelect);
-			SoundManager::getInstance()->m_sounds["modeDecision"]->play();
+			oka::SoundManager::getInstance()->Play("modeDecision");
 		}
 
-		glLineWidth(4);
-		if (SINGLE_MODE == modeCommand){
-			StrokeString::print("SINGLE MODE", { 100, 55, 0 }, 0.1f, { 1, 0, 0 });
+		oka::SetLineWidth(4.0f);
+		if (SINGLE_MODE == modeCommand)
+		{
+			glColor3f(1, 0, 0);
+			oka::DrawString("SINGLE MODE", 100.0f, 55.0f, 0.1f);
 		}
-		else{
-			StrokeString::print("SINGLE MODE", { 100, 55, 0 }, 0.1f, { 1, 1, 1 });
-		}
-
-		if (VS_MODE == modeCommand){
-			StrokeString::print("VS MODE", { 115, 25, 0 }, 0.1f, { 1, 0, 0 });
-		}
-		else{
-			StrokeString::print("VS MODE", { 115, 25, 0 }, 0.1f, { 1, 1, 1 });
+		else
+		{
+			glColor3f(1, 1, 1);
+			oka::DrawString("SINGLE MODE", 100.0f, 55.0f, 0.1f);
 		}
 
-		glLineWidth(1);
-		StrokeString::print("[Lstick]CourseSelect", { 200, 5, 0 }, 0.05f, { 1, 1, 1 });
-		StrokeString::print("[A]Accept", { 260, 5, 0 }, 0.05f, { 1, 1, 1 });
+		if (VS_MODE == modeCommand)
+		{
+			glColor3f(1, 0, 0);
+			oka::DrawString("VS MODE", 115.0f, 25.0f, 0.1f);
+		}
+		else
+		{
+			glColor3f(1, 1, 1);
+			oka::DrawString("VS MODE", 115.0f, 25.0f, 0.1f);
+		}
 
+		oka::SetDefaultLineWidth();
+		oka::DrawString("[Lstick]CourseSelect", 200.0f, 5.0f, 0.05f);
+		oka::DrawString("[A]Accept", 260.0f, 5.0f, 0.05f);
 	}
 
 	glFlush();
@@ -580,17 +608,18 @@ void GameManager::sceneCourseSelect(float delta) {
 	}
 
 	//操作方法
-	if (false == g_isCourseDecision){
-		glLineWidth(1);
-		StrokeString::print("[Lstick]CourseSelect", { 200, 5, 0 }, 0.05f, { 1, 1, 1 });
-		StrokeString::print("[A]Accept", { 260, 5, 0 }, 0.05f, { 1, 1, 1 });
+	if (false == g_isCourseDecision)
+	{
+		oka::SetDefaultLineWidth();
+		oka::DrawString("[Lstick]CourseSelect", 200.0f, 5.0f, 0.05f);
+		oka::DrawString("[Lstick]CourseSelect", 260.0f, 5.0f, 0.05f);
 	}
 
 	if (false == g_isCourseDecision && JoysticManager::getInstance()->m_contoroller[0].m_xRightDown){
 	
 		selectedCourse++;
 		selectedCourse = (selectedCourse + COURSE_NUM_MAX) % COURSE_NUM_MAX;
-		SoundManager::getInstance()->m_sounds["cursorMoveSE"]->play();
+		oka::SoundManager::getInstance()->Play("cursorMoveSE");
 	
 	}
 
@@ -598,7 +627,7 @@ void GameManager::sceneCourseSelect(float delta) {
 		
 		selectedCourse--;
 		selectedCourse = (selectedCourse + COURSE_NUM_MAX) % COURSE_NUM_MAX;
-		SoundManager::getInstance()->m_sounds["cursorMoveSE"]->play();
+		oka::SoundManager::getInstance()->Play("cursorMoveSE");
 
 	}
 
@@ -606,9 +635,8 @@ void GameManager::sceneCourseSelect(float delta) {
 
 		g_isCourseDecision = true;
 		
-		SoundManager::getInstance()->m_sounds["TitleBGM"]->stop();
-					
-		SoundManager::getInstance()->m_sounds["courseDecision"]->play();
+		oka::SoundManager::getInstance()->Stop("TitleBGM");
+		oka::SoundManager::getInstance()->Play("courseDecision");
 
 		//アイテム生成→コースの生成→アイテムの設置
 		//アイテムの生成
@@ -620,10 +648,10 @@ void GameManager::sceneCourseSelect(float delta) {
 		course = createCourse();
 
 		//プレイヤーの初期座標決定
-		if (COURSE1 == selectedCourse){
-			course->m_bgm = new Sound();
-			course->m_bgm->loadWavFile("wav/course1BGM.wav");
-			course->m_bgm->changeVolume(0.5f);
+		if (COURSE1 == selectedCourse)
+		{
+			oka::SoundManager::getInstance()->AddSound("Course1Bgm", oka::Sound::LoadWavFile("wav/course1BGM.wav"));
+			oka::SoundManager::getInstance()->ChangeVolume("Course1Bgm",0.5f);
 
 			player1->m_transform.SetPosition(oka::Vec3(14.f, 0.0f, -165.f));
 			player2->m_transform.SetPosition(oka::Vec3(18.f, 0.f, -160.f));
@@ -631,9 +659,8 @@ void GameManager::sceneCourseSelect(float delta) {
 			player4->m_transform.SetPosition(oka::Vec3(26.f, 0.f, -150.f));
 		}
 		else if (COURSE2 == selectedCourse){
-			course->m_bgm = new Sound();
-			course->m_bgm->loadWavFile("wav/course2BGM.wav");
-			course->m_bgm->changeVolume(0.6f);
+			oka::SoundManager::getInstance()->AddSound("Course2Bgm", oka::Sound::LoadWavFile("wav/course2BGM.wav"));
+			oka::SoundManager::getInstance()->ChangeVolume("Course2Bgm", 0.5f);
 
 			player1->m_transform.SetPosition(oka::Vec3(17.f, 0.f, -110.5f));
 			player2->m_transform.SetPosition(oka::Vec3(25.f, 0.f, -105.5f));
@@ -732,21 +759,19 @@ void func(Character *_pCharacter){
 }
 
 //-------------------------------------------------------------------------------------------------------
-void GameManager::scenePlay(float delta) {
+void GameManager::scenePlay(float delta) 
+{
 
-	if (0.0f == _sequence.getTime()){
-
+	if (0.0f == _sequence.getTime())
+	{
 		printf("プレイシーンが初期化されました\n");
 		printf("\n");
-
-		//delete titleBGM;
-		//delete cursorMove_SE;
 
 		sprintf_s(str_lapMax, "%d", 3);
 
 		//プレイヤーのエンジン音
-		player1->m_engine->play();
-
+		//player1->m_engine->play();
+		oka::SoundManager::getInstance()->Play("Engine");
 
 	}
 
@@ -939,8 +964,8 @@ void GameManager::scenePlay(float delta) {
 
 	}
 
-	if (true == (character[0]->m_isGoal && character[1]->m_isGoal && character[2]->m_isGoal && character[3]->m_isGoal)){
-
+	if (true == (character[0]->m_isGoal && character[1]->m_isGoal && character[2]->m_isGoal && character[3]->m_isGoal))
+	{
 		//スタートボタンが押されたら
 		//タイトルシーンに移行
 		if (JoysticManager::getInstance()->m_contoroller[0].m_downkey & XINPUT_GAMEPAD_START){
@@ -951,10 +976,10 @@ void GameManager::scenePlay(float delta) {
 			modeCommand = SINGLE_MODE;
 
 			//コースbgm停止
-			course->m_bgm->stop();
+			//course->m_bgm->stop();
 
 			//エンジン音を止める
-			player1->m_engine->stop();
+			//player1->m_engine->stop();
 
 			//ループに必要な初期化処理
 			startRace = false;

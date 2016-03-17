@@ -7,372 +7,272 @@
 #include"BmpImage.h"
 #include"Item.h"
 
-//-------------------------------------
-//bmp画像からアルファ値付きのテクスチャ作成
+namespace oka
+{
+	//-------------------------------------
+	//拡張子.bmpの画像読み込み
+	//戻り値としてunsigned int型のハンドル(ID)を返す
+	
+	unsigned int BmpImage::LoadImage3f(const char *_fileName)
+	{
+		FILE *fp;
+		fp = fopen(_fileName, "rb");
 
-GLuint  BmpImage::loadImage_alpha(const char *_Filename){
-	FILE *pBinMapFile;
-	pBinMapFile = fopen(_Filename, "rb");
+		assert(fp != NULL);
 
-	assert(pBinMapFile != NULL);
+		BITMAPFILEHEADER bh;
+		fread(&bh, sizeof(BITMAPFILEHEADER), 1, fp);
 
-	BITMAPFILEHEADER bmpHeader;
-	fread(
-		&bmpHeader,
-		sizeof(BITMAPFILEHEADER),
-		1,
-		pBinMapFile
-		);
+		BITMAPINFOHEADER bih;
+		fread(&bih, sizeof(BITMAPINFOHEADER), 1, fp);
 
-	BITMAPINFOHEADER bmpInfoHeader;
-	fread(
-		&bmpInfoHeader,
-		sizeof(BITMAPINFOHEADER),
-		1,
-		pBinMapFile
-		);
+		int imageSize = bih.biWidth * bih.biHeight * sizeof(RGB);
 
-	int imageSize = bmpInfoHeader.biWidth * bmpInfoHeader.biHeight * sizeof(RGB);
-	RGB *pixels = (RGB*)malloc(imageSize);
+		RGB *pixels = (RGB*)malloc(imageSize);
 
-	int imageSize_alpha = bmpInfoHeader.biWidth * bmpInfoHeader.biHeight * sizeof(RGBA);
-	RGBA *pixels_alpha = (RGBA*)malloc(imageSize_alpha);
+		pixels = (RGB*)malloc(imageSize);
 
-	fread(
-		pixels,
-		imageSize,
-		1,
-		pBinMapFile
-		);
-	fclose(pBinMapFile);
+		fread(pixels, imageSize, 1, fp);
 
-	//ピクセル単位でRとBを逆転させる
-	for (int i = 0; i < bmpInfoHeader.biWidth * bmpInfoHeader.biHeight; i++){
-		unsigned char tmp;
-		tmp = pixels[i].r;
-		pixels[i].r = pixels[i].b;
-		pixels[i].b = tmp;
-	}
+		fclose(fp);
 
-	//ピクセル単位で上下反転
-	for (int i = 0; i < bmpInfoHeader.biWidth; i++){
-		for (int n = 0; n < bmpInfoHeader.biHeight / 2; n++){
-			RGB temp = pixels[bmpInfoHeader.biWidth * n + i];
-			pixels[bmpInfoHeader.biWidth * n + i] = pixels[bmpInfoHeader.biWidth*(bmpInfoHeader.biHeight - n - 1) + i];
-			pixels[bmpInfoHeader.biWidth*(bmpInfoHeader.biHeight - n - 1) + i] = temp;
+		//ピクセル単位でRとBを逆転させる
+		for (int i = 0; i < bih.biWidth * bih.biHeight; i++)
+		{
+			unsigned char tmp;
+			tmp = pixels[i].r;
+			pixels[i].r = pixels[i].b;
+			pixels[i].b = tmp;
 		}
-	}
 
-
-	for (int i = 0; i < bmpInfoHeader.biWidth * bmpInfoHeader.biHeight; i++){
-		pixels_alpha[i].r = pixels[i].r;
-		pixels_alpha[i].g = pixels[i].g;
-		pixels_alpha[i].b = pixels[i].b;
-
-		//白ならアルファ値0とする
-		if (pixels_alpha[i].r == 255 && pixels_alpha[i].g == 255 && pixels_alpha[i].b == 255){
-			pixels_alpha[i].a = 0;
-		}
-		else{
-			pixels_alpha[i].a = 255;
-		}
-	}
-
-
-	GLuint handle;
-
-	glGenTextures(1, &handle);
-	glBindTexture(GL_TEXTURE_2D, handle);
-
-	//pixcel
-	glTexImage2D(
-		GL_TEXTURE_2D,   //GLenum target
-		0,               //GLint level
-		GL_RGBA,          //GLint internalformat(生成するテクスチャのフォーマット)
-		bmpInfoHeader.biWidth,               //GLsizei width
-		bmpInfoHeader.biHeight,               //GLsizei height
-		0,               //GLint border
-		GL_RGBA,          //GLenum format(ピクセルデータのフォーマット)
-		GL_UNSIGNED_BYTE,//GLenum type
-		pixels_alpha          //const GLvoid *pixels
-		);
-
-	glTexParameteri(
-		GL_TEXTURE_2D,          // GLenum target
-		GL_TEXTURE_MIN_FILTER,  // GLenum pname
-		GL_NEAREST);            // GLint param
-
-	glTexParameteri(
-		GL_TEXTURE_2D,          // GLenum target
-		GL_TEXTURE_MAG_FILTER,  // GLenum pname
-		GL_NEAREST);
-
-	free(pixels);
-	free(pixels_alpha);
-
-	return handle;
-}
-
-/*拡張子.bmpの画像読み込み*/
-GLuint BmpImage::loadImage(const char *_fileName){
-	FILE *pBinMapFile;
-	pBinMapFile = fopen(_fileName, "rb");
-
-	assert(pBinMapFile != NULL);
-
-	BITMAPFILEHEADER bmpHeader;
-	fread(&bmpHeader, sizeof(BITMAPFILEHEADER), 1, pBinMapFile);
-
-	BITMAPINFOHEADER bmpInfoHeader;
-	fread(&bmpInfoHeader, sizeof(BITMAPINFOHEADER), 1, pBinMapFile);
-
-	int imageSize = bmpInfoHeader.biWidth * bmpInfoHeader.biHeight * sizeof(RGB);
-
-	RGB *pixels = (RGB*)malloc(imageSize);
-
-	pixels = (RGB*)malloc(imageSize);
-
-	fread(pixels, imageSize, 1, pBinMapFile);
-
-	fclose(pBinMapFile);
-
-	//ピクセル単位でRとBを逆転させる
-	for (int i = 0; i < bmpInfoHeader.biWidth * bmpInfoHeader.biHeight; i++){
-		unsigned char tmp;
-		tmp = pixels[i].r;
-		pixels[i].r = pixels[i].b;
-		pixels[i].b = tmp;
-	}
-
-	//ピクセル単位で上下反転
-	for (int i = 0; i < bmpInfoHeader.biWidth; i++){
-		for (int n = 0; n < bmpInfoHeader.biHeight / 2; n++){
-			RGB temp = pixels[bmpInfoHeader.biWidth * n + i];
-			pixels[bmpInfoHeader.biWidth * n + i] = pixels[bmpInfoHeader.biWidth*(bmpInfoHeader.biHeight - n - 1) + i];
-			pixels[bmpInfoHeader.biWidth*(bmpInfoHeader.biHeight - n - 1) + i] = temp;
-		}
-	}
-
-	GLuint handle;
-	glGenTextures(1, &handle);
-	glBindTexture(GL_TEXTURE_2D, handle);
-
-	//pixcel
-	glTexImage2D(
-		GL_TEXTURE_2D,   //GLenum target
-		0,               //GLint level
-		GL_RGB,          //GLint internalformat(生成するテクスチャのフォーマット)
-		bmpInfoHeader.biWidth,               //GLsizei width
-		bmpInfoHeader.biHeight,               //GLsizei height
-		0,               //GLint border
-		GL_RGB,          //GLenum format(ピクセルデータのフォーマット)
-		GL_UNSIGNED_BYTE,//GLenum type
-		pixels          //const GLvoid *pixels
-		);
-
-	glTexParameteri(
-		GL_TEXTURE_2D,          // GLenum target
-		GL_TEXTURE_MIN_FILTER,  // GLenum pname
-		GL_NEAREST);            // GLint param
-
-	glTexParameteri(
-		GL_TEXTURE_2D,          // GLenum target
-		GL_TEXTURE_MAG_FILTER,  // GLenum pname
-		GL_NEAREST);
-
-	free(pixels);
-
-	return handle;
-}
-
-
-//-------------------------------------
-//煙エフェクト読み込み専用
-
-GLuint BmpImage::loadImage_smoke(const char *_Filename){
-	FILE *pBinMapFile;
-	pBinMapFile = fopen(_Filename, "rb");
-
-	assert(pBinMapFile != NULL);
-
-	BITMAPFILEHEADER bmpHeader;
-	fread(
-		&bmpHeader,
-		sizeof(BITMAPFILEHEADER),
-		1,
-		pBinMapFile
-		);
-
-	BITMAPINFOHEADER bmpInfoHeader;
-	fread(
-		&bmpInfoHeader,
-		sizeof(BITMAPINFOHEADER),
-		1,
-		pBinMapFile
-		);
-
-	int imageSize = bmpInfoHeader.biWidth * bmpInfoHeader.biHeight * sizeof(RGB);
-	RGB *pixels = (RGB*)malloc(imageSize);
-
-	fread(
-		pixels,
-		imageSize,
-		1,
-		pBinMapFile
-		);
-	fclose(pBinMapFile);
-
-
-	for (int i = 0; i < bmpInfoHeader.biWidth * bmpInfoHeader.biHeight; i++){
-		unsigned char tmp;
-		tmp = pixels[i].r;
-		pixels[i].r = pixels[i].b;
-		pixels[i].b = tmp;
-	}
-
-	int texDataSize = bmpInfoHeader.biWidth * bmpInfoHeader.biHeight * sizeof(RGBA);
-	RGBA *pixelsData = (RGBA*)malloc(texDataSize);
-
-	//RGBを白で初期化
-	for (int i = 0; i < bmpInfoHeader.biWidth * bmpInfoHeader.biHeight; i++){
-		pixelsData[i].r = 0xff;
-		pixelsData[i].g = 0xff;
-		pixelsData[i].b = 0xff;
-	}
-
-	//各ピクセルのRの値を、テクスチャ用ピクセルのアルファ値に書き込む。
-	for (int i = 0; i < bmpInfoHeader.biWidth * bmpInfoHeader.biHeight; i++){
-		pixelsData[i].a = pixels[i].r;
-	}
-
-	GLuint textures;
-
-	glGenTextures(
-		1,        //GLsizei n
-		&textures);//GLuint *textures
-
-
-	//pixceldata
-	glBindTexture(
-		GL_TEXTURE_2D,//GLenum target
-		textures//GLuint texture
-		);
-
-	glTexImage2D(
-		GL_TEXTURE_2D,   //GLenum target
-		0,               //GLint level
-		GL_RGBA,          //GLint internalformat(生成するテクスチャのフォーマット)
-		bmpInfoHeader.biWidth,               //GLsizei width
-		bmpInfoHeader.biHeight,               //GLsizei height
-		0,               //GLint border
-		GL_RGBA,          //GLenum format(ピクセルデータのフォーマット)
-		GL_UNSIGNED_BYTE,//GLenum type
-		pixelsData          //const GLvoid *pixels
-		);
-
-	glTexParameteri(
-		GL_TEXTURE_2D,          // GLenum target
-		GL_TEXTURE_MIN_FILTER,  // GLenum pname
-		GL_NEAREST);            // GLint param
-
-	glTexParameteri(
-		GL_TEXTURE_2D,          // GLenum target
-		GL_TEXTURE_MAG_FILTER,  // GLenum pname
-		GL_NEAREST);
-
-	free(pixels);
-	free(pixelsData);
-
-	return textures;
-}
-
-//-------------------------------------
-//拡張子bmpからコース用のバッファを作製する
-
-void BmpImage::makeBuffer(const char *_bufferName, int _buffer[][COURSE_WIDTH]){
-	FILE *pBinMapFile;
-	pBinMapFile = fopen(_bufferName, "rb");
-
-	assert(pBinMapFile != NULL);
-
-	BITMAPFILEHEADER bmpHeader;
-	fread(&bmpHeader, sizeof(BITMAPFILEHEADER), 1, pBinMapFile);
-
-	BITMAPINFOHEADER bmpInfoHeader;
-	fread(&bmpInfoHeader, sizeof(BITMAPINFOHEADER), 1, pBinMapFile);
-
-	int imageSize = bmpInfoHeader.biWidth * bmpInfoHeader.biHeight * sizeof(RGB);
-
-	RGB *pixels = (RGB*)malloc(imageSize);
-
-	pixels = (RGB*)malloc(imageSize);
-
-	fread(pixels, imageSize, 1, pBinMapFile);
-
-	fclose(pBinMapFile);
-
-	//ピクセル単位でRとBを逆転させる
-	for (int i = 0; i < bmpInfoHeader.biWidth * bmpInfoHeader.biHeight; i++){
-		unsigned char tmp;
-		tmp = pixels[i].r;
-		pixels[i].r = pixels[i].b;
-		pixels[i].b = tmp;
-	}
-
-	//ピクセル単位で上下反転
-	for (int i = 0; i < bmpInfoHeader.biWidth; i++){
-		for (int n = 0; n < bmpInfoHeader.biHeight / 2; n++){
-			RGB temp = pixels[bmpInfoHeader.biWidth * n + i];
-			pixels[bmpInfoHeader.biWidth * n + i] = pixels[bmpInfoHeader.biWidth*(bmpInfoHeader.biHeight - n - 1) + i];
-			pixels[bmpInfoHeader.biWidth*(bmpInfoHeader.biHeight - n - 1) + i] = temp;
-		}
-	}
-
-	//コース判定用のバッファ作成
-	for (int i = 0; i < bmpInfoHeader.biHeight; i++){
-		for (int t = 0; t < bmpInfoHeader.biWidth; t++){
-
-			//白なら道
-			if (pixels[t + i*bmpInfoHeader.biWidth].r == 255 &&
-				pixels[t + i*bmpInfoHeader.biWidth].g == 255 &&
-				pixels[t + i*bmpInfoHeader.biWidth].b == 255){
-
-				_buffer[i][t] = PATH;
-			}
-
-			//黒ならダート
-			else if (pixels[t + i*bmpInfoHeader.biWidth].r == 0 &&
-				pixels[t + i*bmpInfoHeader.biWidth].g == 0 &&
-				pixels[t + i*bmpInfoHeader.biWidth].b == 0){
-				_buffer[i][t] = DART;
-			}
-
-			//赤ならスタート
-			else if (pixels[t + i*bmpInfoHeader.biWidth].r == 255 &&
-				pixels[t + i*bmpInfoHeader.biWidth].g == 0 &&
-				pixels[t + i*bmpInfoHeader.biWidth].b == 0){
-
-				_buffer[i][t] = START;
-			}
-
-			//青ならゴール
-			else if (pixels[t + i*bmpInfoHeader.biWidth].r == 0 &&
-				pixels[t + i*bmpInfoHeader.biWidth].g == 0 &&
-				pixels[t + i*bmpInfoHeader.biWidth].b == 255){
-
-				_buffer[i][t] = GOAL;
-			}
-
-			//緑ならアイテムの場所
-			else if (pixels[t + i*bmpInfoHeader.biWidth].r == 0 &&
-				pixels[t + i*bmpInfoHeader.biWidth].g == 255 &&
-				pixels[t + i*bmpInfoHeader.biWidth].b == 0){
-				_buffer[i][t] = ITEMPOSITION;
+		//ピクセル単位で上下反転
+		for (int i = 0; i < bih.biWidth; i++)
+		{
+			for (int n = 0; n < bih.biHeight / 2; n++)
+			{
+				RGB temp = pixels[bih.biWidth * n + i];
+				pixels[bih.biWidth * n + i] = pixels[bih.biWidth*(bih.biHeight - n - 1) + i];
+				pixels[bih.biWidth*(bih.biHeight - n - 1) + i] = temp;
 			}
 		}
 
+		unsigned int handle;
+
+		glGenTextures(1, &handle);
+		glBindTexture(GL_TEXTURE_2D, handle);
+
+		glTexImage2D(
+			GL_TEXTURE_2D,
+			0,            
+			GL_RGB,//生成するテクスチャのフォーマット
+			bih.biWidth,
+			bih.biHeight,
+			0,
+			GL_RGB,//ピクセルデータのフォーマット
+			GL_UNSIGNED_BYTE,
+			pixels
+			);
+
+		glTexParameteri(
+			GL_TEXTURE_2D,          
+			GL_TEXTURE_MIN_FILTER,  
+			GL_NEAREST);    
+
+		glTexParameteri(
+			GL_TEXTURE_2D,         
+			GL_TEXTURE_MAG_FILTER, 
+			GL_NEAREST);
+
+		free(pixels);
+
+		return handle;
 	}
 
-	free(pixels);
+	//-------------------------------------
+	//bmp画像からアルファ値付きのテクスチャ作成
+
+	unsigned int  BmpImage::LoadImage4f(const char *_filename)
+	{
+		FILE *fp;
+		fp = fopen(_filename, "rb");
+
+		assert(fp != NULL);
+
+		BITMAPFILEHEADER bh;
+		fread(&bh,sizeof(BITMAPFILEHEADER),1,fp);
+
+		BITMAPINFOHEADER bih;
+		fread(&bih,sizeof(BITMAPINFOHEADER),1,fp);
+
+		int imageSize3f = bih.biWidth * bih.biHeight * sizeof(RGB);
+		RGB *pixels3f = (RGB*)malloc(imageSize3f);
+
+		int imageSize4f = bih.biWidth * bih.biHeight * sizeof(RGBA);
+		RGBA *pixels4f = (RGBA*)malloc(imageSize4f);
+
+		fread(pixels3f,imageSize3f,1,fp);
+		fclose(fp);
+
+		//ピクセル単位でRとBを逆転させる
+		for (int i = 0; i < bih.biWidth * bih.biHeight; i++) {
+			unsigned char tmp;
+			tmp = pixels3f[i].r;
+			pixels3f[i].r = pixels3f[i].b;
+			pixels3f[i].b = tmp;
+		}
+
+		//ピクセル単位で上下反転
+		for (int i = 0; i < bih.biWidth; i++) 
+		{
+			for (int n = 0; n < bih.biHeight / 2; n++) 
+			{
+				RGB temp = pixels3f[bih.biWidth * n + i];
+				pixels3f[bih.biWidth * n + i] = pixels3f[bih.biWidth*(bih.biHeight - n - 1) + i];
+				pixels3f[bih.biWidth*(bih.biHeight - n - 1) + i] = temp;
+			}
+		}
+
+
+		for (int i = 0; i < bih.biWidth * bih.biHeight; i++)
+		{
+			pixels4f[i].r = pixels3f[i].r;
+			pixels4f[i].g = pixels3f[i].g;
+			pixels4f[i].b = pixels3f[i].b;
+
+			//白ならアルファ値0とする
+			if (pixels4f[i].r == 255 && pixels4f[i].g == 255 && pixels4f[i].b == 255)
+			{
+				pixels4f[i].a = 0;
+			}
+			else 
+			{
+				pixels4f[i].a = 255;
+			}
+		}
+
+		unsigned int handle;
+
+		glGenTextures(1, &handle);
+		glBindTexture(GL_TEXTURE_2D, handle);
+
+		glTexImage2D(
+			GL_TEXTURE_2D,  
+			0,             
+			GL_RGBA,          //生成するテクスチャのフォーマット
+			bih.biWidth,             
+			bih.biHeight,             
+			0,              
+			GL_RGBA,          //ピクセルデータのフォーマット
+			GL_UNSIGNED_BYTE,
+			pixels4f         
+			);
+
+		glTexParameteri(
+			GL_TEXTURE_2D,         
+			GL_TEXTURE_MIN_FILTER, 
+			GL_NEAREST);            
+
+		glTexParameteri(
+			GL_TEXTURE_2D,         
+			GL_TEXTURE_MAG_FILTER,  
+			GL_NEAREST);
+
+		free(pixels3f);
+		free(pixels4f);
+
+		return handle;
+	}
+
+	//-------------------------------------
+	//拡張子bmpからコース用のバッファを作製する
+
+	void BmpImage::makeBuffer(const char *_bufferName, int _buffer[][COURSE_WIDTH]) 
+	{
+		FILE *pBinMapFile;
+		pBinMapFile = fopen(_bufferName, "rb");
+
+		assert(pBinMapFile != NULL);
+
+		BITMAPFILEHEADER bmpHeader;
+		fread(&bmpHeader, sizeof(BITMAPFILEHEADER), 1, pBinMapFile);
+
+		BITMAPINFOHEADER bmpInfoHeader;
+		fread(&bmpInfoHeader, sizeof(BITMAPINFOHEADER), 1, pBinMapFile);
+
+		int imageSize = bmpInfoHeader.biWidth * bmpInfoHeader.biHeight * sizeof(RGB);
+
+		RGB *pixels = (RGB*)malloc(imageSize);
+
+		pixels = (RGB*)malloc(imageSize);
+
+		fread(pixels, imageSize, 1, pBinMapFile);
+
+		fclose(pBinMapFile);
+
+		//ピクセル単位でRとBを逆転させる
+		for (int i = 0; i < bmpInfoHeader.biWidth * bmpInfoHeader.biHeight; i++) {
+			unsigned char tmp;
+			tmp = pixels[i].r;
+			pixels[i].r = pixels[i].b;
+			pixels[i].b = tmp;
+		}
+
+		//ピクセル単位で上下反転
+		for (int i = 0; i < bmpInfoHeader.biWidth; i++) {
+			for (int n = 0; n < bmpInfoHeader.biHeight / 2; n++) {
+				RGB temp = pixels[bmpInfoHeader.biWidth * n + i];
+				pixels[bmpInfoHeader.biWidth * n + i] = pixels[bmpInfoHeader.biWidth*(bmpInfoHeader.biHeight - n - 1) + i];
+				pixels[bmpInfoHeader.biWidth*(bmpInfoHeader.biHeight - n - 1) + i] = temp;
+			}
+		}
+
+		//コース判定用のバッファ作成
+		for (int i = 0; i < bmpInfoHeader.biHeight; i++) {
+			for (int t = 0; t < bmpInfoHeader.biWidth; t++) {
+
+				//白なら道
+				if (pixels[t + i*bmpInfoHeader.biWidth].r == 255 &&
+					pixels[t + i*bmpInfoHeader.biWidth].g == 255 &&
+					pixels[t + i*bmpInfoHeader.biWidth].b == 255) {
+
+					_buffer[i][t] = PATH;
+				}
+
+				//黒ならダート
+				else if (pixels[t + i*bmpInfoHeader.biWidth].r == 0 &&
+					pixels[t + i*bmpInfoHeader.biWidth].g == 0 &&
+					pixels[t + i*bmpInfoHeader.biWidth].b == 0) {
+					_buffer[i][t] = DART;
+				}
+
+				//赤ならスタート
+				else if (pixels[t + i*bmpInfoHeader.biWidth].r == 255 &&
+					pixels[t + i*bmpInfoHeader.biWidth].g == 0 &&
+					pixels[t + i*bmpInfoHeader.biWidth].b == 0) {
+
+					_buffer[i][t] = START;
+				}
+
+				//青ならゴール
+				else if (pixels[t + i*bmpInfoHeader.biWidth].r == 0 &&
+					pixels[t + i*bmpInfoHeader.biWidth].g == 0 &&
+					pixels[t + i*bmpInfoHeader.biWidth].b == 255) {
+
+					_buffer[i][t] = GOAL;
+				}
+
+				//緑ならアイテムの場所
+				else if (pixels[t + i*bmpInfoHeader.biWidth].r == 0 &&
+					pixels[t + i*bmpInfoHeader.biWidth].g == 255 &&
+					pixels[t + i*bmpInfoHeader.biWidth].b == 0) {
+					_buffer[i][t] = ITEMPOSITION;
+				}
+			}
+
+		}
+
+		free(pixels);
+
+	}
 
 }

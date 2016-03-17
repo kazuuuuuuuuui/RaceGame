@@ -1,40 +1,37 @@
-#ifndef LOADIMAGE_H_
-#define LOADIMAGE_H_
+#ifndef _OKA_BMPIMAGE_H_
+#define _OKA_BMPIMAGE_H_
 
 #include<stdlib.h>
 #include"Course.h"
-#include"glut.h"
 
-//透過度無し
-class RGB{
-public:
-	unsigned char r, g, b;
-};
+namespace oka 
+{
+	//-------------------------------------
+	//画像ファイルのピクセル構造体
+	//RGB   透過度無し
+	//RGBA　透過度有り
 
-class RGBA{
-public:
-	unsigned char r, g, b, a;
-};
+	struct RGB{
+		unsigned char r, g, b;
+	};
 
-class BmpImage{
-public:
-	GLuint m_handle;
-	RGB m_pixel;
+	struct RGBA{
+		unsigned char r, g, b, a;
+	};
 
-	static GLuint loadImage(const char *_fileName);
+	//-------------------------------------
+	//
 
-	static void makeBuffer(const char *_bufferName, int _buffer[][COURSE_WIDTH]);
+	class BmpImage
+	{
+	public:
 
-	static GLuint loadImage_alpha(const char *_Filename);
+		static unsigned int LoadImage3f(const char *_fileName);
+		static unsigned int LoadImage4f(const char *_filename);
 
-	static GLuint loadImage_smoke(const char *_Filename);
+		static void makeBuffer(const char *_bufferName, int _buffer[][COURSE_WIDTH]);
+	};
 
-
-};
-
-
-extern GLuint handle;
-
-
+}
 
 #endif

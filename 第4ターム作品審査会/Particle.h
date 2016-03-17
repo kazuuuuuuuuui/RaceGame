@@ -10,7 +10,7 @@ public:
 	float m_alpha;
 
 	void draw(){};
-	void draw(int _type,glm::vec3 _color,GLuint _texture);
+	void draw(int _type,glm::vec3 _color,unsigned int _texture);
 	void update(){};
 
 	Particle() :

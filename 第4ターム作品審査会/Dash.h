@@ -15,4 +15,4 @@ public:
 	
 };
 
-extern GLuint dash_handle;
+extern unsigned int dash_handle;

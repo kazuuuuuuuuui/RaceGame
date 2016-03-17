@@ -5,6 +5,7 @@
 #include"Camera.h"
 #include"GameManager.h"
 #include"joysticManager.h"
+#include"ImageManager.h"
 #include"SoundManager.h"
 #include"Sound.h"
 #include"controller.h"
@@ -44,18 +45,8 @@ void display() {
 
 void timer(int value) {
 
-	if (player1 != nullptr) {
-		printf("%f ", player1->m_transform.GetPosition().m_x);
-		printf("%f ", player1->m_transform.GetPosition().m_y);
-		printf("%f\n", player1->m_transform.GetPosition().m_z);
-	}
 
-	/*if (player1 != nullptr) {
-		printf("%f ", player1->m_speed.m_x);
-		printf("%f ", player1->m_speed.m_y);
-		printf("%f\n", player1->m_speed.m_z);
-	}*/
-	
+
 	glutPostRedisplay();
 	glutTimerFunc(1000 / 60, timer, 0);
 	glutForceJoystickFunc();
@@ -83,9 +74,10 @@ int main(int argc, char *argv[])
 
 	JoysticManager::getInstance();
 	GameManager::getInstance();
-	SoundManager::getInstance();
+	oka::ImageManager::GetInstance();
+	oka::SoundManager::getInstance();
 
-	//コールバック関数の登録
+	
 	glutReshapeFunc(reshape);
 	glutDisplayFunc(display);
 	glutTimerFunc(0, timer, 0);

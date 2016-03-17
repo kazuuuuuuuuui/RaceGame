@@ -8,6 +8,7 @@
 #include"Smoke.h"
 #include"Dash.h"
 #include"xFile.h"
+#include"SoundManager.h"
 
 #define PLAYER_MAX_NUMBER (4)
 
@@ -30,10 +31,11 @@ enum{
 	PLAYER
 };
 
-	class Character :public oka::GameObject {
+	class Character :public oka::GameObject 
+	{
 	public:
 
-		Sound *m_engine;
+		unsigned int m_engine;
 
 		//自身の向きベクトル
 		glm::vec2 OrientationVector;
@@ -196,9 +198,8 @@ enum{
 		{
 			printf("プレイヤーが生成されました\n");
 
-			m_engine = new Sound();
-			m_engine->loadKukeiha(engine_sound, sizeof(engine_sound), 110);
-			m_engine->changeVolume(0.8f);
+			m_engine = oka::Sound::LoadSquareWave(engine_sound, sizeof(engine_sound), 110);
+			oka::SoundManager::getInstance()->AddSound("Engine",m_engine);
 
 			//角度からの向きベクトル
 			OrientationVector = { -sin(m_transform.GetRotation().m_y), -cos(m_transform.GetRotation().m_y) };
@@ -238,8 +239,8 @@ enum{
 		~Character() { printf("キャラクターが削除されました\n"); }
 	};
 
-extern GLuint dashIcon;
-extern GLuint dashGauge;
+extern unsigned int dashIcon;
+extern unsigned int dashGauge;
 
 extern Character *player1;
 extern Character *player2;

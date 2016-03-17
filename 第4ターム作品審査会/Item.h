@@ -73,5 +73,3 @@ public:
 
 extern int itemNum;
 extern Item *item[SET_ITEM_NUMBER];
-extern GLuint ItemFire;
-extern GLuint ItemBlizzard;

@@ -1,31 +1,35 @@
-#pragma once
+#ifndef _OKA_SOUNDMANAGER_H_
+#define _OKA_SOUNDMANAGER_H_
 
-#include<stdio.h>
 #include<map>
 #include<string>
 #include"Sound.h"
 
-class SoundManager {
+namespace oka
+{
+	//-------------------------------------
+	//ゲーム中で使用する音を管理すすクラス
 
-public:
+	class SoundManager
+	{
+	private:
+		static SoundManager* m_instance;
+		
+		void init();
+		SoundManager() { SoundManager::init(); }
+		~SoundManager() {}
 
-	std::map<std::string, Sound*>m_sounds;
+	public:
+		std::map<std::string, unsigned int>m_sounds;
+		static SoundManager* getInstance();
+		void AddSound(const std::string _str, unsigned int _sound);
+		void DeleteSound(const std::string _str);
+		void Play(const std::string _str);
+		void Stop(const std::string _str);
+		void ChangeVolume(const std::string _str,const float _value);
+		void ChangePitch(const std::string _str, const float _value);
+	};
 
-	~SoundManager() {}
-	void updata();
-	static SoundManager* getInstance();
-	void addSound(const std::string _str, Sound *_sound);
+}
 
-private:
-	SoundManager() {
-	
-		Sound::init();
-
-		//debug
-		printf("サウンドマネージャーが生成されました\n");
-
-	}
-	
-	static SoundManager* m_instance;
-
-};
+#endif

@@ -1,6 +1,6 @@
 #include"Dash.h"
 
-GLuint dash_handle = 0;
+unsigned int dash_handle = 0;
 
 void Dash::update()
 {

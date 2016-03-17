@@ -20,8 +20,8 @@ void Smoke::update()
 	}
 }
 
-void Smoke::draw(){
-
+void Smoke::draw()
+{
 	glPushMatrix();
 	{
 		glTranslatef(m_basePosition.m_x, m_basePosition.m_y, m_basePosition.m_z);

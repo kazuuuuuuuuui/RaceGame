@@ -29,8 +29,6 @@ private:
 	{
 		_sequence.change(&GameManager::sceneTitle);
 
-		//debug
-		printf("ゲームマネージャーが生成されました\n");
 	}
 
 	static GameManager* m_instance;
@@ -40,15 +38,15 @@ private:
 
 
 bool checkRanking(Character *_character1, Character *_character2);
-extern GLuint threeTexture;
-extern GLuint twoTexture;
-extern GLuint oneTexture;
-extern GLuint goTexture;
-extern GLuint goalTexture;
-extern GLuint rank1st;
-extern GLuint rank2nd;
-extern GLuint rank3rd;
-extern GLuint rank4th;
+extern unsigned int threeTexture;
+extern unsigned int twoTexture;
+extern unsigned int oneTexture;
+extern unsigned int goTexture;
+extern unsigned int goalTexture;
+extern unsigned int rank1st;
+extern unsigned int rank2nd;
+extern unsigned int rank3rd;
+extern unsigned int rank4th;
 
 
 
