@@ -1,5 +1,11 @@
 #pragma once
 
+/*
+
+Characterクラスのメンバをカプセル化する
+
+*/
+
 #include<vector>
 #define _USE_MATH_DEFINES
 #include<math.h>
