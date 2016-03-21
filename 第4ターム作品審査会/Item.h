@@ -66,8 +66,8 @@ public:
 	{};
 
 	void move();
-	void draw();
-	void update();
+	void Draw();
+	void Update();
 
 };
 

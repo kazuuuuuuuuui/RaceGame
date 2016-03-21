@@ -9,9 +9,9 @@ public:
 
 	float m_alpha;
 
-	void draw(){};
-	void draw(int _type,glm::vec3 _color,unsigned int _texture);
-	void update(){};
+	void Draw(){};
+	void Draw(int _type,glm::vec3 _color,unsigned int _texture);
+	void Update(){};
 
 	Particle() :
 		m_alpha(0.f)

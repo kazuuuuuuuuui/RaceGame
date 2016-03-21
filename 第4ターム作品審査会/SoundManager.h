@@ -21,7 +21,7 @@ namespace oka
 
 	public:
 		std::map<std::string, unsigned int>m_sounds;
-		static SoundManager* getInstance();
+		static SoundManager* GetInstance();
 		void AddSound(const std::string _str, unsigned int _sound);
 		void DeleteSound(const std::string _str);
 		void Play(const std::string _str);

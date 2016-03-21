@@ -10,8 +10,8 @@ class Dash :public Effect{
 public:
 	Particle m_particle[DASH_PARTICLE_NUMBER];
 
-	void draw();
-	void update();
+	void Draw();
+	void Update();
 	
 };
 

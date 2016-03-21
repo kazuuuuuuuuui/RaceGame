@@ -14,6 +14,7 @@ Characterクラスのメンバをカプセル化する
 #include"Smoke.h"
 #include"Dash.h"
 #include"xFile.h"
+#include"Controller.h"
 #include"SoundManager.h"
 
 #define PLAYER_MAX_NUMBER (4)
@@ -41,6 +42,10 @@ enum{
 	{
 	public:
 
+		//自身を操作するコントローラー
+		Contoroller m_contoroller;
+
+		//エンジン音
 		unsigned int m_engine;
 
 		//自身の向きベクトル
@@ -153,9 +158,9 @@ enum{
 		//持っているアイテムの種類のみを保持しておく
 		std::vector<int> m_hasItem;
 
-		void draw();
+		void Draw();
 		void drawHasItem();
-		void update();
+		void Update();
 
 		void checkCourseOut();
 		float checkNextCheckPointLength();
@@ -205,7 +210,7 @@ enum{
 			printf("プレイヤーが生成されました\n");
 
 			m_engine = oka::Sound::LoadSquareWave(engine_sound, sizeof(engine_sound), 110);
-			oka::SoundManager::getInstance()->AddSound("Engine",m_engine);
+			oka::SoundManager::GetInstance()->AddSound("Engine",m_engine);
 
 			//角度からの向きベクトル
 			OrientationVector = { -sin(m_transform.GetRotation().m_y), -cos(m_transform.GetRotation().m_y) };
@@ -254,4 +259,4 @@ extern Character *player3;
 extern Character *player4;
 
 extern std::vector<Character*> character;
-extern std::vector<Character*> g_useController;
+//extern std::vector<Character*> g_useController;

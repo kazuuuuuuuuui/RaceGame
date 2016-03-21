@@ -15,7 +15,8 @@
 //法線を自力計算(フラットシェイディング)する
 //引数にxファイル名とモデルデータを格納するバッファを渡す
 
-void xFile::loadXfile(const char *_xFileName, xFile &_model){
+void xFile::loadXfile(const char *_xFileName, xFile &_model)
+{
 
 	FILE *pFile = fopen(_xFileName, "r");
 

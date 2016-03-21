@@ -2,7 +2,7 @@
 
 unsigned int dash_handle = 0;
 
-void Dash::update()
+void Dash::Update()
 {
 	//パーティクルの更新
 	for (int i = 0; i < DASH_PARTICLE_NUMBER; i++)
@@ -19,7 +19,7 @@ void Dash::update()
 	}
 }
 
-void Dash::draw(){
+void Dash::Draw(){
 
 	//左右対称で2つ描画している
 	glPushMatrix();
@@ -28,13 +28,13 @@ void Dash::draw(){
 		glTranslatef(m_basePosition.m_x, m_basePosition.m_y, m_basePosition.m_z);
 
 		for (int i = 0; i < DASH_PARTICLE_NUMBER; i++){
-			m_particle[i].draw(1, { 1.f, 1.f, 1.f }, dash_handle);
+			m_particle[i].Draw(1, { 1.f, 1.f, 1.f }, dash_handle);
 		}
 
 		glRotatef(180, 0, 1, 0);
 
 		for (int i = 0; i < DASH_PARTICLE_NUMBER; i++){
-			m_particle[i].draw(1, { 1.f, 1.f, 1.f }, dash_handle);
+			m_particle[i].Draw(1, { 1.f, 1.f, 1.f }, dash_handle);
 		}
 
 	}

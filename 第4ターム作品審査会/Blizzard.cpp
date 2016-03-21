@@ -3,7 +3,7 @@
 #include"Character.h"
 #include"glut.h"
 
-void Blizzard::update()
+void Blizzard::Update()
 {
 
 	//ÚG”»’è
@@ -14,7 +14,7 @@ void Blizzard::update()
 
 		if (isHit(character[i]->m_transform.GetPosition())){
 
-			oka::SoundManager::getInstance()->Play("slipSE");
+			oka::SoundManager::GetInstance()->Play("slipSE");
 			m_isActive = false;
 			character[i]->m_isHitItem = true;
 			character[i]->m_dashSpeed = { 0.f, 0.f, 0.f };
@@ -27,7 +27,7 @@ void Blizzard::update()
 }
 
 
-void Blizzard::draw(){
+void Blizzard::Draw(){
 
 	glPushMatrix();
 	{

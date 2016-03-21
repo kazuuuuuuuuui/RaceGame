@@ -11,8 +11,8 @@ public:
 	Particle m_particle[FIRE_PARTICLE_NUMBER];
 	
 
-	void draw();
-	void update();
+	void Draw();
+	void Update();
 	bool isHit(oka::Vec3 _position);
 
 };

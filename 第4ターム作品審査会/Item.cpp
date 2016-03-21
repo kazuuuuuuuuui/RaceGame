@@ -38,7 +38,7 @@ int itemNum = 0;
 //-------------------------------------
 //アイテムの更新
 
-void Item::update(){
+void Item::Update(){
 
 	m_flame++;
 
@@ -69,7 +69,7 @@ void Item::update(){
 				//プレイヤーが取得したときのみ効果音を鳴らす
 				if (player1 == character[i])
 				{
-					oka::SoundManager::getInstance()->Play("getItem");
+					oka::SoundManager::GetInstance()->Play("getItem");
 				}
 
 			}
@@ -99,7 +99,7 @@ void Item::move(){
 //スフィアマッピングをするための拾い物関数なので後で要理解
 
 
-void Item::draw()
+void Item::Draw()
 {
 
 	if (true == m_isActive){

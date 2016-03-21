@@ -1,53 +1,78 @@
 #include<stdio.h>
-#include"joysticManager.h"
-#include"controller.h"
+#include"JoysticManager.h"
 
-JoysticManager* JoysticManager::m_instance = nullptr;
+namespace oka
+{
+	JoysticManager* JoysticManager::m_instance = nullptr;
 
-//-------------------------------------------------------------------------------------------------------
-//ジョイスティックのインスタンス取得
+	//-------------------------------------------------------------------------------------------------------
+	//ジョイスティックのインスタンス取得
 
-JoysticManager* JoysticManager::getInstance() {
-	if (nullptr == m_instance) {
-		m_instance = new JoysticManager();
-	}
-	return m_instance;
-}
-
-//-------------------------------------
-//コントローラーが繋がっているかのチェックと
-//現在繋がっているコントローラーの台数チェック
-
-void JoysticManager::update(){
-
-	for (int i = 0; i < 4; i++){
-
-		if (ERROR_SUCCESS == XInputGetState(i, &m_contoroller[i].m_state)){
-			m_contoroller[i].m_isConnect = true;
-			m_contoroller[i].update();
-		}
-		else{
-			m_contoroller[i].m_isConnect = false;
+	JoysticManager* JoysticManager::GetInstance()
+	{
+		if (nullptr == m_instance)
+		{
+			m_instance = new JoysticManager();
 		}
 
+		return m_instance;
 	}
 
-}
 
-//-------------------------------------
-//現在繋がっているコントローラーの台数を返す
+	//-------------------------------------
+	//キャラクターとコントローラの対応付け
+	//引数としてキャラクタ型のポインタを受け取り
+	//コントローラを管理しているベクターに入れる
 
-int JoysticManager::connectingNum(){
+	void JoysticManager::AddController(Contoroller _character)
+	{
+		m_contoroller.push_back(_character);
+	}
 
-	int num = 0;
+	//-------------------------------------
+	//現在繋がっているコントローラーの台数を返す
 
-	for (int i = 0; i < 4; i++){
+	unsigned int JoysticManager::GetConnectingNum()const
+	{
+		return m_contoroller.size();
+	}
 
-		if (m_contoroller[i].m_isConnect){
-			num++;
+
+
+	Contoroller JoysticManager::GetContoroller(const int _num)const
+	{
+		if (0 != this->GetConnectingNum())
+		{
+			return m_contoroller[_num];
 		}
-	
+		else
+		{
+			
+		}
 	}
 
-	return num;
+	//-------------------------------------
+	//コントローラーが繋がっているかのチェックと
+	//現在繋がっているコントローラーの台数チェック
+
+	void JoysticManager::Update()
+	{
+		for (unsigned int i = 0; i < m_contoroller.size(); i++)
+		{
+			if (ERROR_SUCCESS == XInputGetState(i, &m_contoroller[i].m_state))
+			{
+				m_contoroller[i].m_isConnect = true;
+				m_contoroller[i].Update();
+			}
+			else
+			{
+				m_contoroller[i].m_isConnect = false;
+			}
+
+		}
+
+	}
+
+
+
 }

@@ -1,21 +1,28 @@
-#pragma once
+#ifndef _OKA_JOYSTICK_MANAGER_
+#define _OKA_JOYSTICK_MANAGER_
 
-#include"controller.h"
+#include<vector>
+#include"Controller.h"
+#include"Character.h"
 
-class JoysticManager{
-public:
+namespace oka
+{
+	class JoysticManager
+	{
+	private:
+		static JoysticManager* m_instance;
+		std::vector<Contoroller>m_contoroller;
 
-	contoroller m_contoroller[4];
+		JoysticManager() {};
 
-	int connectingNum();
+	public:
+		Contoroller GetContoroller(const int _num)const;
+		void AddController(Contoroller _Contoroller);
+		unsigned int GetConnectingNum()const;
+		void Update();
+		static JoysticManager* GetInstance();
+	};
 
-	void update();
+}
 
-	static JoysticManager* getInstance();
-
-private:
-	static JoysticManager* m_instance;
-
-	JoysticManager(){};
-
-};
+#endif

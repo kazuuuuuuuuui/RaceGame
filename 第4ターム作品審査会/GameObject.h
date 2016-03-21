@@ -8,7 +8,6 @@
 namespace oka
 {
 	class GameObject {
-
 	public:
 		Transform m_transform;
 		Vec3 m_speed;
@@ -20,8 +19,8 @@ namespace oka
 			m_accel(0, 0, 0)
 		{};
 
-		virtual void draw() = 0;
-		virtual void update() = 0;
+		virtual void Draw() = 0;
+		virtual void Update() = 0;
 	};
 
 }

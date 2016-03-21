@@ -2,7 +2,7 @@
 #include"Fire.h"
 #include"Character.h"
 
-void Fire::update()
+void Fire::Update()
 {
 	m_basePosition += m_speed;
 
@@ -15,7 +15,7 @@ void Fire::update()
 
 		if (isHit(character[i]->m_transform.GetPosition())){
 
-			oka::SoundManager::getInstance()->Play("slipSE");
+			oka::SoundManager::GetInstance()->Play("slipSE");
 			m_isActive = false;
 			character[i]->m_isHitItem = true;
 			character[i]->m_transform.SetRotationZ(0.0f);
@@ -43,7 +43,7 @@ void Fire::update()
 	}
 }
 
-void Fire::draw(){
+void Fire::Draw(){
 
 	glPushMatrix();
 	{
@@ -51,7 +51,7 @@ void Fire::draw(){
 		glTranslatef(m_basePosition.m_x, m_basePosition.m_y, m_basePosition.m_z);
 
 		for (int i = 0; i < FIRE_PARTICLE_NUMBER; i++){
-			m_particle[i].draw(0, { 1.f, 0.25f, 0.125f }, smoke_handle);
+			m_particle[i].Draw(0, { 1.f, 0.25f, 0.125f }, smoke_handle);
 		}
 
 	}

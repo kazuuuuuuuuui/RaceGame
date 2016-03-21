@@ -28,7 +28,7 @@ namespace oka
 	//生成されていなければインスタンスを生成し
 	//既にインスタンスが生成されていればそのインスタンスを返す
 
-	SoundManager* SoundManager::getInstance() {
+	SoundManager* SoundManager::GetInstance() {
 
 		if (nullptr == m_instance) 
 		{
@@ -50,7 +50,7 @@ namespace oka
 		}
 		else
 		{
-
+			printf("%sは既に登録されています\n", _str);
 		}
 	}
 

@@ -2,9 +2,8 @@
 #include"Fire.h"
 #include"Character.h"
 
-void Smoke::update()
+void Smoke::Update()
 {
-
 	for (int i = 0; i < SMOKE_PARTICLE_NUMBER; i++)
 	{
 		m_particle[i].m_alpha -= 0.05f;
@@ -20,14 +19,14 @@ void Smoke::update()
 	}
 }
 
-void Smoke::draw()
+void Smoke::Draw()
 {
 	glPushMatrix();
 	{
 		glTranslatef(m_basePosition.m_x, m_basePosition.m_y, m_basePosition.m_z);
 
 		for (int i = 0; i < SMOKE_PARTICLE_NUMBER; i++){
-			m_particle[i].draw(0,{ 128.f / 256.f, 128.f / 256.f, 128.f / 256.f, }, smoke_handle);
+			m_particle[i].Draw(0,{ 128.f / 256.f, 128.f / 256.f, 128.f / 256.f, }, smoke_handle);
 		}
 
 	}

@@ -5,7 +5,7 @@
 
 #pragma comment (lib,"xinput.lib")
 
-class contoroller
+class Contoroller
 {
 public:
 
@@ -36,10 +36,10 @@ public:
 
 	bool m_isConnect;
 
-	void update();
+	void Update();
 	void stick_x();
 	void stick_y();
 
-	contoroller(){};
+	Contoroller(){};
 
 };

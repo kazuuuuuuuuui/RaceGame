@@ -1,7 +1,8 @@
 #include<stdio.h>
 #include"controller.h"
 
-void contoroller::update(){
+void Contoroller::Update()
+{
 
 	//ボタン
 	m_pressedKey = m_state.Gamepad.wButtons;
@@ -26,23 +27,26 @@ void contoroller::update(){
 //-------------------------------------
 //スティックの傾きによるxトリガーのON・OFF
 
-void contoroller::stick_x(){
-
+void Contoroller::stick_x()
+{
 	bool m_xLeftPressed;
 	bool m_xRightPressed;
 
 	bool m_xLeftChanged;
 	bool m_xRightChanged;
 
-	if (m_sThumbLX > 0.5){
+	if (m_sThumbLX > 0.5)
+	{
 		m_xRightPressed = true;
 		m_xLeftPressed = false;
 	}
-	else if (m_sThumbLX < -0.5){
+	else if (m_sThumbLX < -0.5)
+	{
 		m_xRightPressed = false;
 		m_xLeftPressed = true;
 	}
-	else{
+	else
+	{
 		m_xRightPressed = false;
 		m_xLeftPressed = false;
 	}
@@ -60,8 +64,8 @@ void contoroller::stick_x(){
 //-------------------------------------
 //スティックの傾きによるyトリガーのON・OFF
 
-void contoroller::stick_y(){
-
+void Contoroller::stick_y()
+{
 	bool m_yTopPressed;
 	bool m_yBottomPressed;
 

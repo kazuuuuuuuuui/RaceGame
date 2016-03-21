@@ -33,7 +33,7 @@ namespace oka
 		}
 		else
 		{
-		
+			printf("%s‚ÍŠù‚É“o˜^‚³‚ê‚Ä‚¢‚Ü‚·\n", _str);
 		}
 	}
 

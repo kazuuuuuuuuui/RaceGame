@@ -9,6 +9,6 @@ class Smoke :public Effect{
 public:
 	Particle m_particle[SMOKE_PARTICLE_NUMBER];
 
-	void draw();
-	void update();
+	void Draw();
+	void Update();
 };

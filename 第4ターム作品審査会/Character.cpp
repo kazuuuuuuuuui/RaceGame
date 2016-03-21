@@ -25,8 +25,6 @@ Character *player2 = nullptr;
 Character *player3 = nullptr;
 Character *player4 = nullptr;
 
-
-
 unsigned int dashIcon = 0;
 unsigned int dashGauge = 0;
 
@@ -42,13 +40,11 @@ int getMinute(int _second);
 //キャラクターすべてを管理するベクター
 std::vector<Character*> character;
 
-std::vector<Character*> g_useController;
-
 //-------------------------------------
 //自機の更新
 //ゴールした時点で更新を止める
 
-void Character::update(){
+void Character::Update(){
 
 	if (false == m_isGoal){
 
@@ -87,7 +83,7 @@ void Character::update(){
 			if (false == m_isCharged)
 			{
 				m_isCharged = true;
-				oka::SoundManager::getInstance()->Play("chargeComplete");
+				oka::SoundManager::GetInstance()->Play("chargeComplete");
 			}
 
 		}
@@ -123,11 +119,11 @@ void Character::update(){
 				//1周目または2周目の時のみ鳴らす
 				if (1 == m_lapCount)
 				{
-					oka::SoundManager::getInstance()->Play("lapCountSE");
+					oka::SoundManager::GetInstance()->Play("lapCountSE");
 				}
 				else if (2 == m_lapCount)
 				{
-					oka::SoundManager::getInstance()->Play("finalLapSE");
+					oka::SoundManager::GetInstance()->Play("finalLapSE");
 			
 				}
 
@@ -158,7 +154,7 @@ void Character::update(){
 
 
 	//煙の更新
-	m_smoke.update();
+	m_smoke.Update();
 	m_smoke.m_basePosition.m_x = m_transform.GetPosition().m_x + sin(m_transform.GetRotation().m_y)*1.7f;
 	m_smoke.m_basePosition.m_y = 0.5f;
 	m_smoke.m_basePosition.m_z = m_transform.GetPosition().m_z + cos(m_transform.GetRotation().m_y)*1.7f;
@@ -242,7 +238,7 @@ void Character::update(){
 
 		if (PLAYER == m_type){
 
-			oka::SoundManager::getInstance()->Play("goalSE");
+			oka::SoundManager::GetInstance()->Play("goalSE");
 	
 		}
 
@@ -253,7 +249,7 @@ void Character::update(){
 //-------------------------------------
 //自機の描画
 
-void Character::draw(){
+void Character::Draw(){
 
 	/*車体描画*/
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
@@ -591,7 +587,7 @@ void Character::control(unsigned short _pressedKey, unsigned int _downKeys, floa
 
 	//エンジン音のピッチ調整
 
-	oka::SoundManager::getInstance()->ChangeVolume("Engine", pow(2, (m_speed.length()*15.f) / 12));
+	oka::SoundManager::GetInstance()->ChangeVolume("Engine", pow(2, (m_speed.length()*15.f) / 12));
 
 	/*alSourcef(
 		m_engine->m_sid,
@@ -661,7 +657,7 @@ void Character::control(unsigned short _pressedKey, unsigned int _downKeys, floa
 						fire->m_basePosition = { m_transform.GetPosition().m_x - sin(m_transform.GetRotation().m_y) * 1.f, 0.5f,m_transform.GetPosition().m_z - cos(m_transform.GetRotation().m_y) * 1.f };
 						fire->m_speed = { -sin(m_transform.GetRotation().m_y)*1.f, 0.f, -cos(m_transform.GetRotation().m_y)*1.f };
 						effect.push_back(fire);
-						oka::SoundManager::getInstance()->Play("fireSE");
+						oka::SoundManager::GetInstance()->Play("fireSE");
 
 					}
 
@@ -1196,7 +1192,7 @@ void Character::printStatus()
 
 		if (true == (character[0]->m_isGoal && character[1]->m_isGoal && character[2]->m_isGoal && character[3]->m_isGoal))
 		{
-			if ((GameManager::getInstance()->m_flame % 60) < 30)
+			if ((oka::GameManager::GetInstance()->m_flame % 60) < 30)
 			{
 				oka::DrawString("PushStartButton!!", 220.0f, 10.0f, 0.08f);
 				

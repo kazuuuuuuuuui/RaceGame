@@ -18,7 +18,8 @@ int g_GLframe = 0; //フレーム数
 int g_GLtimenow = 0;//経過時間
 int g_GLtimebase = 0;//計測開始時間
 
-void fps(){
+void fps()
+{
 	g_GLframe++;
 	g_GLtimenow = glutGet(GLUT_ELAPSED_TIME);//経過時間を取得
 
@@ -33,10 +34,10 @@ void fps(){
 //----------------------------------------
 //更新と描画
 
-void display() {
-
-	JoysticManager::getInstance()->update();
-	GameManager::getInstance()->updata();
+void display() 
+{
+	oka::JoysticManager::GetInstance()->Update();
+	oka::GameManager::GetInstance()->Updata();
 	
 }
 
@@ -44,8 +45,6 @@ void display() {
 //display関数を60F単位で再帰的に呼び出す関数
 
 void timer(int value) {
-
-
 
 	glutPostRedisplay();
 	glutTimerFunc(1000 / 60, timer, 0);
@@ -72,10 +71,10 @@ int main(int argc, char *argv[])
 	glutInitWindowSize(g_window_width, g_window_height);
 	glutCreateWindow("BikeRacing");
 
-	JoysticManager::getInstance();
-	GameManager::getInstance();
+	/*oka::JoysticManager::GetInstance();
+	oka::GameManager::GetInstance();
 	oka::ImageManager::GetInstance();
-	oka::SoundManager::getInstance();
+	oka::SoundManager::GetInstance();*/
 
 	
 	glutReshapeFunc(reshape);

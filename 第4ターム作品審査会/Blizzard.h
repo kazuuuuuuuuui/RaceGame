@@ -3,8 +3,8 @@
 class Blizzard :public Effect{
 public:
 	
-	void draw();
-	void update();
+	void Draw();
+	void Update();
 
 	bool isHit(oka::Vec3 _position);
 
