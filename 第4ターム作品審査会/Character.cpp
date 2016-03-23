@@ -14,6 +14,7 @@
 #include"Blizzard.h"
 #include"StrokeString.h"
 #include"SoundManager.h"
+#include"RaceManager.h"
 #include"ImageManager.h"
 #include"JoysticManager.h"
 #include"CharacterManager.h"
@@ -21,8 +22,6 @@
 #include"glm\gtx\transform.hpp"
 #include"glut.h"
 
-unsigned int dashIcon = 0;
-unsigned int dashGauge = 0;
 
 //タイヤの位置等を後でいじる
 //取り敢えず
@@ -188,7 +187,7 @@ void Character::Update(){
 
 		if (0 == i){
 
-			if (false == m_passCheckPoint[i] && course->m_checkPoint[i].checkPassFlag(m_transform.GetPosition())){
+			if (false == m_passCheckPoint[i] && RaceManager::GetInstance()->m_course->m_checkPoint[i].checkPassFlag(m_transform.GetPosition())){
 
 				m_passCheckPoint[i] = true;
 				m_nowPoint++;
@@ -201,7 +200,7 @@ void Character::Update(){
 
 			if (true == m_passCheckPoint[i - 1]){
 
-				if (false == m_passCheckPoint[i] && course->m_checkPoint[i].checkPassFlag(m_transform.GetPosition())){
+				if (false == m_passCheckPoint[i] && RaceManager::GetInstance()->m_course->m_checkPoint[i].checkPassFlag(m_transform.GetPosition())){
 
 					m_passCheckPoint[i] = true;
 					m_nowPoint++;
@@ -333,14 +332,9 @@ void Character::Draw(){
 
 			std::vector<unsigned short>::iterator itr_i = m_backWheel.m_index.begin();
 
-		/*	float aa[] = { 0.01, 0.01, 0.01, 1 };
-			glMaterialfv(GL_FRONT, GL_AMBIENT, aa);*/
 
 			float dd[] = { 0.00, 0.00, 0.00, 1 };
 			glMaterialfv(GL_FRONT, GL_DIFFUSE, dd);
-
-		/*	float ss[] = { 0.4, 0.4, 0.4, 1 };
-			glMaterialfv(GL_FRONT, GL_SPECULAR, ss);*/
 
 			
 
@@ -439,9 +433,6 @@ void Character::Draw(){
 
 		glMultMatrixf((GLfloat*)&myMatrix);
 
-
-
-
 		std::vector<float>::iterator itr_v = m_backWheel.m_vertex.begin();
 		glVertexPointer(3, GL_FLOAT, 0, &(*itr_v));
 
@@ -460,10 +451,10 @@ void Character::Draw(){
 //-------------------------------------
 //所持しているアイテムの描画
 
-void Character::drawHasItem(){
-
-	for (unsigned int i = 0; i < m_hasItem.size(); i++){
-
+void Character::drawHasItem()
+{
+	for (unsigned int i = 0; i < m_hasItem.size(); i++)
+	{
 
 		//テクスチャの設定
 		switch (m_hasItem[i]){
@@ -548,18 +539,12 @@ void Character::control(unsigned short _pressedKey, unsigned int _downKeys, floa
 
 	oka::SoundManager::GetInstance()->ChangeVolume("Engine", pow(2, (m_speed.length()*15.f) / 12));
 
-	/*alSourcef(
-		m_engine->m_sid,
-		AL_PITCH,
-		pow(2, (m_speed.length()*15.f) / 12));*/
-
 	if (false == m_isHitItem)
 	{
 
 		//前進(Aボタン)
 		if (_pressedKey & XINPUT_GAMEPAD_A)
 		{
-
 			//加速度の設定
 			//-0.005fは補正値
 			oka::Vec3 accelIncrement(-0.015*sin(m_transform.GetRotation().m_y), 0.f, -0.015*cos(m_transform.GetRotation().m_y));
@@ -675,7 +660,8 @@ void Character::control(){
 	//コースのAIポイントのx - 敵のx
 	//コースのAIのz - 敵のz
 
-	glm::vec2 v = { course->m_AIPoint[m_nextPoint].m_position.m_x - m_transform.GetPosition().m_x, course->m_AIPoint[m_nextPoint].m_position.m_z - m_transform.GetPosition().m_z };
+	glm::vec2 v = { RaceManager::GetInstance()->m_course->m_AIPoint[m_nextPoint].m_position.m_x - m_transform.GetPosition().m_x,
+		RaceManager::GetInstance()->m_course->m_AIPoint[m_nextPoint].m_position.m_z - m_transform.GetPosition().m_z };
 
 	v = glm::normalize(v);
 
@@ -687,7 +673,7 @@ void Character::control(){
 
 	//敵のAIの挙動制御
 
-	if (course->m_AIPoint[m_nextPoint].checkPassFlag(m_transform.GetPosition())){
+	if (RaceManager::GetInstance()->m_course->m_AIPoint[m_nextPoint].checkPassFlag(m_transform.GetPosition())){
 
 		m_passAIPoint[m_nextPoint] = true;
 
@@ -697,7 +683,8 @@ void Character::control(){
 			m_nextPoint = 0;
 		}
 
-		m_pos_to_AIpoint = { course->m_AIPoint[m_nextPoint].m_position.m_x - m_transform.GetPosition().m_x, course->m_AIPoint[m_nextPoint].m_position.m_z - m_transform.GetPosition().m_z };
+		m_pos_to_AIpoint = { RaceManager::GetInstance()->m_course->m_AIPoint[m_nextPoint].m_position.m_x - m_transform.GetPosition().m_x,
+			RaceManager::GetInstance()->m_course->m_AIPoint[m_nextPoint].m_position.m_z - m_transform.GetPosition().m_z };
 		m_pos_to_AIpoint = glm::normalize(m_pos_to_AIpoint);
 
 		//角度からの向きベクトル
@@ -742,7 +729,8 @@ void Character::useItem(){
 		if (hasItemNumber() > 0){
 
 			//ファイアを使用した
-			if (FIRE == hasItemLast()){
+			if (FIRE == hasItemLast())
+			{
 
 				Fire *fire = new Fire();
 				fire->m_isActive = true;
@@ -753,7 +741,8 @@ void Character::useItem(){
 			}
 
 			//ブリザドを使用した
-			else if (BLIZZARD == hasItemLast()){
+			else if (BLIZZARD == hasItemLast())
+			{
 
 				Blizzard *blizzard = new Blizzard();
 				blizzard->m_isActive = true;
@@ -775,22 +764,27 @@ void Character::useItem(){
 //既定のコース領域から出ていないかの判断と
 //出ていた場合の押し戻し処理
 
-void Character::checkCourseOut(){
+void Character::checkCourseOut()
+{
 
-	if (m_transform.GetPosition().m_x < 0.0f){
+	if (m_transform.GetPosition().m_x < 0.0f)
+	{
 		m_transform.SetPositionX(0.0f);
 	}
 
-	if (m_transform.GetPosition().m_x > COURSE_WIDTH){
+	if (m_transform.GetPosition().m_x > COURSE_WIDTH)
+	{
 		m_transform.SetPositionX(COURSE_WIDTH);
 	}
 
-	if (m_transform.GetPosition().m_z > 0.0f){
+	if (m_transform.GetPosition().m_z > 0.0f)
+	{
 		m_transform.SetPositionZ(0.0f);
 	}
 
 	//256のままだと256番目のピクセル情報にアクセスしてしまうので補正値+1してある
-	if (m_transform.GetPosition().m_z < 1-COURSE_HEIGHT){
+	if (m_transform.GetPosition().m_z < 1-COURSE_HEIGHT)
+	{
 		m_transform.SetPositionZ(1 - COURSE_HEIGHT);
 	}
 
@@ -804,7 +798,7 @@ float Character::checkNextCheckPointLength(){
 
 	oka::Vec3 v;
 
-	v = m_transform.GetPosition() - course->m_checkPoint[m_nowPoint].m_position;
+	v = m_transform.GetPosition() - RaceManager::GetInstance()->m_course->m_checkPoint[m_nowPoint].m_position;
 
 	return v.length();
 }
@@ -818,7 +812,7 @@ bool Character::inDart(){
 	//プレイヤーがどのピクセル上にいるか判断し
 	//直下のピクセル情報によって判定する
 
-	if (course->m_buffer[COURSE_HEIGHT - 1 + (int)m_transform.GetPosition().m_z][(int)m_transform.GetPosition().m_x] == DART){
+	if (RaceManager::GetInstance()->m_course->m_buffer[COURSE_HEIGHT - 1 + (int)m_transform.GetPosition().m_z][(int)m_transform.GetPosition().m_x] == DART){
 
 		return true;
 
@@ -856,7 +850,8 @@ void Character::slip(){
 //-------------------------------------
 //順位の描画
 
-void Character::printRanking(){
+void Character::printRanking()
+{
 
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
@@ -871,22 +866,22 @@ void Character::printRanking(){
 			switch (m_ranking){
 			case 1:
 				glColor4f(255 / 255.f, 201 / 255.f, 14 / 255.f, 1);
-				glBindTexture(GL_TEXTURE_2D, rank1st);
+				glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Rank1st"));
 				break;
 
 			case 2:
 				glColor4f(255 / 255.f, 255 / 255.f, 255 / 255.f, 1);
-				glBindTexture(GL_TEXTURE_2D, rank2nd);
+				glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Rank2nd"));
 				break;
 
 			case 3:
 				glColor4f(188 / 255.f, 126 / 255.f, 92 / 255.f, 1);
-				glBindTexture(GL_TEXTURE_2D, rank3rd);
+				glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Rank3rd"));
 				break;
 
 			case 4:
 				glColor4f(0 / 255.f, 255 / 255.f, 0 / 255.f, 1);
-				glBindTexture(GL_TEXTURE_2D, rank4th);
+				glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Rank4th"));
 				break;
 
 			}
@@ -901,22 +896,22 @@ void Character::printRanking(){
 			switch (m_lastRanking){
 			case 1:
 				glColor4f(255 / 255.f, 201 / 255.f, 14 / 255.f, 1);
-				glBindTexture(GL_TEXTURE_2D, rank1st);
+				glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Rank1st"));
 				break;
 
 			case 2:
 				glColor4f(255 / 255.f, 255 / 255.f, 255 / 255.f, 1);
-				glBindTexture(GL_TEXTURE_2D, rank2nd);
+				glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Rank2nd"));
 				break;
 
 			case 3:
 				glColor4f(188 / 255.f, 126 / 255.f, 92 / 255.f, 1);
-				glBindTexture(GL_TEXTURE_2D, rank3rd);
+				glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Rank3rd"));
 				break;
 
 			case 4:
 				glColor4f(0 / 255.f, 255 / 255.f, 0 / 255.f, 1);
-				glBindTexture(GL_TEXTURE_2D, rank4th);
+				glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Rank4th"));
 				break;
 
 			}
@@ -953,8 +948,8 @@ void Character::printRanking(){
 //-------------------------------------
 //GOALの描画
 
-void printGoal(){
-
+void printGoal()
+{
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -964,7 +959,7 @@ void printGoal(){
 
 		glTranslatef(140, 185, 0);
 
-		glBindTexture(GL_TEXTURE_2D, goalTexture);
+		glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Go"));
 
 		glBegin(GL_QUADS);
 		{
@@ -980,7 +975,6 @@ void printGoal(){
 
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_BLEND);
-
 }
 
 //-------------------------------------
@@ -1000,7 +994,7 @@ void Character::printDashGauge(){
 	{
 		glTranslatef(5, 255, 0);
 
-		glBindTexture(GL_TEXTURE_2D, dashIcon);
+		glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("DashIcon"));
 
 		glBegin(GL_QUADS);
 		{
@@ -1019,7 +1013,7 @@ void Character::printDashGauge(){
 	{
 		glTranslatef(42, 266, 0);
 
-		glBindTexture(GL_TEXTURE_2D, dashGauge);
+		glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("DashGauge"));
 
 		glBegin(GL_QUADS);
 		{
@@ -1071,7 +1065,8 @@ void Character::printDashGauge(){
 void Character::printStatus()
 {
 
-	if (false == m_isGoal){
+	if (false == m_isGoal)
+	{
 
 		//ダッシュゲージの描画
 		printDashGauge();
@@ -1099,23 +1094,6 @@ void Character::printStatus()
 
 		oka::DrawString(m_totalTime, 220.0f, 280.0f, 0.13f);
 
-		/*StrokeString::print("LAP", { 230, 250, 0 }, 0.1f, { 1, 0, 0 });
-		StrokeString::print(m_lap, { 260, 250, 0 }, 0.18f, { 1, 0, 0 });
-		StrokeString::print("/", { 275, 250, 0 }, 0.1f, { 1, 0, 0 });
-		StrokeString::print(str_lapMax, { 285, 250, 0 }, 0.1f, { 1, 0, 0 });
-		StrokeString::print("TIME", { 180, 280, 0 }, 0.13f, { 1, 0, 0 });*/
-
-	/*	StrokeString::print("LAP1", { 220, 230, 0 }, 0.08f, { 1, 0, 0 });
-		StrokeString::print(m_lapTime[FIRST], { 250, 230, 0 }, 0.08f, { 1, 0, 0 });
-
-		StrokeString::print("LAP2", { 220, 215, 0 }, 0.08f, { 1, 0, 0 });
-		StrokeString::print(m_lapTime[SECOND], { 250, 215, 0 }, 0.08f, { 1, 0, 0 });
-
-		StrokeString::print("LAP3", { 220, 200, 0 }, 0.08f, { 1, 0, 0 });
-		StrokeString::print(m_lapTime[THIRD], { 250, 200, 0 }, 0.08f, { 1, 0, 0 });
-
-		StrokeString::print(m_totalTime, { 220, 280, 0 }, 0.13f, { 1, 0, 0 });*/
-
 	}
 	else
 	{
@@ -1133,20 +1111,6 @@ void Character::printStatus()
 		oka::DrawString("TOTALTIME", 25.0f, 30.0f, 0.15f);
 		oka::DrawString(m_totalTime, 130.0f, 30.0f, 0.2f);
 
-		/*StrokeString::print("LAP1", { 59, 159, 0 }, 0.2f, { 0, 0, 0 });
-		StrokeString::print(m_lapTime[FIRST], { 129, 159, 0 }, 0.2f, { 0, 0, 0 });*/
-		
-
-		/*StrokeString::print("LAP2", { 59, 115, 0 }, 0.2f, { 0, 0, 0 });
-		StrokeString::print(m_lapTime[SECOND], { 129, 115, 0 }, 0.2f, { 0, 0, 0 });*/
-		
-
-		/*StrokeString::print("LAP3", { 59, 73, 0 }, 0.2f, { 0, 0, 0 });
-		StrokeString::print(m_lapTime[THIRD], { 129, 73, 0 }, 0.2f, { 0, 0, 0 });*/
-		
-
-		/*StrokeString::print("TOTALTIME", { 23, 31, 0 }, 0.15f, { 0, 0, 0 });
-		StrokeString::print(m_totalTime, { 130, 31, 0 }, 0.2f, { 0, 0, 0 });*/
 		
 
 		if (true == (oka::CharacterManager::GetInstance()->m_character[0]->m_isGoal &&
@@ -1156,10 +1120,7 @@ void Character::printStatus()
 		{
 			if ((oka::GameManager::GetInstance()->m_flame % 60) < 30)
 			{
-				oka::DrawString("PushStartButton!!", 220.0f, 10.0f, 0.08f);
-				
-				//StrokeString::print("PushStartButton!!", { 219, 11, 0 }, 0.08f, { 0, 0, 0 });
-			
+				oka::DrawString("PushStartButton!!", 220.0f, 10.0f, 0.08f);			
 			}
 		}
 
@@ -1174,7 +1135,7 @@ void Character::printStatus()
 
 bool Character::countLap(){
 
-	if (course->m_buffer[COURSE_HEIGHT - 1 + (int)m_transform.GetPosition().m_z][(int)m_transform.GetPosition().m_x] == GOAL){
+	if (RaceManager::GetInstance()->m_course->m_buffer[COURSE_HEIGHT - 1 + (int)m_transform.GetPosition().m_z][(int)m_transform.GetPosition().m_x] == GOAL){
 
 		bool fg = true;
 
@@ -1201,32 +1162,30 @@ bool Character::countLap(){
 //プレイヤーがゴールしたかの判定
 //周回数が既定の周回数になった時点でtrueを返しゴールとする
 
-bool Character::checkIsGoal(){
-
-	if (3 == m_lapCount){
-
+bool Character::checkIsGoal()
+{
+	if (3 == m_lapCount)
+	{
 		return true;
-
 	}
 
 	return false;
-
 }
 
 //-------------------------------------
 //プレイヤーが持っているアイテムの個数を返す
 
-int Character::hasItemNumber(){
-
+int Character::hasItemNumber()
+{
 	return m_hasItem.size();
-
 }
 
 //-------------------------------------
 //プレイヤーがアイテムを持っているときのみ
 //持っているアイテムのラストの種類を返す
 
-int Character::hasItemLast(){
+int Character::hasItemLast()
+{
 
 	int itemLast = m_hasItem.size() - 1;
 

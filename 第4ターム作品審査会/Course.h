@@ -1,12 +1,9 @@
-#pragma once
+#ifndef COURSE_H_
+#define COURSE_H_
 
 //必ず使用するテクスチャの縦横とサイズを合わせること
 #define COURSE_WIDTH (256)
 #define COURSE_HEIGHT (256)
-
-//テクスチャハンドルアクセス時に使用
-#define COUSE_TEXTURE (0)
-#define BACKGROUND_TEXTURE (1)
 
 //コースに配置されている魔石の数
 #define SET_ITEM_NUMBER (20)
@@ -23,13 +20,15 @@
 #include"Item.h"
 #include"BmpImage.h"
 #include"CourseFlag.h"
+#include"GameObject.h"
 #include"AIFlag.h"
 #include"Sound.h"
 #include"glut.h"
 
 //-------------------------------------
 //コースの種類
-enum{
+enum
+{
 	COURSE1 = 0,
 	COURSE2,
 	COURSE_NUM_MAX
@@ -39,7 +38,8 @@ enum{
 //-------------------------------------
 //コースの各ピクセルの情報
 
-enum {
+enum 
+{
 	PATH = 0,
 	DART,
 	START,
@@ -51,7 +51,8 @@ enum {
 //-------------------------------------
 //コースの情報
 
-class Course{
+class Course :public oka::GameObject 
+{
 public:
 	int m_width;
 	int m_height;
@@ -60,8 +61,8 @@ public:
 	CourseFlag m_checkPoint[CHECK_POINT_NUMBER]; //周回判定用のポイント
 	AIFlag m_AIPoint[AI_POINT_NUMBER];			 //敵AI用のポイント
 
-	void draw();
-	void update();
+	void Draw();
+	void Update() {};
 	void setItem();
 	void setCheckPoint(const char *_txtName);
 	void setAIPoint(const char *_txtName);
@@ -83,5 +84,7 @@ public:
 
 Course* createCourse();
 extern int selectedCourse;
-extern Course *course;
+//extern Course *course;
+
+#endif
 

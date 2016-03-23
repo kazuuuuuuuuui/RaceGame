@@ -6,7 +6,8 @@
 #include"Particle.h"
 #include"glm\glm.hpp"
 
-class Fire :public Effect{
+class Fire :public Effect
+{
 public:
 	Particle m_particle[FIRE_PARTICLE_NUMBER];
 	

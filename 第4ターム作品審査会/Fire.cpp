@@ -2,6 +2,7 @@
 
 #include"CharacterManager.h"
 #include"Fire.h"
+#include"ImageManager.h"
 #include"Character.h"
 
 void Fire::Update()
@@ -45,15 +46,16 @@ void Fire::Update()
 	}
 }
 
-void Fire::Draw(){
-
+void Fire::Draw()
+{
 	glPushMatrix();
 	{
 
 		glTranslatef(m_basePosition.m_x, m_basePosition.m_y, m_basePosition.m_z);
 
-		for (int i = 0; i < FIRE_PARTICLE_NUMBER; i++){
-			m_particle[i].Draw(0, { 1.f, 0.25f, 0.125f }, smoke_handle);
+		for (int i = 0; i < FIRE_PARTICLE_NUMBER; i++)
+		{
+			m_particle[i].Draw(0, { 1.f, 0.25f, 0.125f }, oka::ImageManager::GetInstance()->GetHandle("Smoke"));
 		}
 
 	}

@@ -247,5 +247,4 @@ enum
 		~Character() { printf("キャラクターが削除されました\n"); }
 	};
 
-extern unsigned int dashIcon;
-extern unsigned int dashGauge;
+

@@ -1,12 +1,12 @@
 #include"SoundManager.h"
 #include"CharacterManager.h"
+#include"ImageManager.h"
 #include"Blizzard.h"
 #include"Character.h"
 #include"glut.h"
 
 void Blizzard::Update()
 {
-
 	//接触判定
 	//当たったプレイヤーのisHitItemフラグをtrue
 	//当たったアイテムのisActiveフラグをfalseにする
@@ -14,8 +14,8 @@ void Blizzard::Update()
 	for (unsigned int i = 0; i < oka::CharacterManager::GetInstance()->GetCharacterNumber(); i++)
 	{
 
-		if (isHit(oka::CharacterManager::GetInstance()->m_character[i]->m_transform.GetPosition())){
-
+		if (isHit(oka::CharacterManager::GetInstance()->m_character[i]->m_transform.GetPosition()))
+		{
 			oka::SoundManager::GetInstance()->Play("slipSE");
 			m_isActive = false;
 			oka::CharacterManager::GetInstance()->m_character[i]->m_isHitItem = true;
@@ -35,7 +35,7 @@ void Blizzard::Draw(){
 	{
 		glEnable(GL_TEXTURE_2D);
 		glEnable(GL_DEPTH_TEST);
-		glBindTexture(GL_TEXTURE_2D, EffectBlizzard);
+		glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Effectblizzard"));
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE);

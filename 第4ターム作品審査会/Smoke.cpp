@@ -1,5 +1,6 @@
 #include"Smoke.h"
 #include"Fire.h"
+#include"ImageManager.h"
 #include"Character.h"
 
 void Smoke::Update()
@@ -26,7 +27,7 @@ void Smoke::Draw()
 		glTranslatef(m_basePosition.m_x, m_basePosition.m_y, m_basePosition.m_z);
 
 		for (int i = 0; i < SMOKE_PARTICLE_NUMBER; i++){
-			m_particle[i].Draw(0,{ 128.f / 256.f, 128.f / 256.f, 128.f / 256.f, }, smoke_handle);
+			m_particle[i].Draw(0,{ 128.f / 256.f, 128.f / 256.f, 128.f / 256.f, }, oka::ImageManager::GetInstance()->GetHandle("Smoke"));
 		}
 
 	}

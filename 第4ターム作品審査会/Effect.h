@@ -22,6 +22,3 @@ public:
 };
 
 extern std::list<Effect*>effect;
-
-extern unsigned int smoke_handle;
-extern unsigned int EffectBlizzard;

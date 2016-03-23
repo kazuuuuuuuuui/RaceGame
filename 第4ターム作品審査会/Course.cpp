@@ -5,24 +5,15 @@
 #include"CourseFlag.h"
 
 
-Course *course = nullptr;
+//Course *course = nullptr;
 
 //選択されてるコース
 int selectedCourse = COURSE1;
 
-
-//-------------------------------------
-//コース側で毎フレーム行う処理
-
-void Course::update(){
-}
-
-
-
 //-------------------------------------
 //各コース全体と空の描画
 
-void Course::draw(){
+void Course::Draw(){
 
 	glEnable(GL_TEXTURE_2D);
 
@@ -88,18 +79,19 @@ void Course::setItem(){
 //選択されたコースにチェックポイントを配置する
 //チェックポイントの座標は外部テキストファイルに保管
 
-void Course::setCheckPoint(const char *_txtName) {
+void Course::setCheckPoint(const char *_txtName) 
+{
 
 	FILE *fp = fopen(_txtName, "r");
 	assert(fp != nullptr);
 
 	for (int i = 0; i < CHECK_POINT_NUMBER; i++) {
 
-		oka::Vec3 pos;
-		fscanf(fp, "(%f,%f,%f)", &pos.m_x, &pos.m_y, &pos.m_z);
+		oka::Vec3 position;
+		fscanf(fp, "(%f,%f,%f)", &position.m_x, &position.m_y, &position.m_z);
 		fscanf(fp, "%*c"); //改行文字読み飛ばし
 
-		m_checkPoint[i].m_position = pos;
+		m_checkPoint[i].m_position = position;
 
 	}
 
@@ -109,18 +101,18 @@ void Course::setCheckPoint(const char *_txtName) {
 //選択されたコースにAI制御用のポイントを配置する
 //チェックポイントの座標は外部テキストファイルに保管
 
-void Course::setAIPoint(const char *_txtName) {
-
+void Course::setAIPoint(const char *_txtName) 
+{
 	FILE *fp = fopen(_txtName, "r");
 	assert(fp != nullptr);
 
 	for (int i = 0; i < AI_POINT_NUMBER; i++) {
 
-		oka::Vec3 pos;
-		fscanf(fp, "(%f,%f,%f)", &pos.m_x, &pos.m_y, &pos.m_z);
+		oka::Vec3 position;
+		fscanf(fp, "(%f,%f,%f)", &position.m_x, &position.m_y, &position.m_z);
 		fscanf(fp, "%*c"); //改行文字読み飛ばし
 
-		m_AIPoint[i].m_position = pos;
+		m_AIPoint[i].m_position = position;
 
 	}
 
@@ -134,11 +126,13 @@ void Course::setAIPoint(const char *_txtName) {
 //チェックポイント・AI制御用のポイント・バッファ生成
 //使用するテクスチャの読み込みを行う
 
-Course* createCourse(){
+Course* createCourse()
+{
 
 	Course *newCourse = new Course();
 
-	if (COURSE1 == selectedCourse){
+	if (COURSE1 == selectedCourse)
+	{
 
 		//チェックポイントの位置設定
 		newCourse->setCheckPoint("txt/course1_cp.txt");
@@ -155,7 +149,8 @@ Course* createCourse(){
 	
 
 	//コース2(仮)
-	else if (COURSE2 == selectedCourse){
+	else if (COURSE2 == selectedCourse)
+	{
 
 		//チェックポイントの位置設定
 		newCourse->setCheckPoint("txt/course2_cp.txt");

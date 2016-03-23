@@ -45,14 +45,5 @@ namespace oka
 }
 
 bool checkRanking(Character *_character1, Character *_character2);
-extern unsigned int threeTexture;
-extern unsigned int twoTexture;
-extern unsigned int oneTexture;
-extern unsigned int goTexture;
-extern unsigned int goalTexture;
-extern unsigned int rank1st;
-extern unsigned int rank2nd;
-extern unsigned int rank3rd;
-extern unsigned int rank4th;
 
 #endif

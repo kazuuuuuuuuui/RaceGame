@@ -3,8 +3,6 @@
 #include"Course.h"
 #include"glut.h"
 
-unsigned int smoke_handle = 0;
-
 //エフェクトを管理するlist
 std::list<Effect*>effect;
 
@@ -29,8 +27,4 @@ void Effect::checkCourseOut(){
 	}
 }
 
-
-
-
-unsigned int EffectBlizzard = 0;
 
