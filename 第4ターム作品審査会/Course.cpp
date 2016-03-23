@@ -73,7 +73,7 @@ void Course::setItem(){
 				position.m_y = 0.5f;
 				position.m_z = i - COURSE_HEIGHT;
 
-				item[itemNum]->m_transform.SetPosition(position);
+				//item[itemNum]->m_transform.SetPosition(position);
 
 				itemNum++;
 

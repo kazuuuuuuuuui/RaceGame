@@ -1,4 +1,5 @@
 #include"SoundManager.h"
+#include"CharacterManager.h"
 #include"Blizzard.h"
 #include"Character.h"
 #include"glut.h"
@@ -10,16 +11,17 @@ void Blizzard::Update()
 	//当たったプレイヤーのisHitItemフラグをtrue
 	//当たったアイテムのisActiveフラグをfalseにする
 
-	for (unsigned int i = 0; i < character.size(); i++){
+	for (unsigned int i = 0; i < oka::CharacterManager::GetInstance()->GetCharacterNumber(); i++)
+	{
 
-		if (isHit(character[i]->m_transform.GetPosition())){
+		if (isHit(oka::CharacterManager::GetInstance()->m_character[i]->m_transform.GetPosition())){
 
 			oka::SoundManager::GetInstance()->Play("slipSE");
 			m_isActive = false;
-			character[i]->m_isHitItem = true;
-			character[i]->m_dashSpeed = { 0.f, 0.f, 0.f };
-			character[i]->m_transform.SetRotationZ(0.0f);
-			character[i]->m_crashRotate = 360000.f*(M_PI / 180);
+			oka::CharacterManager::GetInstance()->m_character[i]->m_isHitItem = true;
+			oka::CharacterManager::GetInstance()->m_character[i]->m_dashSpeed = { 0.f, 0.f, 0.f };
+			oka::CharacterManager::GetInstance()->m_character[i]->m_transform.SetRotationZ(0.0f);
+			oka::CharacterManager::GetInstance()->m_character[i]->m_crashRotate = 360000.f*(M_PI / 180);
 
 		}
 	}

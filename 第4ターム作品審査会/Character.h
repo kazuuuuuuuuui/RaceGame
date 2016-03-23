@@ -26,14 +26,8 @@ Characterクラスのメンバをカプセル化する
 
 #define DASH_GAUGE_MAX (90)
 
-enum{
-	PLAYER0,
-	PLAYER1,
-	PLAYER2,
-	PLAYER3,
-};
-
-enum{
+enum
+{
 	COMPUTER,
 	PLAYER
 };
@@ -186,7 +180,8 @@ enum{
 		int hasItemLast();
 
 		//コンストラクタ
-		Character() :
+		Character() {};
+		Character(xFile &_body, xFile &_wheel) :
 			CompletionValue(0.f),
 			m_type(0),
 			m_kind(0),
@@ -209,8 +204,10 @@ enum{
 		{
 			printf("プレイヤーが生成されました\n");
 
+			m_body = _body;
+			m_backWheel = _wheel;
+
 			m_engine = oka::Sound::LoadSquareWave(engine_sound, sizeof(engine_sound), 110);
-			oka::SoundManager::GetInstance()->AddSound("Engine",m_engine);
 
 			//角度からの向きベクトル
 			OrientationVector = { -sin(m_transform.GetRotation().m_y), -cos(m_transform.GetRotation().m_y) };
@@ -252,11 +249,3 @@ enum{
 
 extern unsigned int dashIcon;
 extern unsigned int dashGauge;
-
-extern Character *player1;
-extern Character *player2;
-extern Character *player3;
-extern Character *player4;
-
-extern std::vector<Character*> character;
-//extern std::vector<Character*> g_useController;

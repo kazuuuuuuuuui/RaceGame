@@ -15,15 +15,11 @@
 #include"StrokeString.h"
 #include"SoundManager.h"
 #include"ImageManager.h"
-#include"joysticManager.h"
+#include"JoysticManager.h"
+#include"CharacterManager.h"
 #include"glm\gtc\matrix_transform.hpp"
 #include"glm\gtx\transform.hpp"
 #include"glut.h"
-
-Character *player1 = nullptr;
-Character *player2 = nullptr;
-Character *player3 = nullptr;
-Character *player4 = nullptr;
 
 unsigned int dashIcon = 0;
 unsigned int dashGauge = 0;
@@ -35,10 +31,6 @@ extern char str_lapMax[256];
 int getMilliSecond(int _flame);
 int getSecond(int _flame);
 int getMinute(int _second);
-
-//-------------------------------------
-//キャラクターすべてを管理するベクター
-std::vector<Character*> character;
 
 //-------------------------------------
 //自機の更新
@@ -285,39 +277,6 @@ void Character::Draw(){
 
 			std::vector<unsigned short>::iterator itr_i = m_body.m_index.begin();
 
-
-			//マテリアルの設定
-			if (PLAYER0 == m_kind){
-
-				float diffuse[4] = { 1, 0, 0, 1 };
-				glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
-
-			}
-
-			else if (PLAYER1 == m_kind){
-
-				float diffuse[4] = { 0, 1, 0, 1 };
-				glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
-
-			}
-
-			else if (PLAYER2 == m_kind){
-
-				float diffuse[4] = { 0, 0, 1, 1 };
-				glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
-
-			}
-
-			else if (PLAYER3 == m_kind){
-
-				float diffuse[4] = { 1, 1, 0, 1 };
-				glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
-
-			}
-
-			float specular[] = { 1, 1, 1, 1 };
-			glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
-			glMaterialf(GL_FRONT, GL_SHININESS, 10);
 
 			glDrawElements(GL_TRIANGLES, m_body.m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));
 
@@ -1190,7 +1149,10 @@ void Character::printStatus()
 		StrokeString::print(m_totalTime, { 130, 31, 0 }, 0.2f, { 0, 0, 0 });*/
 		
 
-		if (true == (character[0]->m_isGoal && character[1]->m_isGoal && character[2]->m_isGoal && character[3]->m_isGoal))
+		if (true == (oka::CharacterManager::GetInstance()->m_character[0]->m_isGoal &&
+			oka::CharacterManager::GetInstance()->m_character[1]->m_isGoal && 
+			oka::CharacterManager::GetInstance()->m_character[2]->m_isGoal &&
+			oka::CharacterManager::GetInstance()->m_character[3]->m_isGoal))
 		{
 			if ((oka::GameManager::GetInstance()->m_flame % 60) < 30)
 			{

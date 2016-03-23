@@ -113,4 +113,21 @@ namespace oka
 		return sid;
 	}
 
+
+	//-------------------------------------
+	//ハンドルを受け取って音を再生する
+
+	void Sound::Play(unsigned int _sound)
+	{
+		alSourcePlay(_sound);
+	}
+
+	//-------------------------------------
+	//ハンドルを受け取って音を停止する
+
+	void Sound::Stop(unsigned int _sound)
+	{
+		alSourceStop(_sound);
+	}
+
 }//namespace oka

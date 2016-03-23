@@ -3,6 +3,7 @@
 #include"Item.h"
 #include"Character.h"
 #include"CourseFlag.h"
+#include"CharacterManager.h"
 #include"ImageManager.h"
 #include"SoundManager.h"
 #include"glut.h"
@@ -43,7 +44,7 @@ void Item::Update(){
 	m_flame++;
 
 	//動き
-	move();
+	//move();
 
 	//アイテムの再出現
 	if (0 == m_flame % (60 * 10))
@@ -52,22 +53,22 @@ void Item::Update(){
 	}
 
 	//取られたかの判定
-	for (unsigned int i = 0; i < character.size(); i++)
+	for (unsigned int i = 0; i < oka::CharacterManager::GetInstance()->GetCharacterNumber(); i++)
 	{
-		if (true == m_isActive && checkIsGotten(character[i]->m_transform.GetPosition()))
+		if (true == m_isActive && checkIsGotten(oka::CharacterManager::GetInstance()->m_character[i]->m_transform.GetPosition()))
 		{
 
 			m_isActive = false;
 
 
 			//所持アイテムが3つ以下だったらアイテムを所持させる
-			if (character[i]->hasItemNumber() < HAS_ITEM_MAX)
+			if (oka::CharacterManager::GetInstance()->m_character[i]->hasItemNumber() < HAS_ITEM_MAX)
 			{
 				//キャラクターに今取得したアイテムを持たせる
-				character[i]->m_hasItem.push_back(m_type);
+				oka::CharacterManager::GetInstance()->m_character[i]->m_hasItem.push_back(m_type);
 
 				//プレイヤーが取得したときのみ効果音を鳴らす
-				if (player1 == character[i])
+				if (oka::CharacterManager::GetInstance()->m_character[0] == oka::CharacterManager::GetInstance()->m_character[i])
 				{
 					oka::SoundManager::GetInstance()->Play("getItem");
 				}

@@ -11,6 +11,8 @@ namespace oka
 	public:
 		static unsigned int LoadSquareWave(const unsigned char *data, int _size, int _freq);
 		static unsigned int LoadWavFile(const char *_wavFileName);
+		static void Play(unsigned int _sound);
+		static void Stop(unsigned int _sound);
 	};
 
 }

@@ -16,10 +16,10 @@ namespace oka
 	{
 	public:
 		int m_flame;
-		//std::vector<GameObject*>m_gameObject;
+		std::vector<GameObject*>m_gameObject;
 
 		void Updata();
-		//void AddGameObject(GameObject *_object);
+		void AddGameObject(GameObject *_object);
 
 		static GameManager* GetInstance();
 

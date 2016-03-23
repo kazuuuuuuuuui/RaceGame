@@ -1,3 +1,11 @@
+/*
+
+キャラ格納と順位付けるベクターを分ける必要有り？
+
+
+*/
+
+
 #include<stdio.h>
 #include<stdlib.h>
 #include<vector>
@@ -19,6 +27,7 @@
 #include"Smoke.h"
 #include"moji.h"
 #include"Vec3.h"
+#include"CharacterManager.h"
 #include"JoysticManager.h"
 #include"ImageManager.h"
 #include"SoundManager.h"
@@ -92,24 +101,17 @@ namespace oka
 	//管理しているマップに既に登録されている検索し
 	//登録されていなければ追加する
 
-	/*void GameManager::AddGameObject(GameObject *_object)
+	void GameManager::AddGameObject(GameObject *_object)
 	{
 		m_gameObject.push_back(_object);
-	}*/
+	}
 
 	//--------------------------------------
-	//ゲームに現れるオブジェクトの更新
+	//
 
 	void GameManager::Updata()
 	{
 		m_flame++;
-
-		/*auto itr = m_gameObject.begin();
-		while (itr != m_gameObject.end())
-		{
-			itr->second->Update();
-			itr++;
-		}*/
 
 		_sequence.run(this, 1.0f / 60.0f);
 
@@ -356,58 +358,23 @@ namespace oka
 
 	void init()
 	{
-		//後で書き換え
-		xFile body;
-		xFile backWheel;
+		oka::CharacterManager::GetInstance();
 
-		//モデルデータの読み込み
-		//xFile::loadXfile("xFile/player.x", rider);
-		xFile::loadXfile("xFile/bike.x", body);
-		xFile::loadXfile("xFile/taiya.x", backWheel);
+		//コントローラーの対応付け
+		for (unsigned int i = 0; i<oka::CharacterManager::GetInstance()->GetCharacterNumber();i++)
+		{
+			oka::JoysticManager::GetInstance()->AddController(oka::CharacterManager::GetInstance()->m_character[i]->m_contoroller);
+		}
 
-		//車体のモデルデータの向き修正
-		body.rotate();
+		//キャラクターの登録
+		for (unsigned int i = 0; i<oka::CharacterManager::GetInstance()->GetCharacterNumber(); i++)
+		{
+			oka::GameManager::GetInstance()->AddGameObject(oka::CharacterManager::GetInstance()->m_character[i]);
+		}
 
-		//後で書き換え
-		//プレイヤーの生成
-		player1 = new Character();
-		player1->m_kind = PLAYER0;
-		player1->m_body = body;
-		player1->m_backWheel = backWheel;
-
-		//敵の生成
-		player2 = new Character();
-		player2->m_kind = PLAYER1;
-		player2->m_body = body;
-		player2->m_backWheel = backWheel;
-
-		player3 = new Character();
-		player3->m_kind = PLAYER2;
-		player3->m_body = body;
-		player3->m_backWheel = backWheel;
-
-		player4 = new Character();
-		player4->m_kind = PLAYER3;
-		player4->m_body = body;
-		player4->m_backWheel = backWheel;
-
-		//生成したプレイヤーと敵をベクターで管理
-		character.push_back(player1);
-		character.push_back(player2);
-		character.push_back(player3);
-		character.push_back(player4);
-
-		//使用するコントローラーの対応付け
-		/*g_useController.push_back(player1);
-		g_useController.push_back(player2);
-		g_useController.push_back(player3);
-		g_useController.push_back(player4);*/
-
-		oka::JoysticManager::GetInstance()->AddController(player1->m_contoroller);
-		oka::JoysticManager::GetInstance()->AddController(player2->m_contoroller);
-		oka::JoysticManager::GetInstance()->AddController(player3->m_contoroller);
-		oka::JoysticManager::GetInstance()->AddController(player4->m_contoroller);
-
+		
+		
+		
 		//カメラの生成
 		g_camera = new oka::Camera();
 
@@ -455,12 +422,14 @@ namespace oka
 
 
 		//最初の順位設定と順位付与
-		for (unsigned int i = 0; i < character.size(); i++) {
-			std::sort(character.begin(), character.end(), checkRanking);
+		for (unsigned int i = 0; i < oka::CharacterManager::GetInstance()->GetCharacterNumber(); i++) 
+		{
+			std::sort(oka::CharacterManager::GetInstance()->m_character.begin(), oka::CharacterManager::GetInstance()->m_character.end(), checkRanking);
 		}
 
-		for (unsigned int i = 0; i < character.size(); i++) {
-			character[i]->m_ranking = i + 1;
+		for (unsigned int i = 0; i < CharacterManager::GetInstance()->GetCharacterNumber(); i++)
+		{
+			oka::CharacterManager::GetInstance()->m_character[i]->m_ranking = i + 1;
 		}
 	}
 
@@ -482,7 +451,8 @@ namespace oka
 	void GameManager::sceneTitle(float delta)
 	{
 
-		if (0.0f == _sequence.getTime()) {
+		if (0.0f == _sequence.getTime())
+		{
 
 			printf("タイトルシーンが初期化されました\n");
 			printf("\n");
@@ -637,7 +607,8 @@ namespace oka
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(0.f, 0.f, 0.f, 1.f);
 
-		if (g_isCourseDecision) {
+		if (g_isCourseDecision)
+		{
 			courseSelectBG->fadeOut();
 			courseSelect->fadeOut();
 			course1_map->fadeOut();
@@ -699,9 +670,7 @@ namespace oka
 			//アイテムの生成
 			for (int i = 0; i < SET_ITEM_NUMBER; i++) 
 			{
-				//oka::GameManager::GetInstance()->AddGameObject(new Item());
-				item[i] = new Item();
-				//printf("%d\n", oka::GameManager::GetInstance()->m_gameObject.size());
+				oka::GameManager::GetInstance()->AddGameObject(new Item());
 			}
 
 			
@@ -717,20 +686,20 @@ namespace oka
 				oka::SoundManager::GetInstance()->AddSound("Course1Bgm", oka::Sound::LoadWavFile("wav/course1BGM.wav"));
 				oka::SoundManager::GetInstance()->ChangeVolume("Course1Bgm", 0.5f);
 
-				player1->m_transform.SetPosition(oka::Vec3(14.f, 0.0f, -165.f));
-				player2->m_transform.SetPosition(oka::Vec3(18.f, 0.f, -160.f));
-				player3->m_transform.SetPosition(oka::Vec3(22.f, 0.f, -155.f));
-				player4->m_transform.SetPosition(oka::Vec3(26.f, 0.f, -150.f));
+				oka::CharacterManager::GetInstance()->m_character[0]->m_transform.SetPosition(oka::Vec3(14.f, 0.0f, -165.f));
+				oka::CharacterManager::GetInstance()->m_character[1]->m_transform.SetPosition(oka::Vec3(18.f, 0.f, -160.f));
+				oka::CharacterManager::GetInstance()->m_character[2]->m_transform.SetPosition(oka::Vec3(22.f, 0.f, -155.f));
+				oka::CharacterManager::GetInstance()->m_character[3]->m_transform.SetPosition(oka::Vec3(26.f, 0.f, -150.f));
 			}
 			else if (COURSE2 == selectedCourse)
 			{
 				oka::SoundManager::GetInstance()->AddSound("Course2Bgm", oka::Sound::LoadWavFile("wav/course2BGM.wav"));
 				oka::SoundManager::GetInstance()->ChangeVolume("Course2Bgm", 0.5f);
 
-				player1->m_transform.SetPosition(oka::Vec3(17.f, 0.f, -110.5f));
-				player2->m_transform.SetPosition(oka::Vec3(25.f, 0.f, -105.5f));
-				player3->m_transform.SetPosition(oka::Vec3(33.f, 0.f, -100.5f));
-				player4->m_transform.SetPosition(oka::Vec3(41.f, 0.f, -95.5f));
+				oka::CharacterManager::GetInstance()->m_character[0]->m_transform.SetPosition(oka::Vec3(17.f, 0.f, -110.5f));
+				oka::CharacterManager::GetInstance()->m_character[1]->m_transform.SetPosition(oka::Vec3(25.f, 0.f, -105.5f));
+				oka::CharacterManager::GetInstance()->m_character[2]->m_transform.SetPosition(oka::Vec3(33.f, 0.f, -100.5f));
+				oka::CharacterManager::GetInstance()->m_character[3]->m_transform.SetPosition(oka::Vec3(41.f, 0.f, -95.5f));
 
 			}
 
@@ -774,29 +743,30 @@ namespace oka
 
 		//車体部と車輪部のみライティングを有効にしてある
 		//影部はライティング無効
-		for (unsigned int i = 0; i < character.size(); i++) {
-
-			character[i]->Draw();
-
+		for (unsigned int i = 0; i < CharacterManager::GetInstance()->GetCharacterNumber(); i++)
+		{
+			oka::CharacterManager::GetInstance()->m_character[i]->Draw();
 		}
 
-		for (int i = 0; i < SET_ITEM_NUMBER; i++)
+		/*for (int i = 0; i < SET_ITEM_NUMBER; i++)
 		{
 			item[i]->Draw();
-		}
+		}*/
 
-		for (unsigned int i = 0; i < character.size(); i++) {
+		for (unsigned int i = 0; i < CharacterManager::GetInstance()->GetCharacterNumber(); i++) 
+		{
 
-			character[i]->drawHasItem();
+			oka::CharacterManager::GetInstance()->m_character[i]->drawHasItem();
 
 		}
 
 		glDisable(GL_DEPTH_TEST);
 
 		//煙の描画
-		for (unsigned int i = 0; i < character.size(); i++) {
+		for (unsigned int i = 0; i < CharacterManager::GetInstance()->GetCharacterNumber(); i++) 
+		{
 
-			character[i]->m_smoke.Draw();
+			oka::CharacterManager::GetInstance()->m_character[i]->m_smoke.Draw();
 
 		}
 
@@ -826,7 +796,6 @@ namespace oka
 	//-------------------------------------------------------------------------------------------------------
 	void GameManager::scenePlay(float delta)
 	{
-
 		if (0.0f == _sequence.getTime())
 		{
 			printf("プレイシーンが初期化されました\n");
@@ -836,28 +805,32 @@ namespace oka
 
 			//プレイヤーのエンジン音
 			//player1->m_engine->play();
-			oka::SoundManager::GetInstance()->Play("Engine");
+			//oka::SoundManager::GetInstance()->Play("Engine");
 
 		}
 
 
 
-		//-------------------------------------
-		//更新
+		/********************************
+		
+		更新部分
+		
+		*********************************/
 
 		//レースが始まったらする処理
 		if (true == startRace) {
 
 			//順位の判定
-			for (unsigned int i = 0; i < character.size(); i++) {
-				std::sort(character.begin(), character.end(), checkRanking);
+			for (unsigned int i = 0; i < CharacterManager::GetInstance()->GetCharacterNumber(); i++)
+			{
+				std::sort(oka::CharacterManager::GetInstance()->m_character.begin(), oka::CharacterManager::GetInstance()->m_character.end(), checkRanking);
 			}
 
 			//順位の設定
 			//実際に順位を付与する処理
-			for (unsigned int i = 0; i < character.size(); i++)
+			for (unsigned int i = 0; i < CharacterManager::GetInstance()->GetCharacterNumber(); i++)
 			{
-				character[i]->m_ranking = i + 1;
+				oka::CharacterManager::GetInstance()->m_character[i]->m_ranking = i + 1;
 			}
 
 			for (unsigned int i = 0; i < oka::JoysticManager::GetInstance()->GetConnectingNum(); i++)
@@ -890,42 +863,45 @@ namespace oka
 
 			}
 
-			for (unsigned int i = 0; i < character.size(); i++) {
 
-				character[i]->Update();
-
+			//全オブジェクトのUpdate
+			for (unsigned int i = 0; i < oka::GameManager::GetInstance()->m_gameObject.size(); i++)
+			{
+				oka::GameManager::GetInstance()->m_gameObject[i]->Update();
 			}
 
+
+
+			/*for (unsigned int i = 0; i < CharacterManager::GetInstance()->GetCharacterNumber(); i++) 
+			{
+				oka::CharacterManager::GetInstance()->m_character[i]->Update();
+			}*/
+
 			//接触判定
-			for (unsigned int i = 0; i < character.size(); i++) {
-				for (unsigned int t = i + 1; t < character.size(); t++) {
+			for (unsigned int i = 0; i < CharacterManager::GetInstance()->GetCharacterNumber(); i++) {
+				for (unsigned int t = i + 1; t < CharacterManager::GetInstance()->GetCharacterNumber(); t++) {
 
 					//前輪と前輪
-					if (isHitCharacter(character[i]->m_frontPosition, character[t]->m_frontPosition) ||
+					if (isHitCharacter(oka::CharacterManager::GetInstance()->m_character[i]->m_frontPosition, oka::CharacterManager::GetInstance()->m_character[t]->m_frontPosition) ||
 
 						//前輪と後輪
-						isHitCharacter(character[i]->m_frontPosition, character[t]->m_backPosition) ||
+						isHitCharacter(oka::CharacterManager::GetInstance()->m_character[i]->m_frontPosition, oka::CharacterManager::GetInstance()->m_character[t]->m_backPosition) ||
 
 						//後輪と前輪
-						isHitCharacter(character[i]->m_backPosition, character[t]->m_frontPosition) ||
+						isHitCharacter(oka::CharacterManager::GetInstance()->m_character[i]->m_backPosition, oka::CharacterManager::GetInstance()->m_character[t]->m_frontPosition) ||
 
 						//後輪と後輪
-						isHitCharacter(character[i]->m_frontPosition, character[t]->m_frontPosition)) {
+						isHitCharacter(oka::CharacterManager::GetInstance()->m_character[i]->m_frontPosition, oka::CharacterManager::GetInstance()->m_character[t]->m_frontPosition)) {
 
 						//1フレーム前の座標に戻して進行方向とは
 						//逆のベクトルを足し込む
-						oka::Vec3 reverse = character[i]->m_transform.GetPosition() - character[t]->m_transform.GetPosition();
-						character[i]->m_speed += reverse*0.01f;
-						character[t]->m_speed -= reverse*0.01f;
+						oka::Vec3 reverse = oka::CharacterManager::GetInstance()->m_character[i]->m_transform.GetPosition() - oka::CharacterManager::GetInstance()->m_character[t]->m_transform.GetPosition();
+						oka::CharacterManager::GetInstance()->m_character[i]->m_speed += reverse*0.01f;
+						oka::CharacterManager::GetInstance()->m_character[t]->m_speed -= reverse*0.01f;
 					}
 				}
 			}
 
-		}
-
-		//アイテムの更新
-		for (int i = 0; i < SET_ITEM_NUMBER; i++) {
-			item[i]->Update();
 		}
 
 
@@ -963,12 +939,12 @@ namespace oka
 			glClearColor(77.f / 255.f, 180.f / 255.f, 232.f / 255.f, 1);
 
 			oka::Vec3 pos;
-			pos.m_x = player1->m_transform.GetPosition().m_x + sin(player1->m_transform.GetRotation().m_y) * 8;
-			pos.m_y = player1->m_transform.GetPosition().m_y + 3.5f;
-			pos.m_z = player1->m_transform.GetPosition().m_z + cos(player1->m_transform.GetRotation().m_y) * 8;
+			pos.m_x = oka::CharacterManager::GetInstance()->m_character[0]->m_transform.GetPosition().m_x + sin(oka::CharacterManager::GetInstance()->m_character[0]->m_transform.GetRotation().m_y) * 8;
+			pos.m_y = oka::CharacterManager::GetInstance()->m_character[0]->m_transform.GetPosition().m_y + 3.5f;
+			pos.m_z = oka::CharacterManager::GetInstance()->m_character[0]->m_transform.GetPosition().m_z + cos(oka::CharacterManager::GetInstance()->m_character[0]->m_transform.GetRotation().m_y) * 8;
 
 			oka::Vec3 target;
-			target = player1->m_transform.GetPosition();
+			target = oka::CharacterManager::GetInstance()->m_character[0]->m_transform.GetPosition();
 
 			oka::Vec3 up = oka::Vec3(0, 1, 0);
 
@@ -976,7 +952,7 @@ namespace oka
 			g_camera->SetViewMatrix(pos, target, up);
 			g_camera->MultViewMatrix();
 
-			func(player1);
+			func(oka::CharacterManager::GetInstance()->m_character[0]);
 
 			glFlush();
 
@@ -1041,7 +1017,8 @@ namespace oka
 
 		}
 
-		if (true == (character[0]->m_isGoal && character[1]->m_isGoal && character[2]->m_isGoal && character[3]->m_isGoal))
+		if (true == (oka::CharacterManager::GetInstance()->m_character[0]->m_isGoal && oka::CharacterManager::GetInstance()->m_character[1]->m_isGoal &&
+			oka::CharacterManager::GetInstance()->m_character[2]->m_isGoal && oka::CharacterManager::GetInstance()->m_character[3]->m_isGoal))
 		{
 			//スタートボタンが押されたら
 			//タイトルシーンに移行
@@ -1070,12 +1047,12 @@ namespace oka
 				memset(str_lapMax, 0, sizeof(str_lapMax));
 
 				//キャラクター削除
-				for (unsigned int i = 0; i < character.size(); i++) {
+				/*for (unsigned int i = 0; i < CharacterManager::GetInstance()->GetCharacterNumber(); i++) {
 
 					delete character[i];
 
 				}
-				character.clear();
+				character.clear();*/
 
 				//エフェクト削除
 				effect.clear();
