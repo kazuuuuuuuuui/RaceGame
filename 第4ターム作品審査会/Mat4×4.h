@@ -29,6 +29,8 @@ namespace oka
 		static Mat4x4 Perspective(const float _fovy, const float _aspect, const float _zNear, const float _zFar);
 		static Mat4x4 Ortho(const float _left, const float _right, const float _bottom, const float _top, const float _zNear, const float _zFar);
 
+		Mat4x4 operator *(const Mat4x4 &_m)const;
+
 		float m_value[16];
 
 	};

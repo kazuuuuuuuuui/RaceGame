@@ -14,5 +14,3 @@ public:
 	void Update();
 	
 };
-
-extern unsigned int dash_handle;

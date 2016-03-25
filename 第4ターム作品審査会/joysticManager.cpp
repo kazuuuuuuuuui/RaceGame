@@ -30,9 +30,9 @@ namespace oka
 	}
 
 	//-------------------------------------
-	//現在繋がっているコントローラーの台数を返す
+	//
 
-	unsigned int JoysticManager::GetConnectingNum()const
+	unsigned int JoysticManager::GetContorollerNumber()const
 	{
 		return m_contoroller.size();
 	}
@@ -41,14 +41,7 @@ namespace oka
 
 	Contoroller JoysticManager::GetContoroller(const int _num)const
 	{
-		if (0 != this->GetConnectingNum())
-		{
-			return m_contoroller[_num];
-		}
-		else
-		{
-			
-		}
+		return m_contoroller[_num];	
 	}
 
 	//-------------------------------------

@@ -7,6 +7,7 @@
 #include"joysticManager.h"
 #include"ImageManager.h"
 #include"SoundManager.h"
+#include"CharacterManager.h"
 #include"Sound.h"
 #include"controller.h"
 #include"glut.h"
@@ -70,12 +71,6 @@ int main(int argc, char *argv[])
 	glutInit(&argc, argv);
 	glutInitWindowSize(g_window_width, g_window_height);
 	glutCreateWindow("BikeRacing");
-
-	/*oka::JoysticManager::GetInstance();
-	oka::GameManager::GetInstance();
-	oka::ImageManager::GetInstance();
-	oka::SoundManager::GetInstance();*/
-
 	
 	glutReshapeFunc(reshape);
 	glutDisplayFunc(display);

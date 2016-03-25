@@ -13,16 +13,16 @@ void Fire::Update()
 	//当たったプレイヤーのisHitItemフラグをtrue
 	//当たったアイテムのisActiveフラグをfalseにする
 
-	for (unsigned int i = 0; i < oka::CharacterManager::GetInstance()->GetCharacterNumber(); i++)
+	for (unsigned int i = 0; i < CharacterManager::GetInstance()->GetCharacterNumber(); i++)
 	{
 
-		if (isHit(oka::CharacterManager::GetInstance()->m_character[i]->m_transform.GetPosition())){
+		if (isHit(CharacterManager::GetInstance()->m_character[i]->m_transform.GetPosition())){
 
 			oka::SoundManager::GetInstance()->Play("slipSE");
 			m_isActive = false;
-			oka::CharacterManager::GetInstance()->m_character[i]->m_isHitItem = true;
-			oka::CharacterManager::GetInstance()->m_character[i]->m_transform.SetRotationZ(0.0f);
-			oka::CharacterManager::GetInstance()->m_character[i]->m_crashRotate = 360000.f*(M_PI / 180);
+			CharacterManager::GetInstance()->m_character[i]->m_isHitItem = true;
+			CharacterManager::GetInstance()->m_character[i]->m_transform.SetRotationZ(0.0f);
+			CharacterManager::GetInstance()->m_character[i]->m_crashRotate = 360000.f*(M_PI / 180);
 
 		}
 	}

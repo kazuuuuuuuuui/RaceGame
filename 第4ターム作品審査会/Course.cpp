@@ -3,9 +3,7 @@
 #include<stdio.h>
 #include"Course.h"
 #include"CourseFlag.h"
-
-
-//Course *course = nullptr;
+#include"ItemManager.h"
 
 //選択されてるコース
 int selectedCourse = COURSE1;
@@ -64,7 +62,7 @@ void Course::setItem(){
 				position.m_y = 0.5f;
 				position.m_z = i - COURSE_HEIGHT;
 
-				//item[itemNum]->m_transform.SetPosition(position);
+				ItemManager::GetInstance()->m_item[itemNum]->m_transform.SetPosition(position);
 
 				itemNum++;
 
@@ -85,8 +83,8 @@ void Course::setCheckPoint(const char *_txtName)
 	FILE *fp = fopen(_txtName, "r");
 	assert(fp != nullptr);
 
-	for (int i = 0; i < CHECK_POINT_NUMBER; i++) {
-
+	for (int i = 0; i < CHECK_POINT_NUMBER; i++) 
+	{
 		oka::Vec3 position;
 		fscanf(fp, "(%f,%f,%f)", &position.m_x, &position.m_y, &position.m_z);
 		fscanf(fp, "%*c"); //改行文字読み飛ばし

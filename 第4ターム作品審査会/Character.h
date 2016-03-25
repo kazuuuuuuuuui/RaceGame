@@ -16,6 +16,8 @@ Characterクラスのメンバをカプセル化する
 #include"xFile.h"
 #include"Controller.h"
 #include"SoundManager.h"
+#include"BikeBody.h"
+#include"BikeWheel.h"
 
 #define PLAYER_MAX_NUMBER (4)
 
@@ -25,12 +27,6 @@ Characterクラスのメンバをカプセル化する
 #define THIRD (2)
 
 #define DASH_GAUGE_MAX (90)
-
-enum
-{
-	COMPUTER,
-	PLAYER
-};
 
 	class Character :public oka::GameObject 
 	{
@@ -51,18 +47,9 @@ enum
 		//回転の際の補完値
 		float CompletionValue;
 
-		//人が操作するかコンピュータが操作するか
-		int m_type;
-
-		//種類
-		int m_kind;
-
-		//自身の行列
-		glm::mat4 m_matrix;
-
 		//前輪と後輪のポジション
-		oka::Vec3 m_frontPosition;
-		oka::Vec3 m_backPosition;
+		//oka::Vec3 m_frontPosition;
+		//oka::Vec3 m_backPosition;
 
 		oka::Vec3 m_dashSpeed;
 
@@ -72,14 +59,12 @@ enum
 		//車輪の回転スピード
 		float m_wheelSpeed;
 
-		//人部分
-		//xFile m_rider;
-
 		//車体部分
-		xFile m_body;
+		BikeBody m_body;
 
 		//後輪部分
-		xFile m_backWheel;
+		BikeWheel m_frontWheel;
+		BikeWheel m_backWheel;
 
 		//車体から出る煙
 		Smoke m_smoke;
@@ -183,9 +168,6 @@ enum
 		Character() {};
 		Character(xFile &_body, xFile &_wheel) :
 			CompletionValue(0.f),
-			m_type(0),
-			m_kind(0),
-			m_matrix(glm::mat4(1.f)),
 			m_isDash(false),
 			m_dashPower(0),
 			m_isCharged(false),
@@ -204,8 +186,11 @@ enum
 		{
 			printf("プレイヤーが生成されました\n");
 
-			m_body = _body;
-			m_backWheel = _wheel;
+			m_body.m_model = _body;
+			m_frontWheel.m_model = _wheel;
+			m_backWheel.m_model = _wheel;
+
+			m_transform.SetScale(oka::Vec3(0.18f, 0.18f, 0.18f));
 
 			m_engine = oka::Sound::LoadSquareWave(engine_sound, sizeof(engine_sound), 110);
 
@@ -214,18 +199,19 @@ enum
 			m_pos_to_AIpoint = OrientationVector;
 
 			//前輪座標
-			m_frontPosition.m_x = m_transform.GetPosition().m_x - sin(m_transform.GetRotation().m_y)*1.55f;
-			m_frontPosition.m_y = 0.f;
-			m_frontPosition.m_z = m_transform.GetPosition().m_z - cos(m_transform.GetRotation().m_y)*1.55f;
+			//m_frontPosition.m_x = m_transform.GetPosition().m_x - sin(m_transform.GetRotation().m_y)*1.55f;
+			//m_frontPosition.m_y = 0.f;
+			//m_frontPosition.m_z = m_transform.GetPosition().m_z - cos(m_transform.GetRotation().m_y)*1.55f;
 
-			//後輪座標
-			m_backPosition.m_x = m_transform.GetPosition().m_x + sin(m_transform.GetRotation().m_y)*1.15f;
-			m_backPosition.m_y = 0.f;
-			m_backPosition.m_z = m_transform.GetPosition().m_z + cos(m_transform.GetRotation().m_y)*1.15f;
+			////後輪座標
+			//m_backPosition.m_x = m_transform.GetPosition().m_x + sin(m_transform.GetRotation().m_y)*1.15f;
+			//m_backPosition.m_y = 0.f;
+			//m_backPosition.m_z = m_transform.GetPosition().m_z + cos(m_transform.GetRotation().m_y)*1.15f;
 
 
 			//ラップタイムの初期化
-			for (int i = 0; i < 3; i++) {
+			for (int i = 0; i < 3; i++) 
+			{
 				m_lapMilliSecond[i] = 0;
 				m_lapSecond[i] = 0;
 				m_lapMinute[i] = 0;
@@ -238,8 +224,6 @@ enum
 			sprintf_s(m_lapTime[FIRST], "%02d:%02d:%03d ", m_lapMinute[FIRST], m_lapSecond[FIRST], m_lapMilliSecond[FIRST]);
 			sprintf_s(m_lapTime[SECOND], "%02d:%02d:%03d ", m_lapMinute[SECOND], m_lapSecond[SECOND], m_lapMilliSecond[SECOND]);
 			sprintf_s(m_lapTime[THIRD], "%02d:%02d:%03d ", m_lapMinute[THIRD], m_lapSecond[THIRD], m_lapMilliSecond[THIRD]);
-
-			m_transform.SetScale(oka::Vec3(0.18f, 0.18f, 0.18f));
 
 		}
 

@@ -134,4 +134,31 @@ namespace oka
 		return ortho;
 	}
 
+	//-------------------------------------
+	//演算子のオーバーロード
+
+	Mat4x4 Mat4x4::operator*(const Mat4x4 &_m)const
+	{
+		Mat4x4 out;
+
+		out.m_value[0] = this->m_value[0] * _m.m_value[0] + this->m_value[4] * _m.m_value[1] + this->m_value[8] * _m.m_value[2] + this->m_value[12] * _m.m_value[3];
+		out.m_value[1] = this->m_value[1] * _m.m_value[0] + this->m_value[5] * _m.m_value[1] + this->m_value[9] * _m.m_value[2] + this->m_value[13] * _m.m_value[3];
+		out.m_value[2] = this->m_value[2] * _m.m_value[0] + this->m_value[6] * _m.m_value[1] + this->m_value[10] * _m.m_value[2] + this->m_value[14] * _m.m_value[3];
+		out.m_value[3] = this->m_value[3] * _m.m_value[0] + this->m_value[7] * _m.m_value[1] + this->m_value[11] * _m.m_value[2] + this->m_value[15] * _m.m_value[3];
+		out.m_value[4] = this->m_value[0] * _m.m_value[4] + this->m_value[4] * _m.m_value[5] + this->m_value[8] * _m.m_value[6] + this->m_value[12] * _m.m_value[7];
+		out.m_value[5] = this->m_value[1] * _m.m_value[4] + this->m_value[5] * _m.m_value[5] + this->m_value[9] * _m.m_value[6] + this->m_value[13] * _m.m_value[7];
+		out.m_value[6] = this->m_value[2] * _m.m_value[4] + this->m_value[6] * _m.m_value[5] + this->m_value[10] * _m.m_value[6] + this->m_value[14] * _m.m_value[7];
+		out.m_value[7] = this->m_value[3] * _m.m_value[4] + this->m_value[7] * _m.m_value[5] + this->m_value[11] * _m.m_value[6] + this->m_value[15] * _m.m_value[7];
+		out.m_value[8] = this->m_value[0] * _m.m_value[8] + this->m_value[4] * _m.m_value[9] + this->m_value[8] * _m.m_value[10] + this->m_value[12] * _m.m_value[11];
+		out.m_value[9] = this->m_value[1] * _m.m_value[8] + this->m_value[5] * _m.m_value[9] + this->m_value[9] * _m.m_value[10] + this->m_value[13] * _m.m_value[11];
+		out.m_value[10] = this->m_value[2] * _m.m_value[8] + this->m_value[6] * _m.m_value[9] + this->m_value[10] * _m.m_value[10] + this->m_value[14] * _m.m_value[11];
+		out.m_value[11] = this->m_value[3] * _m.m_value[8] + this->m_value[7] * _m.m_value[9] + this->m_value[11] * _m.m_value[10] + this->m_value[15] * _m.m_value[11];
+		out.m_value[12] = this->m_value[0] * _m.m_value[12] + this->m_value[4] * _m.m_value[13] + this->m_value[8] * _m.m_value[14] + this->m_value[12] * _m.m_value[15];
+		out.m_value[13] = this->m_value[1] * _m.m_value[12] + this->m_value[5] * _m.m_value[13] + this->m_value[9] * _m.m_value[14] + this->m_value[13] * _m.m_value[15];
+		out.m_value[14] = this->m_value[2] * _m.m_value[12] + this->m_value[6] * _m.m_value[13] + this->m_value[10] * _m.m_value[14] + this->m_value[14] * _m.m_value[15];
+		out.m_value[15] = this->m_value[3] * _m.m_value[12] + this->m_value[7] * _m.m_value[13] + this->m_value[11] * _m.m_value[14] + this->m_value[15] * _m.m_value[15];
+
+		return out;
+	}
+
 }

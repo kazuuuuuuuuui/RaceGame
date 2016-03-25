@@ -84,7 +84,6 @@ public:
 
 Course* createCourse();
 extern int selectedCourse;
-//extern Course *course;
 
 #endif
 

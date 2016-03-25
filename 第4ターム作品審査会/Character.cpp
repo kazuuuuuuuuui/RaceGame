@@ -104,9 +104,8 @@ void Character::Update(){
 
 			m_lapCount++;
 
-			if (PLAYER == m_type)
+			if (m_contoroller.m_isConnect)
 			{
-
 				//1周目または2周目の時のみ鳴らす
 				if (1 == m_lapCount)
 				{
@@ -117,31 +116,53 @@ void Character::Update(){
 					oka::SoundManager::GetInstance()->Play("finalLapSE");
 			
 				}
-
 			}
 
 		}
 
 	}
 
+	//行列計算
+	oka::Mat4x4 translate = oka::Mat4x4::Translate(oka::Vec3(m_transform.GetPosition().m_x, m_transform.GetPosition().m_y, m_transform.GetPosition().m_z));
+	oka::Mat4x4 rotate = oka::Mat4x4::RotateY(m_transform.GetRotation().m_y + m_crashRotate)*oka::Mat4x4::RotateZ(m_transform.GetRotation().m_z);
+	oka::Mat4x4 scale = oka::Mat4x4::Scale(m_transform.GetScale());
+
+	//親の行列
+	m_matrix = translate *rotate *scale;
+
+	//車体
+	m_body.m_matrix = m_matrix;
+
+	//前輪
+	m_frontWheel.m_transform.SetPositionX(0.0f);
+	m_frontWheel.m_transform.SetPositionY(2.8f);
+	m_frontWheel.m_transform.SetPositionZ(-9.0f);
+	m_frontWheel.m_transform.SetRotation(m_transform.GetRotation());
+
+	m_frontWheel.m_matrix = m_matrix;
+
+	//後輪
+	m_backWheel.m_transform.SetPositionX(0.0f);
+	m_backWheel.m_transform.SetPositionY(3.1f);
+	m_backWheel.m_transform.SetPositionZ(6.3f);
+	m_backWheel.m_transform.SetRotation(m_transform.GetRotation());
+
+	m_backWheel.m_matrix = m_matrix;
+
+	//前輪座標
+	//m_frontPosition.m_x = m_transform.GetPosition().m_x - sin(m_transform.GetRotation().m_y)*1.1f;
+	//m_frontPosition.m_y = 0.5f;
+	//m_frontPosition.m_z = m_transform.GetPosition().m_z - cos(m_transform.GetRotation().m_y)*1.1f;
+
+	////後輪座標
+	//m_backPosition.m_x = m_transform.GetPosition().m_x + sin(m_transform.GetRotation().m_y)*0.7f;
+	//m_backPosition.m_y = 0.5f;
+	//m_backPosition.m_z = m_transform.GetPosition().m_z + cos(m_transform.GetRotation().m_y)*0.7f;
 
 	//スピード・ポジションの更新
 	m_speed += (m_dashSpeed + m_accel);
 
-	//m_transform.GetPosition() += m_speed;
 	m_transform.SetPosition(m_transform.GetPosition() + m_speed);
-
-	//前輪と後輪のポジション更新
-
-	//前輪座標
-	m_frontPosition.m_x = m_transform.GetPosition().m_x - sin(m_transform.GetRotation().m_y)*1.1f;
-	m_frontPosition.m_y = 0.5f;
-	m_frontPosition.m_z = m_transform.GetPosition().m_z - cos(m_transform.GetRotation().m_y)*1.1f;
-
-	//後輪座標
-	m_backPosition.m_x = m_transform.GetPosition().m_x + sin(m_transform.GetRotation().m_y)*0.7f;
-	m_backPosition.m_y = 0.5f;
-	m_backPosition.m_z = m_transform.GetPosition().m_z + cos(m_transform.GetRotation().m_y)*0.7f;
 
 
 	//煙の更新
@@ -151,7 +172,8 @@ void Character::Update(){
 	m_smoke.m_basePosition.m_z = m_transform.GetPosition().m_z + cos(m_transform.GetRotation().m_y)*1.7f;
 
 	//ダッシュエフェクトの更新
-	if (nullptr != m_dash){
+	if (nullptr != m_dash)
+	{
 		m_dash->m_basePosition.m_x = m_transform.GetPosition().m_x + sin(m_transform.GetRotation().m_y)*0.75;
 		m_dash->m_basePosition.m_y = -0.2f;
 		m_dash->m_basePosition.m_z = m_transform.GetPosition().m_z + cos(m_transform.GetRotation().m_y)*0.75;
@@ -163,15 +185,15 @@ void Character::Update(){
 	//ダッシュの減速処理
 	m_dashSpeed *= 0.96;
 
-	if (m_dash != NULL){
-
-		if (m_dashSpeed.length() <= 0.0001){
+	if (m_dash != NULL)
+	{
+		if (m_dashSpeed.length() <= 0.0001)
+		{
 
 			//ダッシュ状態解除
 			m_isDash = false;
 			m_dash->m_isActive = false;
 		}
-
 	}
 
 	//車輪の回転スピード更新
@@ -183,10 +205,10 @@ void Character::Update(){
 	slip();
 
 	//チェックポイントを通過しているかの判定処理
-	for (int i = 0; i < CHECK_POINT_NUMBER; i++){
-
-		if (0 == i){
-
+	for (int i = 0; i < CHECK_POINT_NUMBER; i++)
+	{
+		if (0 == i)
+		{
 			if (false == m_passCheckPoint[i] && RaceManager::GetInstance()->m_course->m_checkPoint[i].checkPassFlag(m_transform.GetPosition())){
 
 				m_passCheckPoint[i] = true;
@@ -196,15 +218,16 @@ void Character::Update(){
 
 		}
 
-		else{
+		else
+		{
 
-			if (true == m_passCheckPoint[i - 1]){
+			if (true == m_passCheckPoint[i - 1])
+			{
 
-				if (false == m_passCheckPoint[i] && RaceManager::GetInstance()->m_course->m_checkPoint[i].checkPassFlag(m_transform.GetPosition())){
-
+				if (false == m_passCheckPoint[i] && RaceManager::GetInstance()->m_course->m_checkPoint[i].checkPassFlag(m_transform.GetPosition()))
+				{
 					m_passCheckPoint[i] = true;
 					m_nowPoint++;
-
 				}
 			}
 		}
@@ -223,15 +246,16 @@ void Character::Update(){
 	}
 
 	//ゴールしたかの判定
-	if (false == m_isGoal && checkIsGoal()){
+	if (false == m_isGoal && checkIsGoal())
+	{
 		m_isGoal = true;
 		m_lastRanking = m_ranking;
 
-		if (PLAYER == m_type){
+		//if (PLAYER == m_type){
 
 			oka::SoundManager::GetInstance()->Play("goalSE");
 	
-		}
+		//}
 
 	}
 
@@ -240,212 +264,53 @@ void Character::Update(){
 //-------------------------------------
 //自機の描画
 
-void Character::Draw(){
-
-	/*車体描画*/
-	glPushAttrib(GL_ALL_ATTRIB_BITS);
-	{
-		glEnable(GL_LIGHTING);
-
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glEnableClientState(GL_NORMAL_ARRAY);
-
-		glPushMatrix();
-		{
-
-			//行列計算
-			glm::mat4 translate = glm::translate(glm::vec3(m_transform.GetPosition().m_x, m_transform.GetPosition().m_y, m_transform.GetPosition().m_z));
-
-			glm::mat4 rotate = glm::rotate(m_transform.GetRotation().m_y + m_crashRotate, glm::vec3(0, 1, 0))*
-				glm::rotate(m_transform.GetRotation().m_z, glm::vec3(0, 0, 1));
-
-
-			glm::mat4 scale = glm::scale(glm::vec3(m_transform.GetScale().m_x, m_transform.GetScale().m_y, m_transform.GetScale().m_z));
-
-			//親の行列
-			m_matrix = translate *rotate *scale;
-
-			//行列適応
-			glMultMatrixf((GLfloat*)&m_matrix);
-
-			std::vector<float>::iterator itr_v = m_body.m_vertex.begin();
-			glVertexPointer(3, GL_FLOAT, 0, &(*itr_v));
-
-			std::vector<float>::iterator itr_n = m_body.m_normal.begin();
-			glNormalPointer(GL_FLOAT, 0, &(*itr_n));
-
-			std::vector<unsigned short>::iterator itr_i = m_body.m_index.begin();
-
-
-			glDrawElements(GL_TRIANGLES, m_body.m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));
-
-		}
-		glPopMatrix();
-
-	}
-	glPopAttrib();
-
-
-
-	glPushAttrib(GL_ALL_ATTRIB_BITS);
-	{
-		glEnable(GL_LIGHTING);
-
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glEnableClientState(GL_NORMAL_ARRAY);
-
-		//回転処理
-		static float angle = 0;
-
-		//後輪
-		glPushMatrix();
-		{
-			angle -= m_wheelSpeed;
-			angle *= 0.98f;
-
-			//angleの値を-10000～0で扱うため
-			if (angle < -200.f){
-				angle = 0.f;
-			}
-
-			glm::mat4 childRotate = glm::rotate(angle, glm::vec3(1, 0, 0));
-
-			glm::mat4 childScale = glm::scale(glm::vec3(0.9f, 0.9f, 0.9f));
-
-			//子供の行列
-			glm::mat4 child = childRotate * childScale;
-
-			//オフセット
-			glm::mat4 offSet = glm::translate(glm::vec3(0.0f, 3.1f, 6.3f));
-
-			glm::mat4 myMatrix = m_matrix * offSet *child;
-
-
-			glMultMatrixf((GLfloat*)&myMatrix);
-
-
-			std::vector<float>::iterator itr_v = m_backWheel.m_vertex.begin();
-			glVertexPointer(3, GL_FLOAT, 0, &(*itr_v));
-
-			std::vector<float>::iterator itr_n = m_backWheel.m_normal.begin();
-			glNormalPointer(GL_FLOAT, 0, &(*itr_n));
-
-			std::vector<unsigned short>::iterator itr_i = m_backWheel.m_index.begin();
-
-
-			float dd[] = { 0.00, 0.00, 0.00, 1 };
-			glMaterialfv(GL_FRONT, GL_DIFFUSE, dd);
-
-			
-
-
-
-
-
-			/*後輪描画*/
-			glDrawElements(GL_TRIANGLES, m_backWheel.m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));
-
-		}
-		glPopMatrix();
-
-
-		//前輪
-		glPushMatrix();
-		{
-
-			glm::mat4 childRotate = glm::rotate(angle, glm::vec3(1, 0, 0));
-
-			glm::mat4 childScale = glm::scale(glm::vec3(0.72f, 0.72f, 0.72f));
-
-			//子供の行列
-			glm::mat4 child = childRotate * childScale;
-
-			//オフセット
-			glm::mat4 offSet = glm::translate(glm::vec3(0.0f, 2.8f, -9.f));
-
-			glm::mat4 myMatrix = m_matrix * offSet *child;
-
-			glMultMatrixf((GLfloat*)&myMatrix);
-
-			std::vector<float>::iterator itr_v = m_backWheel.m_vertex.begin();
-			glVertexPointer(3, GL_FLOAT, 0, &(*itr_v));
-
-			std::vector<float>::iterator itr_n = m_backWheel.m_normal.begin();
-			glNormalPointer(GL_FLOAT, 0, &(*itr_n));
-
-			std::vector<unsigned short>::iterator itr_i = m_backWheel.m_index.begin();
-
-			glDrawElements(GL_TRIANGLES, m_backWheel.m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));
-
-		}
-		glPopMatrix();
-
-	}
-	glPopAttrib();
-
-
-	//影部描画
+void Character::Draw()
+{
 	//車体
+	m_body.Draw();
 
-	glColor3f(100 / 255.f, 100 / 255.f, 100 / 255.f);
+	//前輪
+	m_frontWheel.Draw();
 
-	glPushMatrix();
-	{
-
-		//行列計算
-		glm::mat4 parentTranslate = glm::translate(glm::vec3(m_transform.GetPosition().m_x, 0.01f, m_transform.GetPosition().m_z));
-
-		glm::mat4 parentRotate = glm::rotate(m_transform.GetRotation().m_y + m_crashRotate, glm::vec3(0, 1, 0));
-
-		glm::mat4 parentScale = glm::scale(glm::vec3(m_transform.GetScale().m_x, 0, m_transform.GetScale().m_z));
-
-		//親の行列
-		m_matrix = parentTranslate *parentRotate * parentScale;
-
-		//行列適応
-		glMultMatrixf((GLfloat*)&m_matrix);
-
-		std::vector<float>::iterator itr_v = m_body.m_vertex.begin();
-		glVertexPointer(3, GL_FLOAT, 0, &(*itr_v));
-
-		std::vector<unsigned short>::iterator itr_i = m_body.m_index.begin();
-
-		glDrawElements(GL_TRIANGLES, m_body.m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));
-
-	}
-	glPopMatrix();
-
-
-	//影部描画
 	//後輪
+	m_backWheel.Draw();
 
-	glPushMatrix();
-	{
-
-		//子供の行列
-		glm::mat4 child = glm::scale(glm::vec3(0.92f, 0, 0.92f));
-
-		//オフセット
-		glm::mat4 offSet = glm::translate(glm::vec3(0.0f, 0.01f, 6.3f));
-
-		glm::mat4 myMatrix = m_matrix * offSet *child;
+	//車体影
+	//m_body.DrawShadow();
 
 
-		glMultMatrixf((GLfloat*)&myMatrix);
 
-		std::vector<float>::iterator itr_v = m_backWheel.m_vertex.begin();
-		glVertexPointer(3, GL_FLOAT, 0, &(*itr_v));
+	////影部描画
+	////後輪
 
-		std::vector<unsigned short>::iterator itr_i = m_backWheel.m_index.begin();
+	//glPushMatrix();
+	//{
+
+	//	//子供の行列
+	//	glm::mat4 child = glm::scale(glm::vec3(0.92f, 0, 0.92f));
+
+	//	//オフセット
+	//	glm::mat4 offSet = glm::translate(glm::vec3(0.0f, 0.01f, 6.3f));
+
+	//	glm::mat4 myMatrix = m_matrix * offSet *child;
 
 
-		/*後輪描画*/
-		glDrawElements(GL_TRIANGLES, m_backWheel.m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));
+	//	glMultMatrixf((GLfloat*)&myMatrix);
 
-	}
-	glPopMatrix();
+	//	std::vector<float>::iterator itr_v = m_backWheel.m_vertex.begin();
+	//	glVertexPointer(3, GL_FLOAT, 0, &(*itr_v));
+
+	//	std::vector<unsigned short>::iterator itr_i = m_backWheel.m_index.begin();
+
+
+	//	/*後輪描画*/
+	//	glDrawElements(GL_TRIANGLES, m_backWheel.m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));
+
+	//}
+	//glPopMatrix();
 
 }
+
 
 
 //-------------------------------------
@@ -794,8 +659,8 @@ void Character::checkCourseOut()
 //-------------------------------------
 //目指しているチェックポイントまでの距離を返す
 
-float Character::checkNextCheckPointLength(){
-
+float Character::checkNextCheckPointLength()
+{
 	oka::Vec3 v;
 
 	v = m_transform.GetPosition() - RaceManager::GetInstance()->m_course->m_checkPoint[m_nowPoint].m_position;
@@ -807,7 +672,8 @@ float Character::checkNextCheckPointLength(){
 //プレイヤーがダートに入っているか判定
 //入っていたらtrue 入っていなかったらfalseを返す
 
-bool Character::inDart(){
+bool Character::inDart()
+{
 
 	//プレイヤーがどのピクセル上にいるか判断し
 	//直下のピクセル情報によって判定する
@@ -827,19 +693,19 @@ bool Character::inDart(){
 //-------------------------------------
 //アイテムに当たった時のスリップ処理
 
-void Character::slip(){
+void Character::slip()
+{
 
-	if (m_isHitItem){
-
-		m_speed = { 0.f, 0.f, 0.f };
+	if (m_isHitItem)
+	{
+		m_speed = { 0.0f, 0.0f, 0.0f };
 		
-
 	}
 
 	m_crashRotate *= 0.9f;
 
-	if (m_crashRotate < 0.5f){
-
+	if (m_crashRotate < 0.5f)
+	{
 		m_isHitItem = false;
 
 	}
@@ -860,10 +726,11 @@ void Character::printRanking()
 	glPushMatrix();
 	{
 
-		if (false == m_isGoal){
-
+		if (false == m_isGoal)
+		{
 			//順位に応じて貼るテクスチャを変える
-			switch (m_ranking){
+			switch (m_ranking)
+			{
 			case 1:
 				glColor4f(255 / 255.f, 201 / 255.f, 14 / 255.f, 1);
 				glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Rank1st"));
@@ -890,8 +757,8 @@ void Character::printRanking()
 
 		}
 
-		else{
-
+		else
+		{
 			//順位に応じて貼るテクスチャを変える
 			switch (m_lastRanking){
 			case 1:
@@ -1064,19 +931,20 @@ void Character::printDashGauge(){
 
 void Character::printStatus()
 {
-
 	if (false == m_isGoal)
 	{
 
 		//ダッシュゲージの描画
 		printDashGauge();
 
+		glColor3f(0, 0, 0);
 		oka::SetLineWidth(2.0f);
 		oka::DrawString("[LB] Item", 220.0f, 10.0f, 0.1f);
 		oka::DrawString("[RB]Dash", 135.0f, 10.0f, 0.1f);
 		oka::DrawString("[A]Accelerator", 135.0f, 30.0f, 0.1f);
 		oka::DrawString("[Stick]Control", 220.0f, 30.0f, 0.1f);
 		
+		glColor3f(1, 0, 0);
 		oka::DrawString("LAP", 230.0f, 250.0f, 0.1f);
 		oka::DrawString(m_lap, 260.0f, 250.0f, 0.18f);
 		oka::DrawString("/", 275.0f, 250.0f, 0.1f);
@@ -1099,6 +967,7 @@ void Character::printStatus()
 	{
 		printGoal();
 
+		glColor3f(1, 0, 0);
 		oka::DrawString("LAP1", 60.0f, 160.0f, 0.2f);
 		oka::DrawString(m_lapTime[FIRST], 130.0f, 115.0f, 0.2f);
 
@@ -1113,10 +982,10 @@ void Character::printStatus()
 
 		
 
-		if (true == (oka::CharacterManager::GetInstance()->m_character[0]->m_isGoal &&
-			oka::CharacterManager::GetInstance()->m_character[1]->m_isGoal && 
-			oka::CharacterManager::GetInstance()->m_character[2]->m_isGoal &&
-			oka::CharacterManager::GetInstance()->m_character[3]->m_isGoal))
+		if (true == (CharacterManager::GetInstance()->m_character[0]->m_isGoal &&
+			CharacterManager::GetInstance()->m_character[1]->m_isGoal && 
+			CharacterManager::GetInstance()->m_character[2]->m_isGoal &&
+			CharacterManager::GetInstance()->m_character[3]->m_isGoal))
 		{
 			if ((oka::GameManager::GetInstance()->m_flame % 60) < 30)
 			{
@@ -1133,20 +1002,21 @@ void Character::printStatus()
 //ゴールの位置にいるときにチェックポイントを通過しているか判別する
 //フラグがtrueの状態のときのみtrueを返し1周とカウントする
 
-bool Character::countLap(){
+bool Character::countLap()
+{
 
-	if (RaceManager::GetInstance()->m_course->m_buffer[COURSE_HEIGHT - 1 + (int)m_transform.GetPosition().m_z][(int)m_transform.GetPosition().m_x] == GOAL){
-
+	if (RaceManager::GetInstance()->m_course->m_buffer[COURSE_HEIGHT - 1 + (int)m_transform.GetPosition().m_z][(int)m_transform.GetPosition().m_x] == GOAL)
+	{
 		bool fg = true;
 
-		for (int i = 0; i < CHECK_POINT_NUMBER; i++){
-
+		for (int i = 0; i < CHECK_POINT_NUMBER; i++)
+		{
 			fg &= m_passCheckPoint[i];
 
 		}
 
-		if (fg == true){
-
+		if (fg)
+		{
 			return true;
 
 		}

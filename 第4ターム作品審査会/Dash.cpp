@@ -1,6 +1,5 @@
 #include"Dash.h"
-
-unsigned int dash_handle = 0;
+#include"ImageManager.h"
 
 void Dash::Update()
 {
@@ -24,17 +23,16 @@ void Dash::Draw(){
 	//¶‰E‘ÎÌ‚Å2‚Â•`‰æ‚µ‚Ä‚¢‚é
 	glPushMatrix();
 	{
-
 		glTranslatef(m_basePosition.m_x, m_basePosition.m_y, m_basePosition.m_z);
 
 		for (int i = 0; i < DASH_PARTICLE_NUMBER; i++){
-			m_particle[i].Draw(1, { 1.f, 1.f, 1.f }, dash_handle);
+			m_particle[i].Draw(1, { 1.f, 1.f, 1.f }, oka::ImageManager::GetInstance()->GetHandle("Dash"));
 		}
 
 		glRotatef(180, 0, 1, 0);
 
 		for (int i = 0; i < DASH_PARTICLE_NUMBER; i++){
-			m_particle[i].Draw(1, { 1.f, 1.f, 1.f }, dash_handle);
+			m_particle[i].Draw(1, { 1.f, 1.f, 1.f }, oka::ImageManager::GetInstance()->GetHandle("Dash"));
 		}
 
 	}

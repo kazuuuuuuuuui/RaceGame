@@ -18,7 +18,7 @@ namespace oka
 	public:
 		Contoroller GetContoroller(const int _num)const;
 		void AddController(Contoroller _Contoroller);
-		unsigned int GetConnectingNum()const;
+		unsigned int GetContorollerNumber()const;
 		void Update();
 		static JoysticManager* GetInstance();
 	};

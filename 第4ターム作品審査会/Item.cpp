@@ -31,8 +31,6 @@ void Circle2DFill(float radius, int x, int y)
 	}
 }
 
-Item *item[SET_ITEM_NUMBER] = { nullptr };
-
 //アイテムの添え字に使う
 int itemNum = 0;
 
@@ -53,22 +51,22 @@ void Item::Update(){
 	}
 
 	//取られたかの判定
-	for (unsigned int i = 0; i < oka::CharacterManager::GetInstance()->GetCharacterNumber(); i++)
+	for (unsigned int i = 0; i < CharacterManager::GetInstance()->GetCharacterNumber(); i++)
 	{
-		if (true == m_isActive && checkIsGotten(oka::CharacterManager::GetInstance()->m_character[i]->m_transform.GetPosition()))
+		if (true == m_isActive && checkIsGotten(CharacterManager::GetInstance()->m_character[i]->m_transform.GetPosition()))
 		{
 
 			m_isActive = false;
 
 
 			//所持アイテムが3つ以下だったらアイテムを所持させる
-			if (oka::CharacterManager::GetInstance()->m_character[i]->hasItemNumber() < HAS_ITEM_MAX)
+			if (CharacterManager::GetInstance()->m_character[i]->hasItemNumber() < HAS_ITEM_MAX)
 			{
 				//キャラクターに今取得したアイテムを持たせる
-				oka::CharacterManager::GetInstance()->m_character[i]->m_hasItem.push_back(m_type);
+				CharacterManager::GetInstance()->m_character[i]->m_hasItem.push_back(m_type);
 
 				//プレイヤーが取得したときのみ効果音を鳴らす
-				if (oka::CharacterManager::GetInstance()->m_character[0] == oka::CharacterManager::GetInstance()->m_character[i])
+				if (CharacterManager::GetInstance()->m_character[0] == CharacterManager::GetInstance()->m_character[i])
 				{
 					oka::SoundManager::GetInstance()->Play("getItem");
 				}
