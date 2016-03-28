@@ -11,26 +11,24 @@ namespace oka
 	//RGB   透過度無し
 	//RGBA　透過度有り
 
-	struct RGB{
+	struct RGB
+	{
 		unsigned char r, g, b;
 	};
 
-	struct RGBA{
+	struct RGBA
+	{
 		unsigned char r, g, b, a;
 	};
 
 	//-------------------------------------
 	//
 
-	class BmpImage
-	{
-	public:
+	unsigned int LoadImage3f(const char *_fileName);
+	unsigned int LoadImage4f(const char *_filename);
 
-		static unsigned int LoadImage3f(const char *_fileName);
-		static unsigned int LoadImage4f(const char *_filename);
+	void MakeBuffer(const char *_bufferName, int _buffer[][COURSE_WIDTH]);
 
-		static void makeBuffer(const char *_bufferName, int _buffer[][COURSE_WIDTH]);
-	};
 
 }
 

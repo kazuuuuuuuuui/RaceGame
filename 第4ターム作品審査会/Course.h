@@ -23,6 +23,7 @@
 #include"GameObject.h"
 #include"AIFlag.h"
 #include"Sound.h"
+#include"Vec3.h"
 #include"glut.h"
 
 //-------------------------------------
@@ -60,6 +61,7 @@ public:
 	unsigned int m_handle;							 //コースのテクスチャ
 	CourseFlag m_checkPoint[CHECK_POINT_NUMBER]; //周回判定用のポイント
 	AIFlag m_AIPoint[AI_POINT_NUMBER];			 //敵AI用のポイント
+	oka::Vec3 m_backgroundColor;
 
 	void Draw();
 	void Update() {};
@@ -78,6 +80,15 @@ public:
 				m_buffer[i][t] = PATH;
 			}
 		}
+
+		//背景色初期化
+		oka::Vec3 color;
+		color.m_x = 77.0f / 255.0f;
+		color.m_y = 180.0f / 255.0f;
+		color.m_z = 232.0f / 255.0f;
+
+		m_backgroundColor = color;
+
 	};
 
 };

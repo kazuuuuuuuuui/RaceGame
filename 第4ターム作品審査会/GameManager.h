@@ -20,6 +20,7 @@ namespace oka
 
 		void Updata();
 		void AddGameObject(GameObject *_object);
+		void EraseGameObject();
 
 		static GameManager* GetInstance();
 

@@ -10,6 +10,7 @@ void BikeBody::Draw()
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	{
 		glEnable(GL_LIGHTING);
+		glEnable(GL_LIGHT0);
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glEnableClientState(GL_NORMAL_ARRAY);
 

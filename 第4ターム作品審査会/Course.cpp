@@ -139,10 +139,10 @@ Course* createCourse()
 		newCourse->setAIPoint("txt/course1_AIp.txt");
 
 		//使用するテクスチャの読み込み
-		newCourse->m_handle = oka::BmpImage::LoadImage3f("bmp/course1/course1.bmp");
+		newCourse->m_handle = oka::LoadImage3f("bmp/course1/course1.bmp");
 
 		//バッファの作成
-		oka::BmpImage::makeBuffer("bmp/course1/buffer1.bmp", newCourse->m_buffer);
+		oka::MakeBuffer("bmp/course1/buffer1.bmp", newCourse->m_buffer);
 	}
 	
 
@@ -157,10 +157,10 @@ Course* createCourse()
 		newCourse->setAIPoint("txt/course2_AIp.txt");
 
 		//使用するテクスチャの読み込み
-		newCourse->m_handle = oka::BmpImage::LoadImage3f("bmp/course2/course2.bmp");
+		newCourse->m_handle = oka::LoadImage3f("bmp/course2/course2.bmp");
 		
 		//バッファの作成
-		oka::BmpImage::makeBuffer("bmp/course2/buffer2.bmp", newCourse->m_buffer);
+		oka::MakeBuffer("bmp/course2/buffer2.bmp", newCourse->m_buffer);
 
 	}
 

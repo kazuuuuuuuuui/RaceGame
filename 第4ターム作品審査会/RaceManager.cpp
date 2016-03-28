@@ -1,12 +1,11 @@
 #include<algorithm>
 #include"RaceManager.h"
+#include"CharacterManager.h"
 #include"ImageManager.h"
 #include"SoundManager.h"
 #include"glut.h"
 
 RaceManager* RaceManager::m_instance = nullptr;
-
-
 
 //取り敢えず
 int startFrame = 0;//フレーム数
@@ -256,4 +255,30 @@ void RaceManager::SetRanking(std::vector<Character*> _character)
 	{
 		_character[i]->m_ranking = i + 1;
 	}
+}
+
+
+//----------------------------------------------------------
+//レースが終了しているかの判定を行う
+//キャラクター全員のis_Goalフラグを参照し
+//レースが終了していたらtrue 終了していなかったらfalseを返す
+
+bool RaceManager::IsRaceEnd()const
+{
+	bool flag = true;//判別用フラグ
+
+	for (unsigned int i = 0; i < CharacterManager::GetInstance()->GetCharacterNumber(); i++)
+	{
+		flag = flag & CharacterManager::GetInstance()->m_character[i]->m_isGoal;
+	}
+
+	if (flag)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
 }

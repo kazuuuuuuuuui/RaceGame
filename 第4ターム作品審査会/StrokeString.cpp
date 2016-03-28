@@ -1,5 +1,7 @@
 #include<string>
 #include"StrokeString.h"
+#include"glm\glm.hpp"
+#include"Vec3.h"
 #include"glut.h"
 
 namespace oka
@@ -22,21 +24,29 @@ namespace oka
 
 	//-------------------------------------
 	//ストローク文字の出力
-	//文字・描画位置・文字の大きさ・色を指定して出力
+	//文字・描画位置・文字の大きさ・色・太さを指定して出力
 
-	void DrawString(const char *_str, const float _x, const float _y, const float _scale)
+	void DrawString(const char *_str, const glm::vec2 _position, const float _scale, const Vec3 _color,const float _width)
 	{
-		glPushMatrix();
+		glPushAttrib(GL_ALL_ATTRIB_BITS);
 		{
-			glTranslatef(_x, _y, 1.0f);
-			glScalef(_scale, _scale, _scale);
+			glColor3f(_color.m_x, _color.m_y, _color.m_z);
 
-			for (unsigned int i = 0; i < strlen(_str); i++)
+			glLineWidth(_width);
+
+			glPushMatrix();
 			{
-				glutStrokeCharacter(GLUT_STROKE_ROMAN, _str[i]);
+				glTranslatef(_position.x, _position.y, 1.0f);
+				glScalef(_scale, _scale, _scale);
+
+				for (unsigned int i = 0; i < strlen(_str); i++)
+				{
+					glutStrokeCharacter(GLUT_STROKE_ROMAN, _str[i]);
+				}
 			}
+			glPopMatrix();
 		}
-		glPopMatrix();
+		glPopAttrib();
 	}
 
 }//namespace oka

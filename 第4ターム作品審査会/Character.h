@@ -12,7 +12,6 @@ Characterクラスのメンバをカプセル化する
 #include"GameObject.h"
 #include"Course.h"
 #include"Smoke.h"
-#include"Dash.h"
 #include"xFile.h"
 #include"Controller.h"
 #include"SoundManager.h"
@@ -78,9 +77,6 @@ Characterクラスのメンバをカプセル化する
 
 		//ダッシュパワーが溜まった際にtrueになる
 		bool m_isCharged;
-
-		//ダッシュ時のエフェクト
-		Dash *m_dash;
 
 		//全体のタイム
 		int m_flame;
@@ -171,7 +167,6 @@ Characterクラスのメンバをカプセル化する
 			m_isDash(false),
 			m_dashPower(0),
 			m_isCharged(false),
-			m_dash(nullptr),
 			m_dashSpeed(0, 0, 0),
 			m_crashRotate(0.f),
 			m_wheelSpeed(0.f),

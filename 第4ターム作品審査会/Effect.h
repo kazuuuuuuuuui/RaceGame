@@ -7,8 +7,6 @@
 class Effect :public oka::GameObject
 {
 public:
-	bool m_isActive;
-
 	oka::Vec3 m_basePosition;
 
 	void checkCourseOut();
@@ -16,9 +14,8 @@ public:
 	virtual void Update() = 0;
 
 	Effect() :
-		m_isActive(false),
 		m_basePosition(0, 0, 0)
-	{}
+	{
+		m_isActive = false;
+	}
 };
-
-extern std::list<Effect*>effect;

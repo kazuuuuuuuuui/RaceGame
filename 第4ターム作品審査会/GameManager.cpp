@@ -1,11 +1,3 @@
-/*
-
-キャラ格納と順位付けるベクターを分ける必要有り？
-
-
-*/
-
-
 #include<stdio.h>
 #include<stdlib.h>
 #include<vector>
@@ -21,28 +13,20 @@
 #include"Effect.h"
 #include"Fire.h"
 #include"Blizzard.h"
-#include"Dash.h"
 #include"StrokeString.h"
 #include"Smoke.h"
-#include"moji.h"
 #include"Vec3.h"
+#include"Texture.h"
 #include"CharacterManager.h"
+#include"EffectManager.h"
 #include"ItemManager.h"
 #include"JoysticManager.h"
 #include"ImageManager.h"
 #include"SoundManager.h"
+#include"ScreenManager.h"
 #include"RaceManager.h"
 #include"Sound.h"
 #include"glut.h"
-
-//debug
-extern int g_window_width;
-extern int g_window_height;
-
-
-
-//周回数表示に使う
-char str_lapMax[256];
 
 int getMilliSecond(int _flame)
 {
@@ -70,40 +54,61 @@ namespace oka
 
 	GameManager* GameManager::GetInstance()
 	{
-		if (nullptr == m_instance) 
+		if (nullptr == m_instance)
 		{
 			m_instance = new GameManager();
 		}
 		return m_instance;
 	}
 
+	//--------------------------------------
+	//ゲームのマネージャー更新
+	//常にオブジェクトの活性状態を判別する
+
+	void GameManager::Updata()
+	{
+		m_flame++;
+
+		EraseGameObject();
+
+		_sequence.run(this, 1.0f / 60.0f);
+
+	}
 
 	//-------------------------------------
 	//ゲームに現れるオブジェクトの追加
-	//管理しているマップに既に登録されている検索し
-	//登録されていなければ追加する
+	//管理しているベクターに追加する
 
 	void GameManager::AddGameObject(GameObject *_object)
 	{
 		m_gameObject.push_back(_object);
 	}
 
-	//--------------------------------------
-	//
 
-	void GameManager::Updata()
+	//--------------------------------------------
+	//ゲームに現れるオブジェクトのメモリ解放と削除
+	//非活性ならばメモリを解放しベクターから除外する
+
+	void GameManager::EraseGameObject()
 	{
-		m_flame++;
+		auto itr = m_gameObject.begin();
+		while (itr != m_gameObject.end())
+		{
+			if ((*itr)->CheckIsActive())
+			{
 
-		_sequence.run(this, 1.0f / 60.0f);
+			}
+			else
+			{
+				delete (*itr);
+				itr = m_gameObject.erase(itr);
+				continue;
+			}
 
+			itr++;
+
+		}
 	}
-
-
-
-
-
-
 
 
 
@@ -144,70 +149,10 @@ namespace oka
 
 	}
 
-	//-------------------------------------
-	//ゲームの初期化全般を行う
-
-	void init()
-	{
-		//コントローラーの対応付け
-		for (unsigned int i = 0; i < CharacterManager::GetInstance()->GetCharacterNumber();i++)
-		{
-			oka::JoysticManager::GetInstance()->AddController(CharacterManager::GetInstance()->m_character[i]->m_contoroller);
-		}
-
-		//キャラクターの登録
-		for (unsigned int i = 0; i<CharacterManager::GetInstance()->GetCharacterNumber(); i++)
-		{
-			oka::GameManager::GetInstance()->AddGameObject(CharacterManager::GetInstance()->m_character[i]);
-		}
-	
-		//カメラの生成
-		g_camera = new oka::Camera();
-
-		//テクスチャの読み込み
-		oka::ImageManager::GetInstance()->SetHandle("ItemFire", oka::BmpImage::LoadImage3f("bmp/getItem/fire.bmp"));
-		oka::ImageManager::GetInstance()->SetHandle("ItemBlizzard", oka::BmpImage::LoadImage3f("bmp/getItem/blizzard.bmp"));
-		oka::ImageManager::GetInstance()->SetHandle("CountDown3", oka::BmpImage::LoadImage4f("bmp/start/three.bmp"));
-		oka::ImageManager::GetInstance()->SetHandle("CountDown2", oka::BmpImage::LoadImage4f("bmp/start/two.bmp"));
-		oka::ImageManager::GetInstance()->SetHandle("CountDown1", oka::BmpImage::LoadImage4f("bmp/start/one.bmp"));
-		oka::ImageManager::GetInstance()->SetHandle("Go", oka::BmpImage::LoadImage4f("bmp/start/go.bmp"));
-		oka::ImageManager::GetInstance()->SetHandle("Goal", oka::BmpImage::LoadImage4f("bmp/goal.bmp"));
-		oka::ImageManager::GetInstance()->SetHandle("Smoke", oka::BmpImage::LoadImage4f("bmp/Effect/smoke.bmp"));
-		oka::ImageManager::GetInstance()->SetHandle("Dash", oka::BmpImage::LoadImage4f("bmp/Effect/dash.bmp"));
-		oka::ImageManager::GetInstance()->SetHandle("Rank1st", oka::BmpImage::LoadImage4f("bmp/Ranking/1st.bmp"));
-		oka::ImageManager::GetInstance()->SetHandle("Rank2nd", oka::BmpImage::LoadImage4f("bmp/Ranking/2nd.bmp"));
-		oka::ImageManager::GetInstance()->SetHandle("Rank3rd", oka::BmpImage::LoadImage4f("bmp/Ranking/3rd.bmp"));
-		oka::ImageManager::GetInstance()->SetHandle("Rank4th", oka::BmpImage::LoadImage4f("bmp/Ranking/4th.bmp"));
-		oka::ImageManager::GetInstance()->SetHandle("DashIcon", oka::BmpImage::LoadImage4f("bmp/dashIcon.bmp"));
-		oka::ImageManager::GetInstance()->SetHandle("DashGauge", oka::BmpImage::LoadImage4f("bmp/gauge.bmp"));
-		oka::ImageManager::GetInstance()->SetHandle("EffectBlizzard", oka::BmpImage::LoadImage4f("bmp/Effect/blizzard.bmp"));
-
-
-		//音読み込み	
-		oka::SoundManager::GetInstance()->AddSound("pushStartButtonSE", oka::Sound::LoadWavFile("wav/pushStartButton.wav"));
-		oka::SoundManager::GetInstance()->AddSound("TitleBGM", oka::Sound::LoadWavFile("wav/titleBGM.wav"));
-		oka::SoundManager::GetInstance()->AddSound("cursorMoveSE", oka::Sound::LoadWavFile("wav/cursorMove.wav"));
-		oka::SoundManager::GetInstance()->AddSound("modeDecision", oka::Sound::LoadWavFile("wav/modeDecision.wav"));
-		oka::SoundManager::GetInstance()->AddSound("courseDecision", oka::Sound::LoadWavFile("wav/courseDecision.wav"));
-		oka::SoundManager::GetInstance()->AddSound("slipSE", oka::Sound::LoadWavFile("wav/slip.wav"));
-		oka::SoundManager::GetInstance()->AddSound("fireSE", oka::Sound::LoadWavFile("wav/fire.wav"));
-		oka::SoundManager::GetInstance()->AddSound("chargeComplete", oka::Sound::LoadWavFile("wav/chargeComplete.wav"));
-		oka::SoundManager::GetInstance()->AddSound("getItem", oka::Sound::LoadWavFile("wav/getItem.wav"));
-		oka::SoundManager::GetInstance()->AddSound("lapCountSE", oka::Sound::LoadWavFile("wav/lapCount.wav"));
-		oka::SoundManager::GetInstance()->AddSound("finalLapSE", oka::Sound::LoadWavFile("wav/finalLap.wav"));
-		oka::SoundManager::GetInstance()->AddSound("goalSE", oka::Sound::LoadWavFile("wav/goal.wav"));
-		oka::SoundManager::GetInstance()->AddSound("CountDown", oka::Sound::LoadSquareWave(count_sound, sizeof(count_sound), 440));
-
-
-		//最初の順位設定と順位付与
-		RaceManager::GetInstance()->CheckRanking(CharacterManager::GetInstance()->m_character);
-	}
-
-
 	//-------------------------------------------------------------------------------------------------------
 	//タイトル処理
 
-	enum 
+	enum
 	{
 		SINGLE_MODE = 0,
 		VS_MODE,
@@ -222,38 +167,40 @@ namespace oka
 
 		if (0.0f == _sequence.getTime())
 		{
-
 			printf("タイトルシーンが初期化されました\n");
 			printf("\n");
 
-			init();//ゲームの初期化
+			//最初の順位設定と順位付与
+			RaceManager::GetInstance()->CheckRanking(CharacterManager::GetInstance()->m_character);
 
-			title = new Moji(250.f, 250.f, { 20.f, 50.f }, { 1, 1, 1 }, "bmp/title/title.bmp");
 
 			oka::SoundManager::GetInstance()->Play("TitleBGM");
 
 		}
 
-		glViewport(0, 0, g_window_width, g_window_height);
+		glViewport(0, 0, oka::ScreenManager::GetInstance()->GetWidth(), oka::ScreenManager::GetInstance()->GetHeight());
 
 		//更新
 		g_camera->Ortho(0.0f, 300.f, 0.0f, 300.f, 1.0f, -1.0f);
 
 		//描画
 		glClear(GL_COLOR_BUFFER_BIT);
-		glClearColor(0.f, 0.f, 0.f, 1.f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-		title->Draw();
+		//文字描画変えたい
+		glm::vec2 position = glm::vec2(70.0f, 180.0f);
+		float scale = 0.3f;
+		oka::Vec3 color = oka::Vec3(1.0f, 1.0f, 1.0f);
+		float width = 5.0f;
 
-		if (GameManager::m_flame % 60)
-		{
-			title->changeColor();
-		}
+		oka::DrawString("Bike", position, scale, color,width);
 
-		glColor3f(1, 1, 1);
-		oka::SetLineWidth(5.0f);
-		oka::DrawString("Bike", 105.0f, 180.0f, 0.3f);
-		oka::DrawString("Racing", 85.0f, 135.0f, 0.3f);
+		position = glm::vec2(110.0f, 135.0f);
+		scale = 0.3f;
+		color = oka::Vec3(1.0f, 1.0f, 1.0f);
+		width = 5.0f;
+
+		oka::DrawString("Racing", position, scale, color, width);
 
 		//シーンの遷移
 		if ((false == title_pushAnyKey) && (oka::JoysticManager::GetInstance()->GetContoroller(0).m_downkey & XINPUT_GAMEPAD_START))
@@ -263,13 +210,17 @@ namespace oka
 
 		}
 
-		if (false == title_pushAnyKey) 
+		if (false == title_pushAnyKey)
 		{
 
 			if ((GameManager::m_flame % 60) < 30)
 			{
-				oka::SetLineWidth(4.0f);
-				oka::DrawString("PUSH START BUTTON", 75.0f, 40.0f, 0.1f);
+				glm::vec2 position = glm::vec2(85.0f, 40.0f);
+				float scale = 0.1f;
+				oka::Vec3 color = oka::Vec3(1.0f, 1.0f, 1.0f);
+				float width = 1.5f;
+
+				oka::DrawString("Push Start Button", position, scale, color, width);
 			}
 
 		}
@@ -294,20 +245,6 @@ namespace oka
 
 			if (oka::JoysticManager::GetInstance()->GetContoroller(0).m_downkey & XINPUT_GAMEPAD_A)
 			{
-				//if (SINGLE_MODE == modeCommand)
-				//{
-				//	//g_useController[0]->m_type = PLAYER;
-				//}
-
-				//else if (VS_MODE == modeCommand)
-				//{
-				//	for (unsigned int i = 0; i < oka::JoysticManager::GetInstance()->GetContorollerNumber(); i++)
-				//	{
-				//		//g_useController[i]->m_type = PLAYER;
-				//	}
-
-				//}
-
 				GameManager::GetInstance()->_sequence.change(&GameManager::sceneCourseSelect);
 				oka::SoundManager::GetInstance()->Play("modeDecision");
 			}
@@ -315,30 +252,44 @@ namespace oka
 			oka::SetLineWidth(4.0f);
 			if (SINGLE_MODE == modeCommand)
 			{
-				glColor3f(1, 0, 0);
-				oka::DrawString("SINGLE MODE", 100.0f, 55.0f, 0.1f);
+				/*glColor3f(1, 0, 0);
+				oka::DrawString("SINGLE MODE", 100.0f, 55.0f, 0.1f);*/
+
+				glm::vec2 position = glm::vec2(100.0f, 55.0f);
+				float scale = 0.1f;
+				oka::Vec3 color = oka::Vec3(1.0f, 0.0f, 0.0f);
+				float width = 1.0f;
+
+				oka::DrawString("Single Mode", position, scale, color, width);
 			}
 			else
 			{
-				glColor3f(1, 1, 1);
-				oka::DrawString("SINGLE MODE", 100.0f, 55.0f, 0.1f);
+				glm::vec2 position = glm::vec2(100.0f, 55.0f);
+				float scale = 0.1f;
+				oka::Vec3 color = oka::Vec3(1.0f, 1.0f, 1.0f);
+				float width = 1.0f;
+
+				oka::DrawString("Single Mode", position, scale, color, width);
 			}
 
 			if (VS_MODE == modeCommand)
 			{
-				glColor3f(1, 0, 0);
-				oka::DrawString("VS MODE", 115.0f, 25.0f, 0.1f);
+				glm::vec2 position = glm::vec2(115.0f, 25.0f);
+				float scale = 0.1f;
+				oka::Vec3 color = oka::Vec3(1.0f, 0.0f, 0.0f);
+				float width = 1.0f;
+
+				oka::DrawString("Vs Mode", position, scale, color, width);
 			}
 			else
 			{
-				glColor3f(1, 1, 1);
-				oka::DrawString("VS MODE", 115.0f, 25.0f, 0.1f);
-			}
+				glm::vec2 position = glm::vec2(115.0f, 25.0f);
+				float scale = 0.1f;
+				oka::Vec3 color = oka::Vec3(1.0f, 1.0f, 1.0f);
+				float width = 1.0f;
 
-			glColor3f(1, 1, 1);
-			oka::SetDefaultLineWidth();
-			oka::DrawString("[Lstick]CourseSelect", 200.0f, 5.0f, 0.05f);
-			oka::DrawString("[A]Accept", 260.0f, 5.0f, 0.05f);
+				oka::DrawString("Vs Mode", position, scale, color, width);
+			}
 		}
 
 		glFlush();
@@ -347,13 +298,10 @@ namespace oka
 
 	//-------------------------------------------------------------------------------------------------------
 	//コース選択処理
-	//RB LBでコースの選択をしてAでコース決定
-
-	bool g_isCourseDecision = false;
 
 	void GameManager::sceneCourseSelect(float delta)
 	{
-		if (0.0f == _sequence.getTime()) 
+		if (0.0f == _sequence.getTime())
 		{
 			printf("コースセレクトシーンが初期化されました\n");
 			printf("\n");
@@ -361,15 +309,21 @@ namespace oka
 			//アイテムの添え字初期化
 			itemNum = 0;
 
-			courseSelectBG = new Moji(300.f, 300.f, { 0.f, 0.f }, { 1, 1, 1 }, "bmp/courseSelect/courseSelectBG.bmp");
+			/*courseSelectBG = new Moji(300.f, 300.f, { 0.f, 0.f }, { 1, 1, 1 }, "bmp/courseSelect/courseSelectBG.bmp");
 			courseSelect = new Moji(280.f, 70.f, { 18.f, 230.f }, { 0.f,1.f,0.f }, "bmp/courseSelect/courseSelect.bmp");
 			course1_map = new Moji(240.f, 240.f, { 50.f, 10.f }, { 1, 1, 1 }, "bmp/courseSelect/course1_map.bmp");
-			course2_map = new Moji(230.f, 200.f, { 55.f, 30.f }, { 1, 1, 1 }, "bmp/courseSelect/course2_map.bmp");
+			course2_map = new Moji(230.f, 200.f, { 55.f, 30.f }, { 1, 1, 1 }, "bmp/courseSelect/course2_map.bmp");*/
 
 
 		}
 
-		glViewport(0, 0, g_window_width, g_window_height);
+		//ビューポートの設定
+		const int x = 0;
+		const int y = 0;
+		const int width = oka::ScreenManager::GetInstance()->GetWidth();
+		const int height = oka::ScreenManager::GetInstance()->GetHeight();
+
+		oka::ScreenManager::GetInstance()->SetViewport(x, y, width, height);
 
 		//更新
 		g_camera->Ortho(0.0f, 300.f, 0.0f, 300.f, 1.0f, -1.0f);
@@ -378,40 +332,42 @@ namespace oka
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClearColor(0.f, 0.f, 0.f, 1.f);
 
-		if (g_isCourseDecision)
-		{
-			courseSelectBG->fadeOut();
-			courseSelect->fadeOut();
-			course1_map->fadeOut();
-			course2_map->fadeOut();
-		}
+		//if (RaceManager::GetInstance()->m_isCourseDecision)
+		//{
+		//	/*courseSelectBG->fadeOut();
+		//	courseSelect->fadeOut();
+		//	course1_map->fadeOut();
+		//	course2_map->fadeOut();*/
+		//}
 
 		//コースセレクト
-		courseSelectBG->Draw();
-		courseSelect->Draw();
+		/*courseSelectBG->Draw();
+		courseSelect->Draw();*/
 
-		if (COURSE1 == selectedCourse) {
+		if (COURSE1 == selectedCourse)
+		{
 
 			//コースの様子
-			course1_map->Draw();
+			//course1_map->Draw();
 
 
 		}
-		else if (COURSE2 == selectedCourse) {
+		else if (COURSE2 == selectedCourse) 
+		{
 
-			course2_map->Draw();
+			//course2_map->Draw();
 
 		}
 
 		//操作方法
-		if (false == g_isCourseDecision)
+		/*if (false == RaceManager::GetInstance()->m_isCourseDecision)
 		{
 			oka::SetDefaultLineWidth();
 			oka::DrawString("[Lstick]CourseSelect", 200.0f, 5.0f, 0.05f);
 			oka::DrawString("[A]Accept", 260.0f, 5.0f, 0.05f);
-		}
+		}*/
 
-		if (false == g_isCourseDecision && oka::JoysticManager::GetInstance()->GetContoroller(0).m_xRightDown) {
+		if (oka::JoysticManager::GetInstance()->GetContoroller(0).m_xRightDown) {
 
 			selectedCourse++;
 			selectedCourse = (selectedCourse + COURSE_NUM_MAX) % COURSE_NUM_MAX;
@@ -419,7 +375,7 @@ namespace oka
 
 		}
 
-		if (false == g_isCourseDecision && oka::JoysticManager::GetInstance()->GetContoroller(0).m_xLeftDown) {
+		if (oka::JoysticManager::GetInstance()->GetContoroller(0).m_xLeftDown) {
 
 			selectedCourse--;
 			selectedCourse = (selectedCourse + COURSE_NUM_MAX) % COURSE_NUM_MAX;
@@ -427,21 +383,17 @@ namespace oka
 
 		}
 
-		if (false == g_isCourseDecision && oka::JoysticManager::GetInstance()->GetContoroller(0).m_downkey & XINPUT_GAMEPAD_A)
+		if (oka::JoysticManager::GetInstance()->GetContoroller(0).m_downkey & XINPUT_GAMEPAD_A)
 		{
-
-			g_isCourseDecision = true;
-
 			oka::SoundManager::GetInstance()->Stop("TitleBGM");
 			oka::SoundManager::GetInstance()->Play("courseDecision");
 
 
-
 			//アイテム生成→コースの生成→アイテムの設置
-			
+
 			//アイテムの生成
-			for (unsigned int i = 0; i < ItemManager::GetInstance()->m_item.size(); i++) 
-			{				
+			for (unsigned int i = 0; i < ItemManager::GetInstance()->m_item.size(); i++)
+			{
 				oka::GameManager::GetInstance()->AddGameObject(ItemManager::GetInstance()->m_item[i]);
 			}
 
@@ -449,7 +401,6 @@ namespace oka
 			RaceManager::GetInstance()->m_course = createCourse();
 
 			oka::GameManager::GetInstance()->AddGameObject(RaceManager::GetInstance()->m_course);
-
 
 
 			//プレイヤーの初期座標決定
@@ -461,7 +412,9 @@ namespace oka
 				CharacterManager::GetInstance()->m_character[1]->m_transform.SetPosition(oka::Vec3(18.f, 0.f, -160.f));
 				CharacterManager::GetInstance()->m_character[2]->m_transform.SetPosition(oka::Vec3(22.f, 0.f, -155.f));
 				CharacterManager::GetInstance()->m_character[3]->m_transform.SetPosition(oka::Vec3(26.f, 0.f, -150.f));
+
 			}
+
 			else if (COURSE2 == selectedCourse)
 			{
 				RaceManager::GetInstance()->m_bgm = oka::Sound::LoadWavFile("wav/course2BGM.wav");
@@ -476,7 +429,7 @@ namespace oka
 		}
 
 		//プレイシーンに移行
-		if (g_isCourseDecision && 0.f >= courseSelectBG->m_alpha)
+		if (oka::JoysticManager::GetInstance()->GetContoroller(0).m_downkey & XINPUT_GAMEPAD_A)
 		{
 			GameManager::GetInstance()->_sequence.change(&GameManager::scenePlay);
 		}
@@ -487,56 +440,30 @@ namespace oka
 
 
 
-	/////////////
-
-	void Render(Character *_pCharacter) {
-
-		 /*
-		 
-		 描画部分
-		 	 
-		 */
-
+	//
+	void Render(Character *_pCharacter)
+	{
 		//深度テスト
 		glEnable(GL_DEPTH_TEST);
-
-		//debug
-		/*for (int i = 0; i < CHECK_POINT_NUMBER; i++){
-		  course->m_checkPoint[i].draw();
-		}*/
-		/*for (int i = 0; i < AI_POINT_NUMBER; i++){
-		course->m_AIPoint[i].draw();
-		}*/
 
 		for (unsigned int i = 0; i < GameManager::GetInstance()->m_gameObject.size(); i++)
 		{
 			GameManager::GetInstance()->m_gameObject[i]->Draw();
 		}
 
-		//車体部と車輪部のみライティングを有効にしてある
-		//影部はライティング無効
-		for (unsigned int i = 0; i < CharacterManager::GetInstance()->GetCharacterNumber(); i++) 
+		for (unsigned int i = 0; i < CharacterManager::GetInstance()->GetCharacterNumber(); i++)
 		{
-
 			CharacterManager::GetInstance()->m_character[i]->drawHasItem();
-
 		}
 
 		glDisable(GL_DEPTH_TEST);
 
 		//煙の描画
-		for (unsigned int i = 0; i < CharacterManager::GetInstance()->GetCharacterNumber(); i++) 
+		/*for (unsigned int i = 0; i < CharacterManager::GetInstance()->GetCharacterNumber(); i++)
 		{
 			CharacterManager::GetInstance()->m_character[i]->m_smoke.Draw();
-		}
+		}*/
 
-		//エフェクトの描画
-		auto it = effect.begin();
-		while (it != effect.end())
-		{
-			(*it)->Draw();
-			++it;
-		}
 
 		/*更新*/
 		g_camera->Ortho(0.0f, 300.f, 0.0f, 300.f, 1.0f, -1.0f);
@@ -561,8 +488,6 @@ namespace oka
 			printf("プレイシーンが初期化されました\n");
 			printf("\n");
 
-			sprintf_s(str_lapMax, "%d", 3);
-
 			//プレイヤーのエンジン音
 			oka::Sound::Play(CharacterManager::GetInstance()->m_character[0]->m_engine);
 		}
@@ -570,13 +495,13 @@ namespace oka
 
 
 		/********************************
-		
+
 		更新部分
-		
+
 		*********************************/
 
 		//レースが始まったらする処理
-		if (RaceManager::GetInstance()->m_raceStart) 
+		if (RaceManager::GetInstance()->m_raceStart)
 		{
 			RaceManager::GetInstance()->CheckRanking(CharacterManager::GetInstance()->m_character);
 
@@ -584,16 +509,16 @@ namespace oka
 			{
 				if (oka::JoysticManager::GetInstance()->GetContoroller(i).m_isConnect)
 				{
-					CharacterManager::GetInstance()->m_character[i]->control(
-						oka::JoysticManager::GetInstance()->GetContoroller(i).m_state.Gamepad.wButtons,
-						oka::JoysticManager::GetInstance()->GetContoroller(i).m_downkey,
-						oka::JoysticManager::GetInstance()->GetContoroller(i).m_sThumbLX,
-						oka::JoysticManager::GetInstance()->GetContoroller(i).m_sThumbLY);
+					unsigned short pressedKey = oka::JoysticManager::GetInstance()->GetContoroller(i).m_state.Gamepad.wButtons;
+					unsigned int downKeys = oka::JoysticManager::GetInstance()->GetContoroller(i).m_downkey;
+					float sThumbLX = oka::JoysticManager::GetInstance()->GetContoroller(i).m_sThumbLX;
+					float sThumbLY = oka::JoysticManager::GetInstance()->GetContoroller(i).m_sThumbLY;
 
+					CharacterManager::GetInstance()->m_character[i]->control(pressedKey, downKeys, sThumbLX, sThumbLY);
 				}
 				else
 				{
-					CharacterManager::GetInstance()->m_character[i]->control();
+					//CharacterManager::GetInstance()->m_character[i]->control();
 				}
 
 			}
@@ -609,7 +534,6 @@ namespace oka
 			//{
 			//	for (unsigned int t = i + 1; t < CharacterManager::GetInstance()->GetCharacterNumber(); t++) 
 				//{
-
 			//		//前輪と前輪
 			//		if (isHitCharacter(CharacterManager::GetInstance()->m_character[i]->m_frontPosition, CharacterManager::GetInstance()->m_character[t]->m_frontPosition) ||
 
@@ -633,45 +557,22 @@ namespace oka
 
 		}
 
-
-		//エフェクトの更新
-		auto it = effect.begin();
-		it = effect.begin();
-		while (it != effect.end())
-		{
-			(*it)->Update();
-			(*it)->checkCourseOut();
-			++it;
-		}
-
-		//エフェクト削除処理
-		it = effect.begin();
-		while (it != effect.end()) {
-
-			if (false == (*it)->m_isActive) {
-				it = effect.erase(it);
-				continue;
-			}
-
-			it++;
-
-		}
-
-
 		//-------------------------------------
 		//描画(3D)
 
-		if (SINGLE_MODE == modeCommand) 
+		if (SINGLE_MODE == modeCommand)
 		{
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			glClearColor(77.f / 255.f, 180.f / 255.f, 232.f / 255.f, 1);
 
-			oka::Vec3 pos;
-			pos.m_x = CharacterManager::GetInstance()->m_character[0]->m_transform.GetPosition().m_x + sin(CharacterManager::GetInstance()->m_character[0]->m_transform.GetRotation().m_y) * 8;
-			pos.m_y = CharacterManager::GetInstance()->m_character[0]->m_transform.GetPosition().m_y + 3.5f;
-			pos.m_z = CharacterManager::GetInstance()->m_character[0]->m_transform.GetPosition().m_z + cos(CharacterManager::GetInstance()->m_character[0]->m_transform.GetRotation().m_y) * 8;
+			const oka::Vec3 color = RaceManager::GetInstance()->m_course->m_backgroundColor;
+			glClearColor(color.m_x, color.m_y, color.m_z, 1);
+
+			oka::Vec3 position;
+			position.m_x = CharacterManager::GetInstance()->m_character[0]->m_transform.GetPosition().m_x + sin(CharacterManager::GetInstance()->m_character[0]->m_transform.GetRotation().m_y) * 8;
+			position.m_y = CharacterManager::GetInstance()->m_character[0]->m_transform.GetPosition().m_y + 3.5f;
+			position.m_z = CharacterManager::GetInstance()->m_character[0]->m_transform.GetPosition().m_z + cos(CharacterManager::GetInstance()->m_character[0]->m_transform.GetRotation().m_y) * 8;
 
 			oka::Vec3 target;
 			target = CharacterManager::GetInstance()->m_character[0]->m_transform.GetPosition();
@@ -679,22 +580,18 @@ namespace oka
 			oka::Vec3 up = oka::Vec3(0, 1, 0);
 
 			g_camera->Perspective();
-			g_camera->SetViewMatrix(pos, target, up);
+			g_camera->SetViewMatrix(position, target, up);
 			g_camera->MultViewMatrix();
 
 			Render(CharacterManager::GetInstance()->m_character[0]);
-
-			glFlush();
 
 		}
 
 		else if (VS_MODE == modeCommand)
 		{
-
 			//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			//glClearColor(77.f / 255.f, 180.f / 255.f, 232.f / 255.f, 1);
-
 			////左上
 			//glViewport(0, g_window_height / 2, g_window_width / 2, g_window_height / 2);
 			//g_camera->SetPosition({
@@ -704,9 +601,7 @@ namespace oka
 			//});
 			//g_camera->SetTarget({ player1->transform.m_position });
 			//g_camera->update(TYPE_3D);
-
 			//Render(player1);
-
 			////右上
 			//glViewport(g_window_width / 2, g_window_height / 2, g_window_width / 2, g_window_height / 2);
 			//g_camera->SetPosition({
@@ -716,9 +611,7 @@ namespace oka
 			//});
 			//g_camera->SetTarget({ player2->transform.m_position });
 			//g_camera->update(TYPE_3D);
-
 			//Render(player2);
-
 			////左下
 			//glViewport(0, 0, g_window_width / 2, g_window_height / 2);
 			//g_camera->SetPosition({
@@ -728,9 +621,7 @@ namespace oka
 			//});
 			//g_camera->SetTarget({ player3->transform.m_position });
 			//g_camera->update(TYPE_3D);
-
 			//Render(player3);
-
 			////右下
 			//glViewport(g_window_width / 2, 0, g_window_width / 2, g_window_height / 2);
 			//g_camera->SetPosition({
@@ -740,15 +631,10 @@ namespace oka
 			//});
 			//g_camera->SetTarget({ player4->transform.m_position });
 			//g_camera->update(TYPE_3D);
-
 			//Render(player4);
-
-			//glFlush();
-
 		}
 
-		if (true == (CharacterManager::GetInstance()->m_character[0]->m_isGoal && CharacterManager::GetInstance()->m_character[1]->m_isGoal &&
-			CharacterManager::GetInstance()->m_character[2]->m_isGoal && CharacterManager::GetInstance()->m_character[3]->m_isGoal))
+		if (RaceManager::GetInstance()->IsRaceEnd())
 		{
 			//スタートボタンが押されたら
 			//タイトルシーンに移行
@@ -757,7 +643,6 @@ namespace oka
 				GameManager::GetInstance()->_sequence.change(&GameManager::sceneTitle);
 
 				title_pushAnyKey = false;
-				g_isCourseDecision = false;
 				modeCommand = SINGLE_MODE;
 
 				//コースbgm停止
@@ -774,7 +659,7 @@ namespace oka
 				//startCount = 6;
 
 				//周回数表示クリア
-				memset(str_lapMax, 0, sizeof(str_lapMax));
+				//memset(str_lapMax, 0, sizeof(str_lapMax));
 
 				//キャラクター削除
 				/*for (unsigned int i = 0; i < CharacterManager::GetInstance()->GetCharacterNumber(); i++) {
@@ -785,11 +670,14 @@ namespace oka
 				character.clear();*/
 
 				//エフェクト削除
-				effect.clear();
+				//effect.clear();
 
 			}
 
 		}
-	}
 
+
+		glFlush();
+
+	}
 }

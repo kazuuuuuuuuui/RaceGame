@@ -18,14 +18,10 @@
 #include"ImageManager.h"
 #include"JoysticManager.h"
 #include"CharacterManager.h"
+#include"EffectManager.h"
 #include"glm\gtc\matrix_transform.hpp"
 #include"glm\gtx\transform.hpp"
 #include"glut.h"
-
-
-//タイヤの位置等を後でいじる
-//取り敢えず
-extern char str_lapMax[256];
 
 int getMilliSecond(int _flame);
 int getSecond(int _flame);
@@ -37,8 +33,8 @@ int getMinute(int _second);
 
 void Character::Update(){
 
-	if (false == m_isGoal){
-
+	if (false == m_isGoal)
+	{
 		//フレームの管理
 		m_flame++;
 
@@ -171,30 +167,18 @@ void Character::Update(){
 	m_smoke.m_basePosition.m_y = 0.5f;
 	m_smoke.m_basePosition.m_z = m_transform.GetPosition().m_z + cos(m_transform.GetRotation().m_y)*1.7f;
 
-	//ダッシュエフェクトの更新
-	if (nullptr != m_dash)
-	{
-		m_dash->m_basePosition.m_x = m_transform.GetPosition().m_x + sin(m_transform.GetRotation().m_y)*0.75;
-		m_dash->m_basePosition.m_y = -0.2f;
-		m_dash->m_basePosition.m_z = m_transform.GetPosition().m_z + cos(m_transform.GetRotation().m_y)*0.75;
-	}
-
 	//減速させる慣性
 	m_speed *= 0.965f;
 
 	//ダッシュの減速処理
 	m_dashSpeed *= 0.96;
 
-	if (m_dash != NULL)
+	if (m_dashSpeed.length() <= 0.0001)
 	{
-		if (m_dashSpeed.length() <= 0.0001)
-		{
-
-			//ダッシュ状態解除
-			m_isDash = false;
-			m_dash->m_isActive = false;
-		}
+		//ダッシュ状態解除
+		m_isDash = false;
 	}
+	
 
 	//車輪の回転スピード更新
 	//*100は補正値
@@ -251,12 +235,7 @@ void Character::Update(){
 		m_isGoal = true;
 		m_lastRanking = m_ranking;
 
-		//if (PLAYER == m_type){
-
-			oka::SoundManager::GetInstance()->Play("goalSE");
-	
-		//}
-
+		oka::SoundManager::GetInstance()->Play("goalSE");
 	}
 
 }
@@ -399,7 +378,6 @@ void Character::drawHasItem()
 
 void Character::control(unsigned short _pressedKey, unsigned int _downKeys, float _sThumbLX, float _sThumbLY)
 {
-
 	//エンジン音のピッチ調整
 
 	oka::SoundManager::GetInstance()->ChangeVolume("Engine", pow(2, (m_speed.length()*15.f) / 12));
@@ -460,25 +438,25 @@ void Character::control(unsigned short _pressedKey, unsigned int _downKeys, floa
 					//ファイアを使用した
 					if (FIRE == hasItemLast())
 					{
-
 						Fire *fire = new Fire();
 						fire->m_isActive = true;
 						fire->m_basePosition = { m_transform.GetPosition().m_x - sin(m_transform.GetRotation().m_y) * 1.f, 0.5f,m_transform.GetPosition().m_z - cos(m_transform.GetRotation().m_y) * 1.f };
 						fire->m_speed = { -sin(m_transform.GetRotation().m_y)*1.f, 0.f, -cos(m_transform.GetRotation().m_y)*1.f };
-						effect.push_back(fire);
+						//EffectManager::GetInstance()->m_effect.push_back(fire);
+						oka::GameManager::GetInstance()->AddGameObject(fire);
 						oka::SoundManager::GetInstance()->Play("fireSE");
 
 					}
 
 					//ブリザドを使用した
-					else if (BLIZZARD == hasItemLast()){
+					else if (BLIZZARD == hasItemLast())
+					{
 
 						Blizzard *blizzard = new Blizzard();
 						blizzard->m_isActive = true;
 						blizzard->m_basePosition = { m_transform.GetPosition().m_x + sin(m_transform.GetRotation().m_y)*2.5f, 0.01f, m_transform.GetPosition().m_z + cos(m_transform.GetRotation().m_y)*2.5f };
-						effect.push_back(blizzard);
-
-
+						oka::GameManager::GetInstance()->AddGameObject(blizzard);
+						//EffectManager::GetInstance()->m_effect.push_back(blizzard);
 					}
 
 					m_hasItem.pop_back();
@@ -490,21 +468,17 @@ void Character::control(unsigned short _pressedKey, unsigned int _downKeys, floa
 		}
 
 		//ダッシュ
-		if (_downKeys &  XINPUT_GAMEPAD_RIGHT_SHOULDER){
-
-			if (true == m_isCharged){
+		if (_downKeys &  XINPUT_GAMEPAD_RIGHT_SHOULDER)
+		{
+			if (true == m_isCharged)
+			{
 
 				m_isCharged = false;
 				m_isDash = true;
 
-				m_dashPower = 0.f;
+				m_dashPower = 0.0f;
 
 				m_dashSpeed = oka::Vec3(-0.09f*sin(m_transform.GetRotation().m_y), 0.f, -0.09f*cos(m_transform.GetRotation().m_y));
-
-				m_dash = new Dash();
-				m_dash->m_isActive = true;
-				m_dash->m_basePosition = { m_transform.GetPosition().m_x, 0, m_transform.GetPosition().m_z };
-				effect.push_back(m_dash);
 
 			}
 		}
@@ -519,7 +493,8 @@ void Character::control(unsigned short _pressedKey, unsigned int _downKeys, floa
 //-------------------------------------
 //敵のAI
 
-void Character::control(){
+void Character::control()
+{
 
 	//向き調整
 	//コースのAIポイントのx - 敵のx
@@ -589,19 +564,20 @@ void Character::control(){
 
 void Character::useItem(){
 
-	if (0 == m_flame % 60 * 20){
-
-		if (hasItemNumber() > 0){
-
+	if (0 == m_flame % 60 * 20)
+	{
+		if (hasItemNumber() > 0)
+		{
 			//ファイアを使用した
 			if (FIRE == hasItemLast())
 			{
-
 				Fire *fire = new Fire();
 				fire->m_isActive = true;
 				fire->m_basePosition = { m_transform.GetPosition().m_x - sin(m_transform.GetRotation().m_y) * 1.f, 0.5f, m_transform.GetPosition().m_z - cos(m_transform.GetRotation().m_y) * 1.f };
 				fire->m_speed = { -sin(m_transform.GetRotation().m_y)*1.f, 0.f, -cos(m_transform.GetRotation().m_y)*1.f };
-				effect.push_back(fire);
+				oka::GameManager::GetInstance()->AddGameObject(fire);
+				//EffectManager::GetInstance()->m_effect.push_back(fire);
+				//effect.push_back(fire);
 
 			}
 
@@ -612,7 +588,9 @@ void Character::useItem(){
 				Blizzard *blizzard = new Blizzard();
 				blizzard->m_isActive = true;
 				blizzard->m_basePosition = { m_transform.GetPosition().m_x + sin(m_transform.GetRotation().m_y)*2.5f, 0.01f, m_transform.GetPosition().m_z + cos(m_transform.GetRotation().m_y)*2.5f };
-				effect.push_back(blizzard);
+				oka::GameManager::GetInstance()->AddGameObject(blizzard);
+				//EffectManager::GetInstance()->m_effect.push_back(blizzard);
+				//effect.push_back(blizzard);
 
 
 			}
@@ -826,7 +804,7 @@ void printGoal()
 
 		glTranslatef(140, 185, 0);
 
-		glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Go"));
+		glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Goal"));
 
 		glBegin(GL_QUADS);
 		{
@@ -923,8 +901,6 @@ void Character::printDashGauge(){
 
 }
 
-//extern int flame;
-
 //-------------------------------------
 
 //プレイヤーステータスの表示
@@ -937,39 +913,42 @@ void Character::printStatus()
 		//ダッシュゲージの描画
 		printDashGauge();
 
-		glColor3f(0, 0, 0);
-		oka::SetLineWidth(2.0f);
-		oka::DrawString("[LB] Item", 220.0f, 10.0f, 0.1f);
-		oka::DrawString("[RB]Dash", 135.0f, 10.0f, 0.1f);
-		oka::DrawString("[A]Accelerator", 135.0f, 30.0f, 0.1f);
-		oka::DrawString("[Stick]Control", 220.0f, 30.0f, 0.1f);
+		float scale = 0.1f;
+		oka::Vec3 color = oka::Vec3(1.0f, 0.0f, 0.0f);
+		float width = 2.0f;
+
+
+		oka::DrawString("LAP", glm::vec2(230.0f, 250.0f),scale,color,width);
+		oka::DrawString("/", glm::vec2(275.0f, 250.0f), scale, color, width);
+		oka::DrawString(RaceManager::GetInstance()->m_rapMax, glm::vec2(285.0f, 250.0f), scale, color, width);
+
+		scale = 0.13f;
+		oka::DrawString("TIME", glm::vec2(180.0f, 280.0f),scale, color, width);
+		oka::DrawString(m_totalTime, glm::vec2(220.0f, 280.0f), scale, color, width);
+
+		scale = 0.18f;
+		oka::DrawString(m_lap, glm::vec2(260.0f, 250.0f), scale, color, width);
+
+		scale = 0.08;
+		oka::DrawString("LAP1", glm::vec2(220.0f, 230.0f), scale, color, width);
+		oka::DrawString(m_lapTime[FIRST], glm::vec2(250.0f, 230.0f), scale, color, width);
+
+		oka::DrawString("LAP2", glm::vec2(220.0f, 215.0f), scale, color, width);
+		oka::DrawString(m_lapTime[SECOND], glm::vec2(250.0f, 215.0f), scale, color, width);
+
+		oka::DrawString("LAP3", glm::vec2(220.0f, 200.0f), scale, color, width);
+		oka::DrawString(m_lapTime[THIRD], glm::vec2(250.0f, 200.0f), scale, color, width);
+
 		
-		glColor3f(1, 0, 0);
-		oka::DrawString("LAP", 230.0f, 250.0f, 0.1f);
-		oka::DrawString(m_lap, 260.0f, 250.0f, 0.18f);
-		oka::DrawString("/", 275.0f, 250.0f, 0.1f);
-		oka::DrawString(str_lapMax, 285.0f, 250.0f, 0.1f);
-		oka::DrawString("TIME", 180.0f, 280.0f, 0.13f);
-
-		oka::DrawString("LAP1", 220.0f, 230.0f, 0.08f);
-		oka::DrawString(m_lapTime[FIRST], 250.0f, 230.0f, 0.08f);
-
-		oka::DrawString("LAP2", 220.0f, 215.0f, 0.08f);
-		oka::DrawString(m_lapTime[SECOND], 250.0f, 215.0f, 0.08f);
-
-		oka::DrawString("LAP3", 220.0f, 200.0f, 0.08f);
-		oka::DrawString(m_lapTime[THIRD], 250.0f, 200.0f, 0.08f);
-
-		oka::DrawString(m_totalTime, 220.0f, 280.0f, 0.13f);
 
 	}
 	else
 	{
 		printGoal();
 
-		glColor3f(1, 0, 0);
+		/*glColor3f(1, 0, 0);
 		oka::DrawString("LAP1", 60.0f, 160.0f, 0.2f);
-		oka::DrawString(m_lapTime[FIRST], 130.0f, 115.0f, 0.2f);
+		oka::DrawString(m_lapTime[FIRST], 130.0f, 155.0f, 0.2f);
 
 		oka::DrawString("LAP2", 60.0f, 115.0f, 0.2f);
 		oka::DrawString(m_lapTime[SECOND], 130.0f, 115.0f, 0.2f);
@@ -978,18 +957,15 @@ void Character::printStatus()
 		oka::DrawString(m_lapTime[THIRD], 130.0f, 75.0f, 0.2f);
 
 		oka::DrawString("TOTALTIME", 25.0f, 30.0f, 0.15f);
-		oka::DrawString(m_totalTime, 130.0f, 30.0f, 0.2f);
+		oka::DrawString(m_totalTime, 130.0f, 30.0f, 0.2f);*/
 
 		
 
-		if (true == (CharacterManager::GetInstance()->m_character[0]->m_isGoal &&
-			CharacterManager::GetInstance()->m_character[1]->m_isGoal && 
-			CharacterManager::GetInstance()->m_character[2]->m_isGoal &&
-			CharacterManager::GetInstance()->m_character[3]->m_isGoal))
+		if (RaceManager::GetInstance()->IsRaceEnd())
 		{
 			if ((oka::GameManager::GetInstance()->m_flame % 60) < 30)
 			{
-				oka::DrawString("PushStartButton!!", 220.0f, 10.0f, 0.08f);			
+				//oka::DrawString("PushStartButton!!", 220.0f, 10.0f, 0.08f);			
 			}
 		}
 
@@ -997,7 +973,7 @@ void Character::printStatus()
 }
 
 
-//-------------------------------------
+//---------------------------------------------------------------
 //プレイヤーがコースを順走して1周したかどうかの判定を行う
 //ゴールの位置にいるときにチェックポイントを通過しているか判別する
 //フラグがtrueの状態のときのみtrueを返し1周とカウントする
@@ -1020,8 +996,6 @@ bool Character::countLap()
 			return true;
 
 		}
-
-
 	}
 
 	return false;

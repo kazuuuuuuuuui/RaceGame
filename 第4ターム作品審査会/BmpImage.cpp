@@ -13,7 +13,7 @@ namespace oka
 	//拡張子.bmpの画像読み込み
 	//戻り値としてunsigned int型のハンドル(ID)を返す
 	
-	unsigned int BmpImage::LoadImage3f(const char *_fileName)
+	unsigned int LoadImage3f(const char *_fileName)
 	{
 		FILE *fp;
 		fp = fopen(_fileName, "rb");
@@ -91,7 +91,7 @@ namespace oka
 	//-------------------------------------
 	//bmp画像からアルファ値付きのテクスチャ作成
 
-	unsigned int  BmpImage::LoadImage4f(const char *_filename)
+	unsigned int LoadImage4f(const char *_filename)
 	{
 		FILE *fp;
 		fp = fopen(_filename, "rb");
@@ -186,7 +186,7 @@ namespace oka
 	//-------------------------------------
 	//拡張子bmpからコース用のバッファを作製する
 
-	void BmpImage::makeBuffer(const char *_bufferName, int _buffer[][COURSE_WIDTH]) 
+	void MakeBuffer(const char *_bufferName, int _buffer[][COURSE_WIDTH]) 
 	{
 		FILE *pBinMapFile;
 		pBinMapFile = fopen(_bufferName, "rb");

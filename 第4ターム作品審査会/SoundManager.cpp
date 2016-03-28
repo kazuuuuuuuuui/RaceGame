@@ -4,7 +4,7 @@
 namespace oka
 {
 	SoundManager* SoundManager::m_instance = nullptr;
-
+	
 	//-------------------------------------
 	//ALの初期化処理
 	//デバイスの取得とコンテキストの作成をする
