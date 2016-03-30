@@ -24,9 +24,9 @@ namespace oka
 	//引数としてキャラクタ型のポインタを受け取り
 	//コントローラを管理しているベクターに入れる
 
-	void JoysticManager::AddController(Contoroller _character)
+	void JoysticManager::AddController(Contoroller _controller)
 	{
-		m_contoroller.push_back(_character);
+		m_contoroller.push_back(_controller);
 	}
 
 	//-------------------------------------

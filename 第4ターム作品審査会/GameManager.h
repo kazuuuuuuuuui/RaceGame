@@ -3,8 +3,9 @@
 
 #include<map>
 #include<string>
-//#include<memory>
 #include"GameObject.h"
+
+#include"TitleScene.h"
 
 #include"sequence.h"
 #include"Character.h"
@@ -12,34 +13,32 @@
 
 namespace oka
 {
+	//----------------------------------------------
+	//ゲームのオブジェクトを管理するマネージャクラス
+
 	class GameManager
 	{
 	public:
-		int m_flame;
 		std::vector<GameObject*>m_gameObject;
 
 		void Updata();
 		void AddGameObject(GameObject *_object);
-		void EraseGameObject();
+		void CheckGameObject();
 
 		static GameManager* GetInstance();
 
 		// 各種シーン
-		void sceneTitle(float delta);
-		void sceneCourseSelect(float delta);
-		void scenePlay(float delta);
-		Sequence< GameManager > _sequence;
+		//void sceneTitle(float delta);
+		//void sceneCourseSelect(float delta);
+		//void scenePlay(float delta);
+		//Sequence< GameManager > _sequence;
 
 
 	private:
-		GameManager() :
-			m_flame(0)
+		GameManager()
 		{
-			_sequence.change(&GameManager::sceneTitle);
-
+			//_sequence.Change(&GameManager::sceneTitle);
 		}
-		~GameManager() {}
-
 		static GameManager* m_instance;
 
 	};

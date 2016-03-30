@@ -18,14 +18,10 @@
 #include"ImageManager.h"
 #include"JoysticManager.h"
 #include"CharacterManager.h"
-#include"EffectManager.h"
+#include"TimeManager.h"
 #include"glm\gtc\matrix_transform.hpp"
 #include"glm\gtx\transform.hpp"
 #include"glut.h"
-
-int getMilliSecond(int _flame);
-int getSecond(int _flame);
-int getMinute(int _second);
 
 //-------------------------------------
 //自機の更新
@@ -41,16 +37,16 @@ void Character::Update(){
 		m_lapTimeCounter++;
 
 		//ミリ秒
-		m_milliSecond = getMilliSecond(m_flame);
-		m_lapMilliSecond[m_lapCount] = getMilliSecond(m_lapTimeCounter);
+		m_milliSecond = oka::TimeManager::GetInstance()->GetMilliSecond(m_flame);
+		m_lapMilliSecond[m_lapCount] = oka::TimeManager::GetInstance()->GetMilliSecond(m_lapTimeCounter);
 
 		//秒
-		m_second = getSecond(m_flame);
-		m_lapSecond[m_lapCount] = getSecond(m_lapTimeCounter);
+		m_second = oka::TimeManager::GetInstance()->GetSecond(m_flame);
+		m_lapSecond[m_lapCount] = oka::TimeManager::GetInstance()->GetSecond(m_lapTimeCounter);
 
 		//分
-		m_minute = getMinute(m_second);
-		m_lapMinute[m_lapCount] = getMinute(m_lapSecond[m_lapCount]);
+		m_minute = oka::TimeManager::GetInstance()->GetMinutes(m_second);
+		m_lapMinute[m_lapCount] = oka::TimeManager::GetInstance()->GetMinutes(m_lapSecond[m_lapCount]);
 
 		m_second = m_second % 60;
 		m_lapSecond[m_lapCount] = m_lapSecond[m_lapCount] % 60;
@@ -63,8 +59,8 @@ void Character::Update(){
 		//ダッシュゲージの回復
 		m_dashPower += 0.1f;
 
-		if (m_dashPower >= DASH_GAUGE_MAX){
-
+		if (m_dashPower >= DASH_GAUGE_MAX)
+		{
 			m_dashPower = DASH_GAUGE_MAX;
 
 			if (false == m_isCharged)
@@ -83,12 +79,14 @@ void Character::Update(){
 			m_lapTimeCounter = 0;
 
 			//チェックポイントの初期化
-			for (int i = 0; i < CHECK_POINT_NUMBER; i++){
+			for (int i = 0; i < CHECK_POINT_NUMBER; i++)
+			{
 				m_passCheckPoint[i] = false;
 			}
 
 			//AIポイントの初期化
-			for (int i = 0; i < AI_POINT_NUMBER; i++){
+			for (int i = 0; i < AI_POINT_NUMBER; i++)
+			{
 				m_passAIPoint[i] = false;
 			}
 
@@ -257,34 +255,21 @@ void Character::Draw()
 	//車体影
 	//m_body.DrawShadow();
 
-
-
 	////影部描画
 	////後輪
-
 	//glPushMatrix();
 	//{
-
 	//	//子供の行列
 	//	glm::mat4 child = glm::scale(glm::vec3(0.92f, 0, 0.92f));
-
 	//	//オフセット
 	//	glm::mat4 offSet = glm::translate(glm::vec3(0.0f, 0.01f, 6.3f));
-
 	//	glm::mat4 myMatrix = m_matrix * offSet *child;
-
-
 	//	glMultMatrixf((GLfloat*)&myMatrix);
-
 	//	std::vector<float>::iterator itr_v = m_backWheel.m_vertex.begin();
 	//	glVertexPointer(3, GL_FLOAT, 0, &(*itr_v));
-
 	//	std::vector<unsigned short>::iterator itr_i = m_backWheel.m_index.begin();
-
-
 	//	/*後輪描画*/
 	//	glDrawElements(GL_TRIANGLES, m_backWheel.m_indeces * 3, GL_UNSIGNED_SHORT, &(*itr_i));
-
 	//}
 	//glPopMatrix();
 
@@ -442,7 +427,6 @@ void Character::control(unsigned short _pressedKey, unsigned int _downKeys, floa
 						fire->m_isActive = true;
 						fire->m_basePosition = { m_transform.GetPosition().m_x - sin(m_transform.GetRotation().m_y) * 1.f, 0.5f,m_transform.GetPosition().m_z - cos(m_transform.GetRotation().m_y) * 1.f };
 						fire->m_speed = { -sin(m_transform.GetRotation().m_y)*1.f, 0.f, -cos(m_transform.GetRotation().m_y)*1.f };
-						//EffectManager::GetInstance()->m_effect.push_back(fire);
 						oka::GameManager::GetInstance()->AddGameObject(fire);
 						oka::SoundManager::GetInstance()->Play("fireSE");
 
@@ -456,7 +440,6 @@ void Character::control(unsigned short _pressedKey, unsigned int _downKeys, floa
 						blizzard->m_isActive = true;
 						blizzard->m_basePosition = { m_transform.GetPosition().m_x + sin(m_transform.GetRotation().m_y)*2.5f, 0.01f, m_transform.GetPosition().m_z + cos(m_transform.GetRotation().m_y)*2.5f };
 						oka::GameManager::GetInstance()->AddGameObject(blizzard);
-						//EffectManager::GetInstance()->m_effect.push_back(blizzard);
 					}
 
 					m_hasItem.pop_back();
@@ -576,9 +559,6 @@ void Character::useItem(){
 				fire->m_basePosition = { m_transform.GetPosition().m_x - sin(m_transform.GetRotation().m_y) * 1.f, 0.5f, m_transform.GetPosition().m_z - cos(m_transform.GetRotation().m_y) * 1.f };
 				fire->m_speed = { -sin(m_transform.GetRotation().m_y)*1.f, 0.f, -cos(m_transform.GetRotation().m_y)*1.f };
 				oka::GameManager::GetInstance()->AddGameObject(fire);
-				//EffectManager::GetInstance()->m_effect.push_back(fire);
-				//effect.push_back(fire);
-
 			}
 
 			//ブリザドを使用した
@@ -589,9 +569,6 @@ void Character::useItem(){
 				blizzard->m_isActive = true;
 				blizzard->m_basePosition = { m_transform.GetPosition().m_x + sin(m_transform.GetRotation().m_y)*2.5f, 0.01f, m_transform.GetPosition().m_z + cos(m_transform.GetRotation().m_y)*2.5f };
 				oka::GameManager::GetInstance()->AddGameObject(blizzard);
-				//EffectManager::GetInstance()->m_effect.push_back(blizzard);
-				//effect.push_back(blizzard);
-
 
 			}
 
@@ -917,7 +894,6 @@ void Character::printStatus()
 		oka::Vec3 color = oka::Vec3(1.0f, 0.0f, 0.0f);
 		float width = 2.0f;
 
-
 		oka::DrawString("LAP", glm::vec2(230.0f, 250.0f),scale,color,width);
 		oka::DrawString("/", glm::vec2(275.0f, 250.0f), scale, color, width);
 		oka::DrawString(RaceManager::GetInstance()->m_rapMax, glm::vec2(285.0f, 250.0f), scale, color, width);
@@ -963,10 +939,10 @@ void Character::printStatus()
 
 		if (RaceManager::GetInstance()->IsRaceEnd())
 		{
-			if ((oka::GameManager::GetInstance()->m_flame % 60) < 30)
-			{
-				//oka::DrawString("PushStartButton!!", 220.0f, 10.0f, 0.08f);			
-			}
+			//if ((oka::GameManager::GetInstance()->m_flame % 60) < 30)
+			//{
+			//	//oka::DrawString("PushStartButton!!", 220.0f, 10.0f, 0.08f);			
+			//}
 		}
 
 	}

@@ -4,7 +4,7 @@
 
 #include"Character.h"
 
-oka::Camera *g_camera = nullptr;
+oka::Camera *g_camera = nullptr;//クラスのインスタンスにする？
 
 namespace oka
 {
