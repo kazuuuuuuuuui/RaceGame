@@ -27,6 +27,8 @@ RaceManager* RaceManager::GetInstance()
 }
 
 
+
+
 //-------------------------------------
 //レーススタートのカウントダウン
 
@@ -90,7 +92,7 @@ void RaceManager::CountRaceStart()
 	if (-1 == startCount && startFrame == 10)
 	{
 		oka::SoundManager::GetInstance()->Stop("CountDown");
-		oka::Sound::Play(RaceManager::GetInstance()->m_bgm);
+		oka::Sound::Play(RaceManager::GetInstance()->m_course->m_bgm);
 	}
 
 }

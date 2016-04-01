@@ -108,11 +108,11 @@ Characterクラスのメンバをカプセル化する
 
 
 		//各チェックポイントを通ったかのフラグ
-		bool m_passCheckPoint[CHECK_POINT_NUMBER];
+		bool m_passCheckPoint[Course::checkPointNum];
 
 		//敵のみに使用
 		//各AIポイントを通ったかのフラグ
-		bool m_passAIPoint[AI_POINT_NUMBER];
+		bool m_passAIPoint[Course::aimPointNum];
 
 		//順位判定に使用する
 		//今どのチェックポイントまで通ったか

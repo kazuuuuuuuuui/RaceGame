@@ -1,56 +1,266 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include<stdio.h>
+#include<Windows.h>
+
 #include"Course.h"
-#include"CourseFlag.h"
+#include"CheckPoint.h"
 #include"ItemManager.h"
 
-//選択されてるコース
-int selectedCourse = COURSE1;
+#include<stdlib.h>
+#include"BmpImage.h"
+
+
+//-------------------------------------
+//コンストラクタ
+//コースに使う画像の読み込みと画像データから
+//コースデータのバッファを作成する
+
+Course::Course(const char *_fileName)
+{
+	m_width = 0;
+	m_height = 0;//
+	m_depth = 0;
+
+	m_bgm = 0;
+
+	//背景色初期化
+	oka::Vec3 color;
+	color.m_x = 77.0f / 255.0f;
+	color.m_y = 180.0f / 255.0f;
+	color.m_z = 232.0f / 255.0f;
+	m_backgroundColor = color;
+
+	//使用するテクスチャの読み込み
+	m_handle = oka::LoadImage3f(_fileName);
+
+
+	//test
+
+	//頂点データ
+	for (int z = 0; z < COURSE_HEIGHT;z++)
+	{
+		for (int x = 0; x < COURSE_WIDTH; x++)
+		{
+			m_vertex.push_back(oka::Vec3(x, 0, -z));
+		}
+	}
+
+	//インデックスデータ
+	for (int z = 0; z < (COURSE_HEIGHT - 1); z++)
+	{
+		for (int x = 0; x < (COURSE_WIDTH - 1); x++)
+		{
+			m_index.push_back(0 + x + COURSE_HEIGHT * z);
+			m_index.push_back(COURSE_WIDTH + x + COURSE_HEIGHT * z);
+			m_index.push_back(1 + x + COURSE_HEIGHT * z);
+
+			m_index.push_back(1 + x + COURSE_HEIGHT * z);
+			m_index.push_back(COURSE_WIDTH + x + COURSE_HEIGHT * z);
+			m_index.push_back((COURSE_WIDTH + 1) + x + COURSE_HEIGHT * z);
+		}
+	}
+
+	//uvデータ
+	for (int v = 0; v < COURSE_HEIGHT; v++)
+	{
+		for (int u = 0; u < COURSE_WIDTH;u++)
+		{
+			glm::vec2 tex;
+			tex.x = (u/1.0f)/ COURSE_WIDTH;//u
+			tex.y = (v/1.0f)/ COURSE_HEIGHT;//v
+
+			m_tex.push_back(tex);
+
+		}
+	}
+	
+	m_vertex[50].m_y = 1.0f;
+
+	m_vertices = m_vertex.size();
+	m_indeces = m_index.size();
+
+}
+
+//-------------------------------------
+//拡張子bmpからコース用のバッファを作製する
+
+void Course::MakeBuffer(const char *_fileName)
+{
+	FILE *pBinMapFile;
+	pBinMapFile = fopen(_fileName, "rb");
+
+	assert(pBinMapFile != NULL);
+
+	BITMAPFILEHEADER bh;
+	fread(&bh, sizeof(BITMAPFILEHEADER), 1, pBinMapFile);
+
+	BITMAPINFOHEADER bih;
+	fread(&bih, sizeof(BITMAPINFOHEADER), 1, pBinMapFile);
+
+	//画像の縦横情報の取得
+	m_width = bih.biWidth;
+	m_height = bih.biHeight;
+
+	int imageSize = bih.biWidth * bih.biHeight * sizeof(oka::RGB);
+
+	oka::RGB *pixels = (oka::RGB*)malloc(imageSize);
+
+	pixels = (oka::RGB*)malloc(imageSize);
+
+	fread(pixels, imageSize, 1, pBinMapFile);
+
+	fclose(pBinMapFile);
+
+	//ピクセル単位でRとBを逆転させる
+	for (int i = 0; i < bih.biWidth * bih.biHeight; i++)
+	{
+		unsigned char tmp;
+		tmp = pixels[i].r;
+		pixels[i].r = pixels[i].b;
+		pixels[i].b = tmp;
+	}
+
+	//ピクセル単位で上下反転
+	for (int i = 0; i < bih.biWidth; i++)
+	{
+		for (int n = 0; n < bih.biHeight / 2; n++)
+		{
+			oka::RGB temp = pixels[bih.biWidth * n + i];
+			pixels[bih.biWidth * n + i] = pixels[bih.biWidth*(bih.biHeight - n - 1) + i];
+			pixels[bih.biWidth*(bih.biHeight - n - 1) + i] = temp;
+		}
+	}
+
+	//コース判定用のバッファ作成
+	for (int i = 0; i < bih.biHeight; i++) {
+		for (int t = 0; t < bih.biWidth; t++) {
+
+			//白なら道
+			if (pixels[t + i*bih.biWidth].r == 255 &&
+				pixels[t + i*bih.biWidth].g == 255 &&
+				pixels[t + i*bih.biWidth].b == 255)
+			{
+
+				m_buffer[i][t] = PATH;
+			}
+
+			//黒ならダート
+			else if (pixels[t + i*bih.biWidth].r == 0 &&
+				pixels[t + i*bih.biWidth].g == 0 &&
+				pixels[t + i*bih.biWidth].b == 0)
+			{
+				m_buffer[i][t] = DART;
+			}
+
+			//赤ならスタート
+			else if (pixels[t + i*bih.biWidth].r == 255 &&
+				pixels[t + i*bih.biWidth].g == 0 &&
+				pixels[t + i*bih.biWidth].b == 0) {
+
+				m_buffer[i][t] = START;
+			}
+
+			//青ならゴール
+			else if (pixels[t + i*bih.biWidth].r == 0 &&
+				pixels[t + i*bih.biWidth].g == 0 &&
+				pixels[t + i*bih.biWidth].b == 255)
+			{
+				m_buffer[i][t] = GOAL;
+			}
+
+			//緑ならアイテムの場所
+			else if (pixels[t + i*bih.biWidth].r == 0 &&
+				pixels[t + i*bih.biWidth].g == 255 &&
+				pixels[t + i*bih.biWidth].b == 0)
+			{
+				m_buffer[i][t] = ITEMPOSITION;
+			}
+		}
+
+	}
+
+	free(pixels);
+
+}
+
+//-------------------------------------
+//
+
+
+
+
+
 
 //-------------------------------------
 //各コース全体と空の描画
 
 void Course::Draw(){
 
-	glEnable(GL_TEXTURE_2D);
-
-	//コースの描画
-	glPushMatrix();
+	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	{
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		
+		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, m_handle);
 
-		glColor3f(1, 1, 1);
-
-		glBegin(GL_QUADS);
+		glPushMatrix();
 		{
-			glNormal3f(0, 1, 0);
-			glTexCoord2f(0.f, 1.f);
-			glVertex3f(0.f, 0.f, 0.f);
+			auto v = m_vertex.begin();
+			glVertexPointer(3, GL_FLOAT, 0, &(*v));
 
-			glTexCoord2f(1.f, 1.f);
-			glVertex3f(m_width, 0.f, 0.f);
+			auto t = m_tex.begin();
+			glTexCoordPointer(2, GL_FLOAT, 0, &(*t));
 
-			glTexCoord2f(1.f, 0.f);
-			glVertex3f(m_width, 0, -m_height);
+			auto i = m_index.begin();
 
-			glTexCoord2f(0.f, 0.f);
-			glVertex3f(0, 0, -m_height);
+			glDrawElements(GL_TRIANGLES, m_indeces, GL_UNSIGNED_SHORT, &(*i));
+
 		}
-		glEnd();
-
+		glPopMatrix();
 	}
-	glPopMatrix();
+	glPopAttrib();
 
-	glDisable(GL_TEXTURE_2D);
+
+
+	//glEnable(GL_TEXTURE_2D);
+
+	////コースの描画
+	//glPushMatrix();
+	//{
+	//	glBindTexture(GL_TEXTURE_2D, m_handle);
+
+	//	glColor3f(1, 1, 1);
+
+	//	glBegin(GL_QUADS);
+	//	{
+	//		glTexCoord2f(0.f, 1.f);
+	//		glVertex3f(0.f, 0.f, 0.f);
+
+	//		glTexCoord2f(1.f, 1.f);
+	//		glVertex3f(m_width, 0.f, 0.f);
+
+	//		glTexCoord2f(1.f, 0.f);
+	//		glVertex3f(m_width, 0, -m_height);
+
+	//		glTexCoord2f(0.f, 0.f);
+	//		glVertex3f(0, 0, -m_height);
+	//	}
+	//	glEnd();
+
+	//}
+	//glPopMatrix();
+
+	//glDisable(GL_TEXTURE_2D);
 }
 
 //-------------------------------------
 //コース上に魔石を配置する
 //画像左上から右下に向かって読んでいく
 
-void Course::setItem(){
-
+void Course::SetItem()
+{
 	for (int i = 0; i < COURSE_HEIGHT; i++){
 		for (int t = 0; t < COURSE_WIDTH; t++){
 
@@ -77,13 +287,13 @@ void Course::setItem(){
 //選択されたコースにチェックポイントを配置する
 //チェックポイントの座標は外部テキストファイルに保管
 
-void Course::setCheckPoint(const char *_txtName) 
+void Course::SetCheckPoint(const char *_txtName) 
 {
 
 	FILE *fp = fopen(_txtName, "r");
 	assert(fp != nullptr);
 
-	for (int i = 0; i < CHECK_POINT_NUMBER; i++) 
+	for (int i = 0; i < Course::checkPointNum; i++)
 	{
 		oka::Vec3 position;
 		fscanf(fp, "(%f,%f,%f)", &position.m_x, &position.m_y, &position.m_z);
@@ -99,73 +309,19 @@ void Course::setCheckPoint(const char *_txtName)
 //選択されたコースにAI制御用のポイントを配置する
 //チェックポイントの座標は外部テキストファイルに保管
 
-void Course::setAIPoint(const char *_txtName) 
+void Course::SetAimPoint(const char *_txtName) 
 {
 	FILE *fp = fopen(_txtName, "r");
 	assert(fp != nullptr);
 
-	for (int i = 0; i < AI_POINT_NUMBER; i++) {
-
+	for (int i = 0; i < Course::aimPointNum; i++)
+	{
 		oka::Vec3 position;
 		fscanf(fp, "(%f,%f,%f)", &position.m_x, &position.m_y, &position.m_z);
 		fscanf(fp, "%*c"); //改行文字読み飛ばし
 
-		m_AIPoint[i].m_position = position;
+		m_aimPoint[i].m_position = position;
 
 	}
-
-}
-
-
-
-
-//-------------------------------------
-//選ばれたコースの生成
-//チェックポイント・AI制御用のポイント・バッファ生成
-//使用するテクスチャの読み込みを行う
-
-Course* createCourse()
-{
-
-	Course *newCourse = new Course();
-
-	if (COURSE1 == selectedCourse)
-	{
-
-		//チェックポイントの位置設定
-		newCourse->setCheckPoint("txt/course1_cp.txt");
-		
-		//AIポイントの位置設定
-		newCourse->setAIPoint("txt/course1_AIp.txt");
-
-		//使用するテクスチャの読み込み
-		newCourse->m_handle = oka::LoadImage3f("bmp/course1/course1.bmp");
-
-		//バッファの作成
-		oka::MakeBuffer("bmp/course1/buffer1.bmp", newCourse->m_buffer);
-	}
-	
-
-	//コース2(仮)
-	else if (COURSE2 == selectedCourse)
-	{
-
-		//チェックポイントの位置設定
-		newCourse->setCheckPoint("txt/course2_cp.txt");
-
-		//AIポイントの位置設定
-		newCourse->setAIPoint("txt/course2_AIp.txt");
-
-		//使用するテクスチャの読み込み
-		newCourse->m_handle = oka::LoadImage3f("bmp/course2/course2.bmp");
-		
-		//バッファの作成
-		oka::MakeBuffer("bmp/course2/buffer2.bmp", newCourse->m_buffer);
-
-	}
-
-	newCourse->setItem();
-
-	return newCourse;
 
 }

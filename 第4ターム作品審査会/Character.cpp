@@ -29,8 +29,8 @@
 
 void Character::Update(){
 
-	if (false == m_isGoal)
-	{
+	//if (false == m_isGoal)
+	//{
 		//フレームの管理
 		m_flame++;
 
@@ -79,13 +79,13 @@ void Character::Update(){
 			m_lapTimeCounter = 0;
 
 			//チェックポイントの初期化
-			for (int i = 0; i < CHECK_POINT_NUMBER; i++)
+			for (int i = 0; i < Course::checkPointNum; i++)
 			{
 				m_passCheckPoint[i] = false;
 			}
 
 			//AIポイントの初期化
-			for (int i = 0; i < AI_POINT_NUMBER; i++)
+			for (int i = 0; i < Course::aimPointNum; i++)
 			{
 				m_passAIPoint[i] = false;
 			}
@@ -114,7 +114,7 @@ void Character::Update(){
 
 		}
 
-	}
+	//}
 
 	//行列計算
 	oka::Mat4x4 translate = oka::Mat4x4::Translate(oka::Vec3(m_transform.GetPosition().m_x, m_transform.GetPosition().m_y, m_transform.GetPosition().m_z));
@@ -187,11 +187,11 @@ void Character::Update(){
 	slip();
 
 	//チェックポイントを通過しているかの判定処理
-	for (int i = 0; i < CHECK_POINT_NUMBER; i++)
+	for (int i = 0; i < Course::checkPointNum; i++)
 	{
 		if (0 == i)
 		{
-			if (false == m_passCheckPoint[i] && RaceManager::GetInstance()->m_course->m_checkPoint[i].checkPassFlag(m_transform.GetPosition())){
+			if (false == m_passCheckPoint[i] && RaceManager::GetInstance()->m_course->m_checkPoint[i].CheckPass(m_transform.GetPosition())){
 
 				m_passCheckPoint[i] = true;
 				m_nowPoint++;
@@ -206,7 +206,7 @@ void Character::Update(){
 			if (true == m_passCheckPoint[i - 1])
 			{
 
-				if (false == m_passCheckPoint[i] && RaceManager::GetInstance()->m_course->m_checkPoint[i].checkPassFlag(m_transform.GetPosition()))
+				if (false == m_passCheckPoint[i] && RaceManager::GetInstance()->m_course->m_checkPoint[i].CheckPass(m_transform.GetPosition()))
 				{
 					m_passCheckPoint[i] = true;
 					m_nowPoint++;
@@ -247,10 +247,10 @@ void Character::Draw()
 	m_body.Draw();
 
 	//前輪
-	m_frontWheel.Draw();
+	//m_frontWheel.Draw();
 
 	//後輪
-	m_backWheel.Draw();
+	//m_backWheel.Draw();
 
 	//車体影
 	//m_body.DrawShadow();
@@ -483,8 +483,8 @@ void Character::control()
 	//コースのAIポイントのx - 敵のx
 	//コースのAIのz - 敵のz
 
-	glm::vec2 v = { RaceManager::GetInstance()->m_course->m_AIPoint[m_nextPoint].m_position.m_x - m_transform.GetPosition().m_x,
-		RaceManager::GetInstance()->m_course->m_AIPoint[m_nextPoint].m_position.m_z - m_transform.GetPosition().m_z };
+	glm::vec2 v = { RaceManager::GetInstance()->m_course->m_aimPoint[m_nextPoint].m_position.m_x - m_transform.GetPosition().m_x,
+		RaceManager::GetInstance()->m_course->m_aimPoint[m_nextPoint].m_position.m_z - m_transform.GetPosition().m_z };
 
 	v = glm::normalize(v);
 
@@ -496,18 +496,18 @@ void Character::control()
 
 	//敵のAIの挙動制御
 
-	if (RaceManager::GetInstance()->m_course->m_AIPoint[m_nextPoint].checkPassFlag(m_transform.GetPosition())){
+	if (RaceManager::GetInstance()->m_course->m_aimPoint[m_nextPoint].CheckPass(m_transform.GetPosition())){
 
 		m_passAIPoint[m_nextPoint] = true;
 
 		m_nextPoint++;
 
-		if (AI_POINT_NUMBER == m_nextPoint){
+		if (Course::aimPointNum == m_nextPoint){
 			m_nextPoint = 0;
 		}
 
-		m_pos_to_AIpoint = { RaceManager::GetInstance()->m_course->m_AIPoint[m_nextPoint].m_position.m_x - m_transform.GetPosition().m_x,
-			RaceManager::GetInstance()->m_course->m_AIPoint[m_nextPoint].m_position.m_z - m_transform.GetPosition().m_z };
+		m_pos_to_AIpoint = { RaceManager::GetInstance()->m_course->m_aimPoint[m_nextPoint].m_position.m_x - m_transform.GetPosition().m_x,
+			RaceManager::GetInstance()->m_course->m_aimPoint[m_nextPoint].m_position.m_z - m_transform.GetPosition().m_z };
 		m_pos_to_AIpoint = glm::normalize(m_pos_to_AIpoint);
 
 		//角度からの向きベクトル
@@ -673,97 +673,99 @@ void Character::slip()
 
 void Character::printRanking()
 {
-
-	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glPushMatrix();
+	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	{
+		glDisable(GL_DEPTH_TEST);
 
-		if (false == m_isGoal)
+		glEnable(GL_TEXTURE_2D);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		glPushMatrix();
 		{
-			//順位に応じて貼るテクスチャを変える
-			switch (m_ranking)
+
+			if (false == m_isGoal)
 			{
-			case 1:
-				glColor4f(255 / 255.f, 201 / 255.f, 14 / 255.f, 1);
-				glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Rank1st"));
-				break;
+				//順位に応じて貼るテクスチャを変える
+				switch (m_ranking)
+				{
+				case 1:
+					glColor4f(255 / 255.f, 201 / 255.f, 14 / 255.f, 1);
+					glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Rank1st"));
+					break;
 
-			case 2:
-				glColor4f(255 / 255.f, 255 / 255.f, 255 / 255.f, 1);
-				glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Rank2nd"));
-				break;
+				case 2:
+					glColor4f(255 / 255.f, 255 / 255.f, 255 / 255.f, 1);
+					glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Rank2nd"));
+					break;
 
-			case 3:
-				glColor4f(188 / 255.f, 126 / 255.f, 92 / 255.f, 1);
-				glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Rank3rd"));
-				break;
+				case 3:
+					glColor4f(188 / 255.f, 126 / 255.f, 92 / 255.f, 1);
+					glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Rank3rd"));
+					break;
 
-			case 4:
-				glColor4f(0 / 255.f, 255 / 255.f, 0 / 255.f, 1);
-				glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Rank4th"));
-				break;
+				case 4:
+					glColor4f(0 / 255.f, 255 / 255.f, 0 / 255.f, 1);
+					glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Rank4th"));
+					break;
 
-			}
+				}
 
-			glTranslatef(0.f, 0.f, 0);
-
-		}
-
-		else
-		{
-			//順位に応じて貼るテクスチャを変える
-			switch (m_lastRanking){
-			case 1:
-				glColor4f(255 / 255.f, 201 / 255.f, 14 / 255.f, 1);
-				glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Rank1st"));
-				break;
-
-			case 2:
-				glColor4f(255 / 255.f, 255 / 255.f, 255 / 255.f, 1);
-				glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Rank2nd"));
-				break;
-
-			case 3:
-				glColor4f(188 / 255.f, 126 / 255.f, 92 / 255.f, 1);
-				glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Rank3rd"));
-				break;
-
-			case 4:
-				glColor4f(0 / 255.f, 255 / 255.f, 0 / 255.f, 1);
-				glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Rank4th"));
-				break;
+				glTranslatef(0.f, 0.f, 0);
 
 			}
 
-			glTranslatef(50.f, 193.f, 0);
+			else
+			{
+				//順位に応じて貼るテクスチャを変える
+				switch (m_lastRanking) {
+				case 1:
+					glColor4f(255 / 255.f, 201 / 255.f, 14 / 255.f, 1);
+					glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Rank1st"));
+					break;
 
+				case 2:
+					glColor4f(255 / 255.f, 255 / 255.f, 255 / 255.f, 1);
+					glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Rank2nd"));
+					break;
+
+				case 3:
+					glColor4f(188 / 255.f, 126 / 255.f, 92 / 255.f, 1);
+					glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Rank3rd"));
+					break;
+
+				case 4:
+					glColor4f(0 / 255.f, 255 / 255.f, 0 / 255.f, 1);
+					glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Rank4th"));
+					break;
+
+				}
+
+				glTranslatef(50.f, 193.f, 0);
+
+			}
+
+
+			glBegin(GL_QUADS);
+			{
+				glTexCoord2f(0, 1);
+				glVertex2f(0, 0);
+
+				glTexCoord2f(1, 1);
+				glVertex2f(80, 0);
+
+				glTexCoord2f(1, 0);
+				glVertex2f(80, 80);
+
+				glTexCoord2f(0, 0);
+				glVertex2f(0, 80);
+			}
+			glEnd();
 		}
+		glPopMatrix();
 
-
-		glBegin(GL_QUADS);
-		{
-			glTexCoord2f(0, 1);
-			glVertex2f(0, 0);
-
-			glTexCoord2f(1, 1);
-			glVertex2f(80, 0);
-
-			glTexCoord2f(1, 0);
-			glVertex2f(80, 80);
-
-			glTexCoord2f(0, 0);
-			glVertex2f(0, 80);
-		}
-		glEnd();
 	}
-	glPopMatrix();
-
-	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_BLEND);
-
+	glPopAttrib();
 
 }
 
@@ -807,74 +809,80 @@ void printGoal()
 void Character::printDashGauge(){
 
 	//インターフェイス部分
-	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	//アイコン部分
-	glPushMatrix();
+	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	{
-		glTranslatef(5, 255, 0);
+		glEnable(GL_TEXTURE_2D);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("DashIcon"));
-
-		glBegin(GL_QUADS);
+		//アイコン部分
+		glPushMatrix();
 		{
-			glColor4f(1, 1, 1, 1);
-			glTexCoord2f(0, 1); glVertex2f(0, 0);
-			glTexCoord2f(1, 1); glVertex2f(40, 0);
-			glTexCoord2f(1, 0); glVertex2f(40, 40);
-			glTexCoord2f(0, 0); glVertex2f(0, 40);
-		}
-		glEnd();
-	}
-	glPopMatrix();
+			glTranslatef(5, 255, 0);
 
-	//ゲージ外枠
-	glPushMatrix();
-	{
-		glTranslatef(42, 266, 0);
+			glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("DashIcon"));
 
-		glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("DashGauge"));
-
-		glBegin(GL_QUADS);
-		{
-			glColor4f(1, 1, 1, 1);
-			glTexCoord2f(0, 0); glVertex2f(0, 0);
-			glTexCoord2f(1, 0); glVertex2f(100, 0);
-			glTexCoord2f(1, 1); glVertex2f(100, 15);
-			glTexCoord2f(0, 1); glVertex2f(0, 15);
-		}
-		glEnd();
-	}
-	glPopMatrix();
-
-	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_BLEND);
-
-	//ゲージ部分
-
-	glPushMatrix();
-	{
-		glTranslatef(46.5, 270.f, 0);
-
-		glBegin(GL_QUADS);
-		{
-			if (DASH_GAUGE_MAX == m_dashPower){
-				glColor3f(1, rand() % 256 / 255.f, rand() % 256 / 255.f);
+			glBegin(GL_QUADS);
+			{
+				glColor4f(1, 1, 1, 1);
+				glTexCoord2f(0, 1); glVertex2f(0, 0);
+				glTexCoord2f(1, 1); glVertex2f(40, 0);
+				glTexCoord2f(1, 0); glVertex2f(40, 40);
+				glTexCoord2f(0, 0); glVertex2f(0, 40);
 			}
-			else{
-				glColor3f(1, 0, 0);
-			}
-			glVertex2f(0, 0);
-			glVertex2f(m_dashPower, 0);
-			glVertex2f(m_dashPower, 7.f);
-			glVertex2f(0, 7.f);
+			glEnd();
 		}
-		glEnd();
+		glPopMatrix();
+
+		//ゲージ外枠
+		glPushMatrix();
+		{
+			glTranslatef(42, 266, 0);
+
+			glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("DashGauge"));
+
+			glBegin(GL_QUADS);
+			{
+				glColor4f(1, 1, 1, 1);
+				glTexCoord2f(0, 0); glVertex2f(0, 0);
+				glTexCoord2f(1, 0); glVertex2f(100, 0);
+				glTexCoord2f(1, 1); glVertex2f(100, 15);
+				glTexCoord2f(0, 1); glVertex2f(0, 15);
+			}
+			glEnd();
+		}
+		glPopMatrix();
+
+		glDisable(GL_TEXTURE_2D);
+		glDisable(GL_BLEND);
+
+		//ゲージ部分
+
+		glPushMatrix();
+		{
+			glTranslatef(46.5, 270.f, 0);
+
+			glBegin(GL_QUADS);
+			{
+				if (DASH_GAUGE_MAX == m_dashPower) {
+					glColor3f(1, rand() % 256 / 255.f, rand() % 256 / 255.f);
+				}
+				else {
+					glColor3f(1, 0, 0);
+				}
+				glVertex2f(0, 0);
+				glVertex2f(m_dashPower, 0);
+				glVertex2f(m_dashPower, 7.f);
+				glVertex2f(0, 7.f);
+			}
+			glEnd();
+
+		}
+		glPopMatrix();
 
 	}
-	glPopMatrix();
+	glPopAttrib();
 
 }
 
@@ -884,67 +892,72 @@ void Character::printDashGauge(){
 
 void Character::printStatus()
 {
-	if (false == m_isGoal)
+	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	{
+		glDisable(GL_DEPTH_TEST);
 
-		//ダッシュゲージの描画
-		printDashGauge();
-
-		float scale = 0.1f;
-		oka::Vec3 color = oka::Vec3(1.0f, 0.0f, 0.0f);
-		float width = 2.0f;
-
-		oka::DrawString("LAP", glm::vec2(230.0f, 250.0f),scale,color,width);
-		oka::DrawString("/", glm::vec2(275.0f, 250.0f), scale, color, width);
-		oka::DrawString(RaceManager::GetInstance()->m_rapMax, glm::vec2(285.0f, 250.0f), scale, color, width);
-
-		scale = 0.13f;
-		oka::DrawString("TIME", glm::vec2(180.0f, 280.0f),scale, color, width);
-		oka::DrawString(m_totalTime, glm::vec2(220.0f, 280.0f), scale, color, width);
-
-		scale = 0.18f;
-		oka::DrawString(m_lap, glm::vec2(260.0f, 250.0f), scale, color, width);
-
-		scale = 0.08;
-		oka::DrawString("LAP1", glm::vec2(220.0f, 230.0f), scale, color, width);
-		oka::DrawString(m_lapTime[FIRST], glm::vec2(250.0f, 230.0f), scale, color, width);
-
-		oka::DrawString("LAP2", glm::vec2(220.0f, 215.0f), scale, color, width);
-		oka::DrawString(m_lapTime[SECOND], glm::vec2(250.0f, 215.0f), scale, color, width);
-
-		oka::DrawString("LAP3", glm::vec2(220.0f, 200.0f), scale, color, width);
-		oka::DrawString(m_lapTime[THIRD], glm::vec2(250.0f, 200.0f), scale, color, width);
-
-		
-
-	}
-	else
-	{
-		printGoal();
-
-		/*glColor3f(1, 0, 0);
-		oka::DrawString("LAP1", 60.0f, 160.0f, 0.2f);
-		oka::DrawString(m_lapTime[FIRST], 130.0f, 155.0f, 0.2f);
-
-		oka::DrawString("LAP2", 60.0f, 115.0f, 0.2f);
-		oka::DrawString(m_lapTime[SECOND], 130.0f, 115.0f, 0.2f);
-
-		oka::DrawString("LAP3", 60.0f, 75.0f, 0.2f);
-		oka::DrawString(m_lapTime[THIRD], 130.0f, 75.0f, 0.2f);
-
-		oka::DrawString("TOTALTIME", 25.0f, 30.0f, 0.15f);
-		oka::DrawString(m_totalTime, 130.0f, 30.0f, 0.2f);*/
-
-		
-
-		if (RaceManager::GetInstance()->IsRaceEnd())
+		if (false == m_isGoal)
 		{
-			//if ((oka::GameManager::GetInstance()->m_flame % 60) < 30)
-			//{
-			//	//oka::DrawString("PushStartButton!!", 220.0f, 10.0f, 0.08f);			
-			//}
-		}
 
+			//ダッシュゲージの描画
+			printDashGauge();
+
+			float scale = 0.1f;
+			oka::Vec3 color = oka::Vec3(1.0f, 0.0f, 0.0f);
+			float width = 2.0f;
+
+			oka::DrawString("LAP", glm::vec2(230.0f, 250.0f), scale, color, width);
+			oka::DrawString("/", glm::vec2(275.0f, 250.0f), scale, color, width);
+			oka::DrawString(RaceManager::GetInstance()->m_rapMax, glm::vec2(285.0f, 250.0f), scale, color, width);
+
+			scale = 0.13f;
+			oka::DrawString("TIME", glm::vec2(180.0f, 280.0f), scale, color, width);
+			oka::DrawString(m_totalTime, glm::vec2(220.0f, 280.0f), scale, color, width);
+
+			scale = 0.18f;
+			oka::DrawString(m_lap, glm::vec2(260.0f, 250.0f), scale, color, width);
+
+			scale = 0.08;
+			oka::DrawString("LAP1", glm::vec2(220.0f, 230.0f), scale, color, width);
+			oka::DrawString(m_lapTime[FIRST], glm::vec2(250.0f, 230.0f), scale, color, width);
+
+			oka::DrawString("LAP2", glm::vec2(220.0f, 215.0f), scale, color, width);
+			oka::DrawString(m_lapTime[SECOND], glm::vec2(250.0f, 215.0f), scale, color, width);
+
+			oka::DrawString("LAP3", glm::vec2(220.0f, 200.0f), scale, color, width);
+			oka::DrawString(m_lapTime[THIRD], glm::vec2(250.0f, 200.0f), scale, color, width);
+
+
+
+		}
+		else
+		{
+			printGoal();
+
+			/*glColor3f(1, 0, 0);
+			oka::DrawString("LAP1", 60.0f, 160.0f, 0.2f);
+			oka::DrawString(m_lapTime[FIRST], 130.0f, 155.0f, 0.2f);
+
+			oka::DrawString("LAP2", 60.0f, 115.0f, 0.2f);
+			oka::DrawString(m_lapTime[SECOND], 130.0f, 115.0f, 0.2f);
+
+			oka::DrawString("LAP3", 60.0f, 75.0f, 0.2f);
+			oka::DrawString(m_lapTime[THIRD], 130.0f, 75.0f, 0.2f);
+
+			oka::DrawString("TOTALTIME", 25.0f, 30.0f, 0.15f);
+			oka::DrawString(m_totalTime, 130.0f, 30.0f, 0.2f);*/
+
+
+
+			if (RaceManager::GetInstance()->IsRaceEnd())
+			{
+				//if ((oka::GameManager::GetInstance()->m_flame % 60) < 30)
+				//{
+				//	//oka::DrawString("PushStartButton!!", 220.0f, 10.0f, 0.08f);			
+				//}
+			}
+
+		}
 	}
 }
 
@@ -961,7 +974,7 @@ bool Character::countLap()
 	{
 		bool fg = true;
 
-		for (int i = 0; i < CHECK_POINT_NUMBER; i++)
+		for (int i = 0; i < Course::checkPointNum; i++)
 		{
 			fg &= m_passCheckPoint[i];
 

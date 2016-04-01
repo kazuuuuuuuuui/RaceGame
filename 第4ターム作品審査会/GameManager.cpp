@@ -8,7 +8,7 @@
 #include"GameManager.h"
 #include"camera.h"
 #include"Course.h"
-#include"CourseFlag.h"
+#include"CheckPoint.h"
 #include"Item.h"
 #include"Effect.h"
 #include"Fire.h"
@@ -51,10 +51,7 @@ namespace oka
 
 	void GameManager::Updata()
 	{
-		CheckGameObject();//ä÷êîñºïœÇ¶ÇΩÇ¢
-
-		//_sequence.Run(this, 1.0f / 60.0f);
-
+		CheckGameObject();
 	}
 
 	//-------------------------------------

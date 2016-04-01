@@ -27,9 +27,6 @@ namespace oka
 	unsigned int LoadImage3f(const char *_fileName);
 	unsigned int LoadImage4f(const char *_filename);
 
-	void MakeBuffer(const char *_bufferName, int _buffer[][COURSE_WIDTH]);
-
-
 }
 
 #endif

@@ -9,11 +9,11 @@ class RaceManager
 {
 public:
 	Course *m_course;
-	unsigned int m_bgm;
 	bool m_raceStart;
 	char m_rapMax[256];
 
 	static RaceManager* GetInstance();
+
 	void CountRaceStart();
 	void PrintRaceStrart()const;
 	bool IsRaceEnd()const;
@@ -26,7 +26,6 @@ public:
 private:
 	RaceManager() :
 	m_course(nullptr),
-	m_bgm(0),
 	m_raceStart(false)
 	{
 		sprintf_s(m_rapMax, "%d", 3);

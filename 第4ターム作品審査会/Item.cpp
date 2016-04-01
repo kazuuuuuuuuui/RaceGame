@@ -2,7 +2,7 @@
 #include<math.h>
 #include"Item.h"
 #include"Character.h"
-#include"CourseFlag.h"
+#include"CheckPoint.h"
 #include"CharacterManager.h"
 #include"ImageManager.h"
 #include"SoundManager.h"

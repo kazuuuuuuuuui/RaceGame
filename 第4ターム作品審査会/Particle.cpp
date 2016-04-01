@@ -11,76 +11,79 @@
 
 void Particle::Draw(int _type,glm::vec3 _color,unsigned int _texture){
 
-	glPushMatrix();
+	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	{
-		BillboardMatrix = glm::inverse(g_camera->GetViewMatrix());
-		BillboardMatrix[3][0] = 0;
-		BillboardMatrix[3][1] = 0;
-		BillboardMatrix[3][2] = 0;
+		glDisable(GL_DEPTH_TEST);
 
-		//ブレンド
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+		glPushMatrix();
+		{
+			BillboardMatrix = glm::inverse(g_camera->GetViewMatrix());
+			BillboardMatrix[3][0] = 0;
+			BillboardMatrix[3][1] = 0;
+			BillboardMatrix[3][2] = 0;
 
-		glEnable(GL_TEXTURE_2D);
+			//ブレンド
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-		glBindTexture(GL_TEXTURE_2D, _texture);
+			glEnable(GL_TEXTURE_2D);
 
-		glTranslatef(m_transform.GetPosition().m_x, m_transform.GetPosition().m_y, m_transform.GetPosition().m_z);
-		
-		//ビルボード回転行列適用
-		glMultMatrixf((GLfloat*)&BillboardMatrix);
-		
-		glScalef(m_transform.GetScale().m_x, m_transform.GetScale().m_y, m_transform.GetScale().m_z);
-		
-		if (_type == 0){
+			glBindTexture(GL_TEXTURE_2D, _texture);
 
-			glBegin(GL_QUADS);
-			{
-				glColor4f(_color.x, _color.y, _color.z, m_alpha);
+			glTranslatef(m_transform.GetPosition().m_x, m_transform.GetPosition().m_y, m_transform.GetPosition().m_z);
 
-				glTexCoord2f(0.f, 1.f);
-				glVertex2f(-1.f, -1.f);
-				
-				glTexCoord2f(0.f, 0.f);
-				glVertex2f(-1.f, 1.f);
-				
-				glTexCoord2f(1.f, 0.f);
-				glVertex2f(1.f, 1.f);
-				
-				glTexCoord2f(1.f, 1.f);
-				glVertex2f(1.f, -1.f);
+			//ビルボード回転行列適用
+			glMultMatrixf((GLfloat*)&BillboardMatrix);
+
+			glScalef(m_transform.GetScale().m_x, m_transform.GetScale().m_y, m_transform.GetScale().m_z);
+
+			if (_type == 0) {
+
+				glBegin(GL_QUADS);
+				{
+					glColor4f(_color.x, _color.y, _color.z, m_alpha);
+
+					glTexCoord2f(0.f, 1.f);
+					glVertex2f(-1.f, -1.f);
+
+					glTexCoord2f(0.f, 0.f);
+					glVertex2f(-1.f, 1.f);
+
+					glTexCoord2f(1.f, 0.f);
+					glVertex2f(1.f, 1.f);
+
+					glTexCoord2f(1.f, 1.f);
+					glVertex2f(1.f, -1.f);
+				}
+				glEnd();
+
 			}
-			glEnd();
+
+			else if (_type == 1) {
+
+				glBegin(GL_QUADS);
+				{
+					glColor4f(_color.x, _color.y, _color.z, m_alpha);
+
+					glTexCoord2f(0.f, 1.f);
+					glVertex2f(0.f, 0.f);
+
+					glTexCoord2f(0.f, 0.f);
+					glVertex2f(0.f, 1.f);
+
+					glTexCoord2f(1.f, 0.f);
+					glVertex2f(1.f, 1.f);
+
+					glTexCoord2f(1.f, 1.f);
+					glVertex2f(1.f, 0.f);
+				}
+				glEnd();
+
+			}
 
 		}
-
-		else if (_type == 1){
-
-			glBegin(GL_QUADS);
-			{
-				glColor4f(_color.x, _color.y, _color.z, m_alpha);
-
-				glTexCoord2f(0.f, 1.f);
-				glVertex2f(0.f, 0.f);
-
-				glTexCoord2f(0.f, 0.f);
-				glVertex2f(0.f, 1.f);
-
-				glTexCoord2f(1.f, 0.f);
-				glVertex2f(1.f, 1.f);
-
-				glTexCoord2f(1.f, 1.f);
-				glVertex2f(1.f, 0.f);
-			}
-			glEnd();
-
-		}
-
+		glPopMatrix();
 	}
-	glPopMatrix();
-
-	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_BLEND);
+	glPopAttrib();
 
 }

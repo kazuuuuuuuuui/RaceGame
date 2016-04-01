@@ -8,33 +8,16 @@
 //コースに配置されている魔石の数
 #define SET_ITEM_NUMBER (20)
 
-//コースに設置してある
-//周回判定用のチェックポイントの個数
-#define CHECK_POINT_NUMBER (10)
-
-//コースに設置してある
-//敵キャラAI用のポイントの個数
-#define AI_POINT_NUMBER (25)
-
 #include<stdlib.h>
+#include<vector>
 #include"Item.h"
 #include"BmpImage.h"
-#include"CourseFlag.h"
+#include"CheckPoint.h"
 #include"GameObject.h"
-#include"AIFlag.h"
+#include"AimPoint.h"
 #include"Sound.h"
 #include"Vec3.h"
 #include"glut.h"
-
-//-------------------------------------
-//コースの種類
-enum
-{
-	COURSE1 = 0,
-	COURSE2,
-	COURSE_NUM_MAX
-};
-
 
 //-------------------------------------
 //コースの各ピクセルの情報
@@ -55,46 +38,62 @@ enum
 class Course :public oka::GameObject 
 {
 public:
+
+	//コースに設置してある
+	//周回判定用のチェックポイントの個数
+	static const int checkPointNum = 10;
+
+	//コースに設置してある
+	//敵キャラAI用のポイントの個数
+	static const int aimPointNum = 25;
+
+	//頂点数
+	unsigned int m_vertices;
+
+	//インデックス数
+	unsigned int m_indeces;
+
+	//頂点情報
+	std::vector<oka::Vec3>m_vertex;
+
+	//インデックス情報
+	std::vector<unsigned short>m_index;
+
+	//法線情報
+	//std::vector<float>m_normal;
+
+	//uv情報
+	std::vector<glm::vec2>m_tex;
+
 	int m_width;
 	int m_height;
+
+	int m_depth;
+
 	int m_buffer[COURSE_HEIGHT][COURSE_WIDTH];   //各コースの各ピクセルの情報を格納するバッファ
+	
 	unsigned int m_handle;							 //コースのテクスチャ
-	CourseFlag m_checkPoint[CHECK_POINT_NUMBER]; //周回判定用のポイント
-	AIFlag m_AIPoint[AI_POINT_NUMBER];			 //敵AI用のポイント
+	unsigned int m_bgm;
+	
+	CheckPoint m_checkPoint[checkPointNum]; //周回判定用のポイント
+	AimPoint m_aimPoint[aimPointNum];			 //敵AI用のポイント
+	
 	oka::Vec3 m_backgroundColor;
 
 	void Draw();
 	void Update() {};
-	void setItem();
-	void setCheckPoint(const char *_txtName);
-	void setAIPoint(const char *_txtName);
 
-	Course() :
-		m_width(COURSE_WIDTH),
-		m_height(COURSE_HEIGHT),
-		m_handle(0)
-	{	
-		//コースバッファの初期化
-		for (int i = 0; i < COURSE_HEIGHT; i++){
-			for (int t = 0; t < COURSE_WIDTH; t++){
-				m_buffer[i][t] = PATH;
-			}
-		}
+	void MakeBuffer(const char *_fileName);
 
-		//背景色初期化
-		oka::Vec3 color;
-		color.m_x = 77.0f / 255.0f;
-		color.m_y = 180.0f / 255.0f;
-		color.m_z = 232.0f / 255.0f;
+	void SetItem();
+	void SetCheckPoint(const char *_txtName);
+	void SetAimPoint(const char *_txtName);
 
-		m_backgroundColor = color;
-
-	};
+	Course(const char *_fileName);
 
 };
 
-Course* createCourse();
-extern int selectedCourse;
+
 
 #endif
 
