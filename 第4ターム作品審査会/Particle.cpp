@@ -13,6 +13,7 @@ void Particle::Draw(int _type,glm::vec3 _color,unsigned int _texture){
 
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	{
+		glDisable(GL_LIGHTING);
 		glDisable(GL_DEPTH_TEST);
 
 		glPushMatrix();

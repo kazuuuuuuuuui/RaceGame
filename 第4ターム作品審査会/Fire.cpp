@@ -91,7 +91,7 @@ bool Fire::isHit(oka::Vec3 _position){
 	v.m_y = 0;
 	v.m_z = m_basePosition.m_z - _position.m_z;
 
-	float length = v.length();
+	float length = v.Length();
 
 	if (length < 1.5f){
 

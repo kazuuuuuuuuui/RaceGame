@@ -1,5 +1,6 @@
 #include"Vec3.h"
 #include<math.h>
+#include<assert.h>
 
 namespace oka {
 
@@ -185,14 +186,35 @@ namespace oka {
 	//-------------------------------------
 	//自身のベクトルの長さを返す
 
-	float Vec3::length()const
+	float Vec3::Length()const
 	{
 		return sqrtf((m_x*m_x) + (m_y*m_y) + (m_z*m_z));
 	}
 
+	//-----------------------------------------------
+	//ベクトルの正規化
+	//ベクトルの長さが0の場合正規化出来ないのでassert
 
+	void Vec3::Normalize()
+	{
+		float length = this->Length();
+		assert(length);
+		m_x /= length;
+		m_y /= length;
+		m_z /= length;
+	}
 
+	//-------------------------------------
+	//ベクトルの外積計算
 
+	Vec3 Vec3::Cross(const Vec3 &_v1, const Vec3 &_v2)
+	{
+		Vec3 out;
+		out.m_x = _v1.m_y*_v2.m_z - _v1.m_z*_v2.m_y;
+		out.m_y = _v1.m_z*_v2.m_x - _v1.m_x*_v2.m_z;
+		out.m_z = _v1.m_x*_v2.m_y - _v1.m_y*_v2.m_x;
 
+		return out;
+	}
 
 }

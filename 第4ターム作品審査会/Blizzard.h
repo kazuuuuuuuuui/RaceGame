@@ -1,6 +1,7 @@
 #include"Effect.h"
 
-class Blizzard :public Effect{
+class Blizzard :public Effect
+{
 public:
 	
 	void Draw();

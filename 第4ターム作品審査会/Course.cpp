@@ -16,8 +16,10 @@
 //コースに使う画像の読み込みと画像データから
 //コースデータのバッファを作成する
 
-Course::Course(const char *_fileName)
+Course::Course()
 {
+	m_name = nullptr;
+
 	m_width = 0;
 	m_height = 0;//
 	m_depth = 0;
@@ -31,14 +33,28 @@ Course::Course(const char *_fileName)
 	color.m_z = 232.0f / 255.0f;
 	m_backgroundColor = color;
 
-	//使用するテクスチャの読み込み
-	m_handle = oka::LoadImage3f(_fileName);
+	//頂点データ
+	SetVertex();
 
+	//インデックスデータ
+	SetIndex();
+	
+	//法線データ
+	SetNormal();
+
+	//uvデータ
+	SetTex();
 
 	//test
+	SetHeight("bmp/test.bmp");
+}
 
-	//頂点データ
-	for (int z = 0; z < COURSE_HEIGHT;z++)
+//------------------------
+//コースの頂点データの生成
+
+void Course::SetVertex()
+{
+	for (int z = 0; z < COURSE_HEIGHT; z++)
 	{
 		for (int x = 0; x < COURSE_WIDTH; x++)
 		{
@@ -46,7 +62,15 @@ Course::Course(const char *_fileName)
 		}
 	}
 
-	//インデックスデータ
+	m_vertices = m_vertex.size();
+
+}
+
+//-------------------------------------
+//コースのインデックスデータの生成
+
+void Course::SetIndex()
+{
 	for (int z = 0; z < (COURSE_HEIGHT - 1); z++)
 	{
 		for (int x = 0; x < (COURSE_WIDTH - 1); x++)
@@ -61,24 +85,138 @@ Course::Course(const char *_fileName)
 		}
 	}
 
-	//uvデータ
-	for (int v = 0; v < COURSE_HEIGHT; v++)
-	{
-		for (int u = 0; u < COURSE_WIDTH;u++)
-		{
-			glm::vec2 tex;
-			tex.x = (u/1.0f)/ COURSE_WIDTH;//u
-			tex.y = (v/1.0f)/ COURSE_HEIGHT;//v
+	m_indeces = m_index.size();
 
-			m_tex.push_back(tex);
+}
+
+//-------------------------------------
+//法線の計算
+//三角ポリゴン2枚を1組として外積計算
+
+void Course::SetNormal()
+{
+	for (int z = 0; z < COURSE_HEIGHT; z++)
+	{
+		for (int x = 0; x < COURSE_WIDTH; x++)
+		{
+			m_normal.push_back(oka::Vec3(0, 1, 0));
+		}
+	}
+	//for (int z = 0; z < (COURSE_HEIGHT - 1); z++)
+	//{
+	//	for (int x = 0; x < (COURSE_WIDTH - 1); x++)
+	//	{
+	//		oka::Vec3 v0 = m_vertex[0 + x + COURSE_HEIGHT * z];
+	//		oka::Vec3 v1 = m_vertex[COURSE_WIDTH + x + COURSE_HEIGHT * z];
+	//		oka::Vec3 v2 = m_vertex[1 + x + COURSE_HEIGHT * z];
+
+	//		oka::Vec3 v01 = v1 - v0;
+	//		oka::Vec3 v02 = v2 - v0;
+
+	//		//面の法線
+	//		oka::Vec3 normal = oka::Vec3::Cross(v01,v02);
+	//		normal.Normalize();
+	//		m_normal.push_back(normal);
+	//		m_normal.push_back(normal);
+	//		m_normal.push_back(normal);
+
+	//		v0 = m_vertex[1 + x + COURSE_HEIGHT * z];
+	//		v1 = m_vertex[COURSE_WIDTH + x + COURSE_HEIGHT * z];
+	//		v2 = m_vertex[(COURSE_WIDTH + 1) + x + COURSE_HEIGHT * z];
+
+	//		v01 = v1 - v0;
+	//		v02 = v2 - v0;
+
+	//		normal = oka::Vec3::Cross(v01, v02);
+	//		normal.Normalize();
+	//		m_normal.push_back(normal);
+	//		m_normal.push_back(normal);
+	//		m_normal.push_back(normal);
+
+	//	}
+	//}
+}
+
+//----------------
+//uv座標の設定
+
+void Course::SetTex()
+{
+	for (int v = COURSE_HEIGHT; v > 0; v--)
+	{
+		for (int u = 0; u < COURSE_WIDTH; u++)
+		{
+			glm::vec2 t;
+			t.x = (u / 1.0f) / COURSE_WIDTH;//u
+			t.y = (v / 1.0f) / COURSE_HEIGHT;//v
+
+			m_tex.push_back(t);
 
 		}
 	}
-	
-	m_vertex[50].m_y = 1.0f;
+}
 
-	m_vertices = m_vertex.size();
-	m_indeces = m_index.size();
+//-------------------------------------
+//拡張子bmpからコースの各頂点のY座標を設定する
+
+void Course::SetHeight(const char *_fileName)
+{
+	FILE *fp;
+	fp = fopen(_fileName, "rb");
+
+	assert(fp != NULL);
+
+	BITMAPFILEHEADER bh;
+	fread(&bh, sizeof(BITMAPFILEHEADER), 1, fp);
+
+	BITMAPINFOHEADER bih;
+	fread(&bih, sizeof(BITMAPINFOHEADER), 1, fp);
+
+	int imageSize = bih.biWidth * bih.biHeight * sizeof(oka::RGB);
+
+	oka::RGB *pixels = (oka::RGB*)malloc(imageSize);
+
+	pixels = (oka::RGB*)malloc(imageSize);
+
+	fread(pixels, imageSize, 1, fp);
+
+	fclose(fp);
+
+	//ピクセル単位でRとBを逆転させる
+	for (int i = 0; i < bih.biWidth * bih.biHeight; i++)
+	{
+		unsigned char tmp;
+		tmp = pixels[i].r;
+		pixels[i].r = pixels[i].b;
+		pixels[i].b = tmp;
+	}
+
+	//ピクセル単位で上下反転
+	/*for (int i = 0; i < bih.biWidth; i++)
+	{
+		for (int n = 0; n < bih.biHeight / 2; n++)
+		{
+			oka::RGB temp = pixels[bih.biWidth * n + i];
+			pixels[bih.biWidth * n + i] = pixels[bih.biWidth*(bih.biHeight - n - 1) + i];
+			pixels[bih.biWidth*(bih.biHeight - n - 1) + i] = temp;
+		}
+	}*/
+
+	//Y座標の設定
+	for (int z = 0; z < bih.biHeight; z++)
+	{
+		for (int x = 0; x < bih.biWidth; x++)
+		{
+			float height = (pixels[z*bih.biWidth + x].r + pixels[z*bih.biWidth + x].g + pixels[z*bih.biWidth + x].b)/3.0f;
+			
+			height /= 255.0f;//0.0～1.0f;
+
+			//test
+			height = 1.0f - height;
+
+			m_vertex[z*bih.biWidth + x].m_y = height;
+		}
+	}
 
 }
 
@@ -193,13 +331,14 @@ void Course::MakeBuffer(const char *_fileName)
 
 
 //-------------------------------------
-//各コース全体と空の描画
+//各コース全体の描画
 
 void Course::Draw(){
 
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	{
 		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_NORMAL_ARRAY);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		
 		glEnable(GL_TEXTURE_2D);
@@ -209,6 +348,9 @@ void Course::Draw(){
 		{
 			auto v = m_vertex.begin();
 			glVertexPointer(3, GL_FLOAT, 0, &(*v));
+
+			auto n = m_normal.begin();
+			glNormalPointer(GL_FLOAT, 0, &(*n));
 
 			auto t = m_tex.begin();
 			glTexCoordPointer(2, GL_FLOAT, 0, &(*t));
@@ -221,38 +363,6 @@ void Course::Draw(){
 		glPopMatrix();
 	}
 	glPopAttrib();
-
-
-
-	//glEnable(GL_TEXTURE_2D);
-
-	////コースの描画
-	//glPushMatrix();
-	//{
-	//	glBindTexture(GL_TEXTURE_2D, m_handle);
-
-	//	glColor3f(1, 1, 1);
-
-	//	glBegin(GL_QUADS);
-	//	{
-	//		glTexCoord2f(0.f, 1.f);
-	//		glVertex3f(0.f, 0.f, 0.f);
-
-	//		glTexCoord2f(1.f, 1.f);
-	//		glVertex3f(m_width, 0.f, 0.f);
-
-	//		glTexCoord2f(1.f, 0.f);
-	//		glVertex3f(m_width, 0, -m_height);
-
-	//		glTexCoord2f(0.f, 0.f);
-	//		glVertex3f(0, 0, -m_height);
-	//	}
-	//	glEnd();
-
-	//}
-	//glPopMatrix();
-
-	//glDisable(GL_TEXTURE_2D);
 }
 
 //-------------------------------------

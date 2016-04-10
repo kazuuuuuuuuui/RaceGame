@@ -1,6 +1,7 @@
 #ifndef TITLESCENE_H_
 #define TITLESCENE_H_
 
+#include<stdio.h>
 #include"BaseScene.h"
 
 //--------------------
@@ -10,21 +11,31 @@ class TitleScene:public BaseScene
 {
 public:
 
-	enum Mode
+	enum GameMode
 	{
-		Single = 0,
-		Vs,
-		Max
+		single = 0,
+		vs,
+		exit,
+		GameModeMax
 	};
 
-	int m_mode;
+	static int m_gameMode;
+	static const char *m_gameModeName[GameModeMax];
 
 	void Update();
 	void Render();
 
-	TitleScene():
-	m_mode(Single)
-	{}
+	TitleScene() 
+	{
+		//debug
+		printf("タイトルシーン生成\n");
+	};
+
+	~TitleScene()
+	{
+		//debug
+		printf("タイトルシーン削除\n");
+	};
 };
 
 #endif

@@ -6,23 +6,50 @@
 #include"JoysticManager.h"
 #include"SoundManager.h"
 #include"CharacterManager.h"
+#include"ImageManager.h"
 #include"ItemManager.h"
 #include"RaceManager.h"
+#include"StrokeString.h"
+
+//変更予定
+
+CourseSelectScene::CourseSelectScene()
+{
+	//debug
+	printf("コース選択シーン生成\n");
+
+	m_rot = 0.0f;
+
+	m_selectedCourse = Course1;
+	
+	m_course[Course1] = new Course();
+	m_course[Course1]->m_name = "Course1";
+	m_course[Course1]->m_handle = oka::ImageManager::GetInstance()->GetHandle("Course1");
+
+	m_course[Course2] = new Course();
+	m_course[Course2]->m_name = "Course2";
+	m_course[Course2]->m_handle = oka::ImageManager::GetInstance()->GetHandle("Course2");
+
+}
 
 void CourseSelectScene::Update()
 {
-	if (oka::JoysticManager::GetInstance()->GetContoroller(0).m_xRightDown) {
+	if (oka::JoysticManager::GetInstance()->GetContoroller(0).m_yBottomDown) 
+	{
+		m_rot = 0.0f;
 
 		m_selectedCourse++;
-		m_selectedCourse = (m_selectedCourse + CourseName::Max) % CourseName::Max;
+		m_selectedCourse = (m_selectedCourse + CourseName::CourseNameMax) % CourseName::CourseNameMax;
 		oka::SoundManager::GetInstance()->Play("cursorMoveSE");
 
 	}
 
-	if (oka::JoysticManager::GetInstance()->GetContoroller(0).m_xLeftDown) {
+	if (oka::JoysticManager::GetInstance()->GetContoroller(0).m_yTopDown) 
+	{
+		m_rot = 0.0f;
 
 		m_selectedCourse--;
-		m_selectedCourse = (m_selectedCourse + CourseName::Max) % CourseName::Max;
+		m_selectedCourse = (m_selectedCourse + CourseName::CourseNameMax) % CourseName::CourseNameMax;
 		oka::SoundManager::GetInstance()->Play("cursorMoveSE");
 
 	}
@@ -52,15 +79,15 @@ void CourseSelectScene::Update()
 		Course *newCourse = nullptr;
 
 		if (CourseName::Course1 == m_selectedCourse)
-		{
-			newCourse = new Course("bmp/course1/course1.bmp");
+		{	
+			newCourse = new Course();
+			newCourse->m_handle = oka::ImageManager::GetInstance()->GetHandle("Course1");
 			newCourse->SetCheckPoint("txt/course1_cp.txt");		
 			newCourse->SetAimPoint("txt/course1_AIp.txt");
 			newCourse->MakeBuffer("bmp/course1/buffer1.bmp");
 			newCourse->SetItem();
 
-			//レースのBGM読み込み
-			newCourse->m_bgm = oka::Sound::LoadWavFile("wav/course1BGM.wav");
+			newCourse->m_bgm = oka::SoundManager::GetInstance()->GetHandle("Course1BGM");
 
 			//初期座標
 			CharacterManager::GetInstance()->m_character[0]->m_transform.SetPosition(oka::Vec3(14.f, 0.0f, -165.f));
@@ -72,14 +99,14 @@ void CourseSelectScene::Update()
 
 		else if (CourseName::Course2 == m_selectedCourse)
 		{
-			newCourse = new Course("bmp/course2/course2.bmp");
+			newCourse = new Course();
+			newCourse->m_handle = oka::ImageManager::GetInstance()->GetHandle("Course2");
 			newCourse->SetCheckPoint("txt/course2_cp.txt");
 			newCourse->SetAimPoint("txt/course2_AIp.txt");
 			newCourse->MakeBuffer("bmp/course2/buffer2.bmp");
 			newCourse->SetItem();
 
-			//レースのBGM読み込み
-			newCourse->m_bgm = oka::Sound::LoadWavFile("wav/course2BGM.wav");
+			newCourse->m_bgm = oka::SoundManager::GetInstance()->GetHandle("Course2BGM");
 
 			//初期座標
 			CharacterManager::GetInstance()->m_character[0]->m_transform.SetPosition(oka::Vec3(17.f, 0.f, -110.5f));
@@ -88,8 +115,6 @@ void CourseSelectScene::Update()
 			CharacterManager::GetInstance()->m_character[3]->m_transform.SetPosition(oka::Vec3(41.f, 0.f, -95.5f));
 
 		}
-
-		/**/
 
 		RaceManager::GetInstance()->m_course = newCourse;
 		oka::GameManager::GetInstance()->AddGameObject(RaceManager::GetInstance()->m_course);
@@ -100,15 +125,57 @@ void CourseSelectScene::Update()
 
 void CourseSelectScene::Render()
 {
+	//設定必要？
 	//ビューポートの設定
-	const int x = 0;
+	/*const int x = 0;
 	const int y = 0;
 	const int width = oka::ScreenManager::GetInstance()->GetWidth();
 	const int height = oka::ScreenManager::GetInstance()->GetHeight();
 
-	oka::ScreenManager::GetInstance()->SetViewport(x, y, width, height);
+	oka::ScreenManager::GetInstance()->SetViewport(x, y, width, height);*/
+
+	m_rot += 0.01f;
+
+	float x = sin(m_rot)*100 + 200.0f;
+	float z = cos(m_rot)*50 + 100.0f;
+
+	oka::Vec3 position = oka::Vec3(x, 150.0f, z);
+	oka::Vec3 target = oka::Vec3(128.0f, 0.0f, -128.0f);
+	oka::Vec3 up = oka::Vec3(0.0f, 1.0f, 0.0f);
+
+	g_camera->Perspective();
+	g_camera->SetViewMatrix(position, target, up);
+	g_camera->MultViewMatrix();
+
+	m_course[m_selectedCourse]->Draw();
 
 	//更新
 	g_camera->Ortho(0.0f, 300.f, 0.0f, 300.f, 1.0f, -1.0f);
+
+	glm::vec2 pos = glm::vec2(55.0f,250.0f);
+	oka::Vec3 color = oka::Vec3(1.0f,1.0f,1.0f);
+	float scale = 0.25f;
+	float width = 3.0f;
+
+	oka::DrawString("CourseSelect",pos, scale,color, width);
+
+	for (int i = 0; i < CourseNameMax; i++) 
+	{
+		pos = glm::vec2(120.0f, 200.0f - 30.0f*i);
+		scale = 0.15f;
+		width = 3.0f;
+
+		if (m_selectedCourse == i)
+		{
+			color = oka::Vec3(1.0f, 0.0f, 0.0f);
+		}
+		else
+		{
+			color = oka::Vec3(1.0f, 1.0f, 1.0f);
+		}
+
+		oka::DrawString(m_course[i]->m_name, pos, scale, color, width);
+
+	}
 
 }

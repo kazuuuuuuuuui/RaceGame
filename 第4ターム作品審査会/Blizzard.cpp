@@ -33,6 +33,9 @@ void Blizzard::Draw()
 {
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	{
+
+		glDisable(GL_LIGHTING);
+
 		glPushMatrix();
 		{
 			glEnable(GL_TEXTURE_2D);
@@ -78,7 +81,7 @@ bool Blizzard::isHit(oka::Vec3 _position)
 	v.m_y = 0;
 	v.m_z = m_basePosition.m_z - _position.m_z;
 
-	float length = v.length();
+	float length = v.Length();
 
 	//îÕàÕÇÕóvèCê≥
 	if (length < 2.f){

@@ -15,7 +15,9 @@ namespace oka
 		Vec3(const float _x, const float _y, const float _z);
 		~Vec3() {};
 
-		float length()const;
+		float Length()const;
+		void Normalize();
+		static Vec3 Cross(const Vec3 &_v1, const Vec3 &_v2);
 	
 		Vec3 operator +(const Vec3 &_v)const;
 		Vec3 operator -(const Vec3 &_v)const;

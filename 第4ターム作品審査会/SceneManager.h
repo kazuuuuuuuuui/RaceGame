@@ -31,15 +31,9 @@ namespace oka
 		void Title(float _delta);
 		void CourseSelect(float _delta);
 		void GameMain(float _delta);
+		void Pause(float _delta);
 		 
-
-		SceneManager()
-		{
-			m_nowScene = new TitleScene();
-			m_prevScene = nullptr;
-			m_sequence.Change(&SceneManager::Title);
-		}
-		
+		SceneManager();		
 
 	};
 }

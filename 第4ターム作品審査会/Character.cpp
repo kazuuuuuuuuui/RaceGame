@@ -29,8 +29,6 @@
 
 void Character::Update(){
 
-	//if (false == m_isGoal)
-	//{
 		//フレームの管理
 		m_flame++;
 
@@ -171,7 +169,7 @@ void Character::Update(){
 	//ダッシュの減速処理
 	m_dashSpeed *= 0.96;
 
-	if (m_dashSpeed.length() <= 0.0001)
+	if (m_dashSpeed.Length() <= 0.0001)
 	{
 		//ダッシュ状態解除
 		m_isDash = false;
@@ -180,7 +178,7 @@ void Character::Update(){
 
 	//車輪の回転スピード更新
 	//*100は補正値
-	m_wheelSpeed = m_speed.length() * 100.f;
+	m_wheelSpeed = m_speed.Length() * 100.f;
 
 
 	//スリップ処理
@@ -365,7 +363,7 @@ void Character::control(unsigned short _pressedKey, unsigned int _downKeys, floa
 {
 	//エンジン音のピッチ調整
 
-	oka::SoundManager::GetInstance()->ChangeVolume("Engine", pow(2, (m_speed.length()*15.f) / 12));
+	oka::SoundManager::GetInstance()->ChangeVolume("Engine", pow(2, (m_speed.Length()*15.f) / 12));
 
 	if (false == m_isHitItem)
 	{
@@ -531,7 +529,8 @@ void Character::control()
 	//補完の滑らかさが変わる
 	CompletionValue += 0.05f;
 
-	if (CompletionValue >= 1){
+	if (CompletionValue >= 1)
+	{
 		CompletionValue = 1.f;
 	}
 
@@ -620,7 +619,7 @@ float Character::checkNextCheckPointLength()
 
 	v = m_transform.GetPosition() - RaceManager::GetInstance()->m_course->m_checkPoint[m_nowPoint].m_position;
 
-	return v.length();
+	return v.Length();
 }
 
 //-------------------------------------

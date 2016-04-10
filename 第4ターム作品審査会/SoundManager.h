@@ -24,6 +24,7 @@ namespace oka
 		static SoundManager* GetInstance();
 		void AddSound(const std::string _str, unsigned int _sound);
 		void DeleteSound(const std::string _str);
+		unsigned int GetHandle(const std::string _str)const;
 		void Play(const std::string _str);
 		void Stop(const std::string _str);
 		void ChangeVolume(const std::string _str,const float _value);

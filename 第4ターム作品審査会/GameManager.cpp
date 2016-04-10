@@ -120,7 +120,7 @@ namespace oka
 
 		float hitLine = 2.4f;
 
-		if (v.length() < hitLine) {
+		if (v.Length() < hitLine) {
 			return true;
 		}
 

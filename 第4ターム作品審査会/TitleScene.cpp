@@ -17,16 +17,43 @@
 #include"glm\glm.hpp"
 #include"Vec3.h"
 
-bool title_pushAnyKey = false;
+//-------------------------------------
+//現在選択されているゲームモード初期化
+
+int TitleScene::m_gameMode = single;
+
+//-------------------------------------
+//ゲームモード名の配列初期化
+
+const char* TitleScene::m_gameModeName[GameModeMax] =
+{
+	"Single Mode",
+	"VS Mode",
+	"Exit"
+};
 
 void TitleScene::Update()
 {
-	if ((false == title_pushAnyKey) && (oka::JoysticManager::GetInstance()->GetContoroller(0).m_downkey & XINPUT_GAMEPAD_START))
-	{
-		title_pushAnyKey = true;
-		oka::SoundManager::GetInstance()->Play("pushStartButtonSE");
+	//if ((oka::JoysticManager::GetInstance()->GetContoroller(0).m_downkey & XINPUT_GAMEPAD_START))
+	//{
+	//	oka::SoundManager::GetInstance()->Play("pushStartButtonSE");//鳴らない
+	//}
 
-	}
+	if (oka::JoysticManager::GetInstance()->GetContoroller(0).m_yBottomDown)
+		{
+			m_gameMode++;
+			m_gameMode = (m_gameMode + TitleScene::GameMode::GameModeMax) % TitleScene::GameMode::GameModeMax;
+			oka::SoundManager::GetInstance()->Play("cursorMoveSE");
+
+		}
+
+		if (oka::JoysticManager::GetInstance()->GetContoroller(0).m_yTopDown)
+		{
+			m_gameMode--;
+			m_gameMode = (m_gameMode + TitleScene::GameMode::GameModeMax) % TitleScene::GameMode::GameModeMax;
+			oka::SoundManager::GetInstance()->Play("cursorMoveSE");
+
+		}
 
 }
 
@@ -53,10 +80,7 @@ void TitleScene::Render()
 
 	oka::DrawString("Racing", position, scale, color, width);
 
-	if (false == title_pushAnyKey)
-	{
-
-		if ((oka::TimeManager::GetInstance()->m_flame % 60) < 30)
+		/*if ((oka::TimeManager::GetInstance()->m_flame % 60) < 30)
 		{
 			glm::vec2 position = glm::vec2(85.0f, 40.0f);
 			float scale = 0.1f;
@@ -64,72 +88,24 @@ void TitleScene::Render()
 			float width = 1.5f;
 
 			oka::DrawString("Push Start Button", position, scale, color, width);
-		}
-
-	}
-	else
-	{
-		if (oka::JoysticManager::GetInstance()->GetContoroller(0).m_yTopDown)
-		{
-			m_mode++;
-			m_mode = (m_mode + TitleScene::Mode::Max) % TitleScene::Mode::Max;
-			oka::SoundManager::GetInstance()->Play("cursorMoveSE");
-
-		}
-
-		if (oka::JoysticManager::GetInstance()->GetContoroller(0).m_yBottomDown)
-		{
-			m_mode--;
-			m_mode = (m_mode + TitleScene::Mode::Max) % TitleScene::Mode::Max;
-			oka::SoundManager::GetInstance()->Play("cursorMoveSE");
-
-		}
-
-
-		/*if (oka::JoysticManager::GetInstance()->GetContoroller(0).m_downkey & XINPUT_GAMEPAD_A)
-		{
-			oka::GameManager::GetInstance()->_sequence.Change(&oka::GameManager::sceneCourseSelect);
-			oka::SoundManager::GetInstance()->Play("modeDecision");
 		}*/
 
-		//oka::SetLineWidth(4.0f);
-		if (TitleScene::Mode::Single == m_mode)
-		{
-			glm::vec2 position = glm::vec2(100.0f, 55.0f);
-			float scale = 0.1f;
-			oka::Vec3 color = oka::Vec3(1.0f, 0.0f, 0.0f);
-			float width = 1.0f;
+	for (int i = 0; i < GameModeMax; i++)
+	{
+		glm::vec2 pos = glm::vec2(110.0f, 80.0f - 20.0f*i);
+		scale = 0.1f;
+		width = 2.0f;
 
-			oka::DrawString("Single Mode", position, scale, color, width);
+		if (m_gameMode == i)
+		{
+			color = oka::Vec3(1.0f, 0.0f, 0.0f);
 		}
 		else
 		{
-			glm::vec2 position = glm::vec2(100.0f, 55.0f);
-			float scale = 0.1f;
-			oka::Vec3 color = oka::Vec3(1.0f, 1.0f, 1.0f);
-			float width = 1.0f;
-
-			oka::DrawString("Single Mode", position, scale, color, width);
+			color = oka::Vec3(1.0f, 1.0f, 1.0f);
 		}
 
-		if (TitleScene::Mode::Vs == m_mode)
-		{
-			glm::vec2 position = glm::vec2(115.0f, 25.0f);
-			float scale = 0.1f;
-			oka::Vec3 color = oka::Vec3(1.0f, 0.0f, 0.0f);
-			float width = 1.0f;
+		oka::DrawString(m_gameModeName[i], pos, scale, color, width);
 
-			oka::DrawString("Vs Mode", position, scale, color, width);
-		}
-		else
-		{
-			glm::vec2 position = glm::vec2(115.0f, 25.0f);
-			float scale = 0.1f;
-			oka::Vec3 color = oka::Vec3(1.0f, 1.0f, 1.0f);
-			float width = 1.0f;
-
-			oka::DrawString("Vs Mode", position, scale, color, width);
-		}
 	}
-
 }

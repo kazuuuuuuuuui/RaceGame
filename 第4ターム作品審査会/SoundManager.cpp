@@ -54,6 +54,23 @@ namespace oka
 		}
 	}
 
+	//-------------------------------------
+	//ˆø”‚Æ‚µ‚ÄŽó‚¯Žæ‚Á‚½key‚ªmap‚É“o˜^‚³‚ê‚Ä‚¢‚é‚©
+	//ŒŸõ‚µ“o˜^‚³‚ê‚Ä‚¢‚ê‚Î‚»‚Ìkey‚É‘Î‰ž‚·‚éƒeƒNƒXƒ`ƒƒƒnƒ“ƒhƒ‹‚ð•Ô‚·
+
+	unsigned int SoundManager::GetHandle(const std::string _str)const
+	{
+		if (m_sounds.find(_str) == m_sounds.end())
+		{
+			//—vC³
+			return 0;
+		}
+		else
+		{
+			return m_sounds.find(_str)->second;
+		}
+	}
+
 
 	//-------------------------------------
 	//•¶Žš—ñkey‚ÆSoundŒ^‚Ìvalue‚ðŽó‚¯Žæ‚Á‚Ä

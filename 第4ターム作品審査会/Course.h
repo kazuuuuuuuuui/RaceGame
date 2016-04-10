@@ -39,6 +39,8 @@ class Course :public oka::GameObject
 {
 public:
 
+	const char *m_name;
+
 	//コースに設置してある
 	//周回判定用のチェックポイントの個数
 	static const int checkPointNum = 10;
@@ -60,7 +62,7 @@ public:
 	std::vector<unsigned short>m_index;
 
 	//法線情報
-	//std::vector<float>m_normal;
+	std::vector<oka::Vec3>m_normal;
 
 	//uv情報
 	std::vector<glm::vec2>m_tex;
@@ -83,17 +85,21 @@ public:
 	void Draw();
 	void Update() {};
 
+	void SetVertex();
+	void SetIndex();
+	void SetNormal();
+	void SetTex();
+	void SetHeight(const char *_fileName);
+	
 	void MakeBuffer(const char *_fileName);
 
 	void SetItem();
 	void SetCheckPoint(const char *_txtName);
 	void SetAimPoint(const char *_txtName);
 
-	Course(const char *_fileName);
+	Course();
 
 };
-
-
 
 #endif
 
