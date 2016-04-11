@@ -45,6 +45,18 @@ namespace oka
 		return m_instance;
 	}
 
+	//-------------------------------------
+	//自身がnullptrでない場合自分自身を破棄する
+
+	void GameManager::Destroy()
+	{
+		if (m_instance)
+		{
+			delete m_instance;
+			m_instance = nullptr;
+		}
+	}
+
 	//--------------------------------------
 	//ゲームのマネージャー更新
 	//常にオブジェクトの活性状態を判別する

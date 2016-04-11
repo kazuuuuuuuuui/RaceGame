@@ -26,20 +26,25 @@ namespace oka
 		void CheckGameObject();
 
 		static GameManager* GetInstance();
-
-		// 各種シーン
-		//void sceneTitle(float delta);
-		//void sceneCourseSelect(float delta);
-		//void scenePlay(float delta);
-		//Sequence< GameManager > _sequence;
-
+		static void Destroy();
 
 	private:
+		static GameManager* m_instance;
+
 		GameManager()
 		{
-			//_sequence.Change(&GameManager::sceneTitle);
+			//debug
+			printf("ゲームマネージャーが生成されました\n");
+			printf("\n");
+
 		}
-		static GameManager* m_instance;
+
+		~GameManager()
+		{
+			//debug
+			printf("ゲームマネージャーが削除されました\n");
+			printf("\n");
+		}
 
 	};
 }

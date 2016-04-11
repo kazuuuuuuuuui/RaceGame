@@ -24,7 +24,7 @@ namespace oka
 	//引数としてキャラクタ型のポインタを受け取り
 	//コントローラを管理しているベクターに入れる
 
-	void JoysticManager::AddController(Contoroller _controller)
+	void JoysticManager::AddController(Contoroller *_controller)
 	{
 		m_contoroller.push_back(_controller);
 	}
@@ -41,7 +41,7 @@ namespace oka
 
 	Contoroller JoysticManager::GetContoroller(const int _num)const
 	{
-		return m_contoroller[_num];	
+		return *(m_contoroller[_num]);	
 	}
 
 	//-------------------------------------
@@ -52,14 +52,14 @@ namespace oka
 	{
 		for (unsigned int i = 0; i < m_contoroller.size(); i++)
 		{
-			if (ERROR_SUCCESS == XInputGetState(i, &m_contoroller[i].m_state))
+			if (ERROR_SUCCESS == XInputGetState(i, &m_contoroller[i]->m_state))
 			{
-				m_contoroller[i].m_isConnect = true;
-				m_contoroller[i].Update();
+				m_contoroller[i]->m_isConnect = true;
+				m_contoroller[i]->Update();
 			}
 			else
 			{
-				m_contoroller[i].m_isConnect = false;
+				m_contoroller[i]->m_isConnect = false;
 			}
 
 		}

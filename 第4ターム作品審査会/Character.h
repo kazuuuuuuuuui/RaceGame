@@ -32,10 +32,10 @@ Characterクラスのメンバをカプセル化する
 	public:
 
 		//自身を操作するコントローラー
-		Contoroller m_contoroller;
+		//Contoroller m_contoroller;
 
 		//エンジン音
-		unsigned int m_engine;
+		//unsigned int m_engine;
 
 		//自身の向きベクトル
 		glm::vec2 OrientationVector;
@@ -179,6 +179,7 @@ Characterクラスのメンバをカプセル化する
 			m_isHitItem(false),
 			m_isGoal(false)
 		{
+			//debug
 			printf("プレイヤーが生成されました\n");
 
 			m_body.m_model = _body;
@@ -187,7 +188,7 @@ Characterクラスのメンバをカプセル化する
 
 			m_transform.SetScale(oka::Vec3(0.18f, 0.18f, 0.18f));
 
-			m_engine = oka::Sound::LoadSquareWave(engine_sound, sizeof(engine_sound), 110);
+			//m_engine = oka::Sound::LoadSquareWave(engine_sound, sizeof(engine_sound), 110);
 
 			//角度からの向きベクトル
 			OrientationVector = { -sin(m_transform.GetRotation().m_y), -cos(m_transform.GetRotation().m_y) };
@@ -223,7 +224,11 @@ Characterクラスのメンバをカプセル化する
 		}
 
 		//デストラクタ
-		~Character() { printf("キャラクターが削除されました\n"); }
+		~Character() 
+		{
+			//debug
+			printf("キャラクターが削除されました\n"); 
+		}
 	};
 
 

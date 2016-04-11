@@ -11,13 +11,13 @@ namespace oka
 	{
 	private:
 		static JoysticManager* m_instance;
-		std::vector<Contoroller>m_contoroller;
+		std::vector<Contoroller*>m_contoroller;
 
 		JoysticManager() {};
 
 	public:
 		Contoroller GetContoroller(const int _num)const;
-		void AddController(Contoroller _Contoroller);
+		void AddController(Contoroller *_Contoroller);
 		unsigned int GetContorollerNumber()const;
 		void Update();
 		static JoysticManager* GetInstance();

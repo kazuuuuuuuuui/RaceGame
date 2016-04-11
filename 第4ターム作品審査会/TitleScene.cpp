@@ -80,16 +80,6 @@ void TitleScene::Render()
 
 	oka::DrawString("Racing", position, scale, color, width);
 
-		/*if ((oka::TimeManager::GetInstance()->m_flame % 60) < 30)
-		{
-			glm::vec2 position = glm::vec2(85.0f, 40.0f);
-			float scale = 0.1f;
-			oka::Vec3 color = oka::Vec3(1.0f, 1.0f, 1.0f);
-			float width = 1.5f;
-
-			oka::DrawString("Push Start Button", position, scale, color, width);
-		}*/
-
 	for (int i = 0; i < GameModeMax; i++)
 	{
 		glm::vec2 pos = glm::vec2(110.0f, 80.0f - 20.0f*i);

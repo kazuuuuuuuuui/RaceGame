@@ -10,6 +10,15 @@
 #include<stdlib.h>
 #include"BmpImage.h"
 
+//-------------
+//背景色初期化
+
+const oka::Vec3 Course::m_backgroundColor =
+{
+	77.0f / 255.0f,
+	180.0f / 255.0f,
+	232.0f / 255.0f
+};
 
 //-------------------------------------
 //コンストラクタ
@@ -18,6 +27,11 @@
 
 Course::Course()
 {
+	//debug
+	printf("コースが生成されました\n");
+	printf("\n");
+
+
 	m_name = nullptr;
 
 	m_width = 0;
@@ -26,12 +40,6 @@ Course::Course()
 
 	m_bgm = 0;
 
-	//背景色初期化
-	oka::Vec3 color;
-	color.m_x = 77.0f / 255.0f;
-	color.m_y = 180.0f / 255.0f;
-	color.m_z = 232.0f / 255.0f;
-	m_backgroundColor = color;
 
 	//頂点データ
 	SetVertex();
@@ -47,6 +55,19 @@ Course::Course()
 
 	//test
 	SetHeight("bmp/test.bmp");
+}
+
+//-------------------------------------
+//デストラクタ
+
+Course::~Course()
+{
+	//debug
+	printf("コースが削除されました\n");
+	printf("\n");
+
+
+
 }
 
 //------------------------
@@ -382,9 +403,9 @@ void Course::SetItem()
 				position.m_y = 0.5f;
 				position.m_z = i - COURSE_HEIGHT;
 
-				ItemManager::GetInstance()->m_item[itemNum]->m_transform.SetPosition(position);
+				ItemManager::GetInstance()->m_item[ItemManager::GetInstance()->m_itemNum]->m_transform.SetPosition(position);
 
-				itemNum++;
+				ItemManager::GetInstance()->m_itemNum++;
 
 			}
 

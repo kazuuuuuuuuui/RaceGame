@@ -18,8 +18,8 @@ namespace oka
 
 	SceneManager::SceneManager()
 	{
-		m_nowScene = new TitleScene();
-		m_prevScene = new TitleScene();
+		m_nowScene = nullptr;
+		m_prevScene = nullptr;
 		m_sequence.Change(&SceneManager::Title);
 	}
 
@@ -52,16 +52,12 @@ namespace oka
 	{
 		if (0.0f == m_sequence.GetTime())
 		{	
-			delete m_prevScene;
-			m_prevScene = m_nowScene;
+			printf("/********************************/\n");
+	
 			m_nowScene = new TitleScene();
-
+			
 			printf("タイトルシーンが初期化されました\n");
 			printf("\n");
-
-			//変更予定
-			//最初の順位設定と順位付与
-			RaceManager::GetInstance()->CheckRanking(CharacterManager::GetInstance()->m_character);
 
 			oka::SoundManager::GetInstance()->Play("TitleBGM");
 
@@ -79,6 +75,10 @@ namespace oka
 			else
 			{
 				printf("コース選択シーンに移ります\n");
+				printf("\n");
+
+				m_prevScene = m_nowScene;
+				delete m_nowScene;
 
 				m_sequence.Change(&SceneManager::CourseSelect);
 				oka::SoundManager::GetInstance()->Play("modeDecision");
@@ -94,30 +94,38 @@ namespace oka
 	{
 		if (0.0f == m_sequence.GetTime())
 		{
-			delete m_prevScene;
-			m_prevScene = m_nowScene;
+			printf("/********************************/\n");
+			
 			m_nowScene = new CourseSelectScene();
-
-			printf("コースセレクトシーンが初期化されました\n");
+	
+			printf("コース選択シーンが初期化されました\n");
 			printf("\n");
-
-			//アイテムの添え字初期化
-			itemNum = 0;
 
 		}
 
 		m_nowScene->Update();
 		m_nowScene->Render();
 
-		//プレイシーンに移行
+		//ゲームシーンに移行
 		if (oka::JoysticManager::GetInstance()->GetContoroller(0).m_downkey & XINPUT_GAMEPAD_A)
 		{
-			printf("プレイシーンに移ります\n");
+			printf("\n");
+			printf("ゲームシーンに移ります\n");
+			printf("\n");
+
+			m_prevScene = m_nowScene;
+			delete m_nowScene;
+
 			m_sequence.Change(&SceneManager::GameMain);
 		}
 		else if (oka::JoysticManager::GetInstance()->GetContoroller(0).m_downkey & XINPUT_GAMEPAD_B)
 		{
 			printf("タイトルシーンに戻ります\n");
+			printf("\n");
+
+			m_prevScene = m_nowScene;
+			delete m_nowScene;
+
 			m_sequence.Change(&SceneManager::Title);
 		}
 	}
@@ -130,10 +138,15 @@ namespace oka
 	{
 		if (0.0f == m_sequence.GetTime())
 		{
-			m_prevScene = m_nowScene;
+			printf("/********************************/\n");
+			
 			m_nowScene = new GameMainScene();
 
-			printf("プレイシーンが初期化されました\n");
+			//変更予定
+			//最初の順位設定と順位付与
+			RaceManager::GetInstance()->CheckRanking(CharacterManager::GetInstance()->m_character);
+
+			printf("ゲームシーンが初期化されました\n");
 			printf("\n");
 
 		}
@@ -145,6 +158,10 @@ namespace oka
 		if (oka::JoysticManager::GetInstance()->GetContoroller(0).m_downkey & XINPUT_GAMEPAD_START)
 		{
 			printf("ポーズシーンに移ります\n");
+			printf("\n");
+
+			m_prevScene = m_nowScene;
+
 			m_sequence.Change(&SceneManager::Pause);
 		}
 	}
@@ -155,7 +172,8 @@ namespace oka
 	{
 		if (0.0f == m_sequence.GetTime())
 		{
-			m_prevScene = m_nowScene;
+			printf("/********************************/\n");
+			
 			m_nowScene = new PauseScene();
 
 			printf("ポーズシーンが初期化されました\n");
@@ -173,16 +191,31 @@ namespace oka
 			if (PauseScene::Mode::backGame == PauseScene::m_mode)
 			{
 				printf("ゲームシーンに戻ります\n");
+				printf("\n");
+
+				m_prevScene = m_nowScene;
+				delete m_nowScene;
+
 				m_sequence.Change(&SceneManager::GameMain);
 			}
 			else if (PauseScene::Mode::backTitle == PauseScene::m_mode)
 			{
 				printf("タイトルシーンに戻ります\n");
+				printf("\n");
+
+				delete m_nowScene;//ポーズシーン
+				delete m_prevScene;//ゲームメインシーン
+
 				m_sequence.Change(&SceneManager::Title);
 			}
 			else if(PauseScene::Mode::backCourseSelect == PauseScene::m_mode)
 			{
 				printf("コース選択シーンに戻ります\n");
+				printf("\n");
+
+				delete m_nowScene;//ポーズシーン
+				delete m_prevScene;//ゲームメインシーン
+
 				m_sequence.Change(&SceneManager::CourseSelect);
 
 			}

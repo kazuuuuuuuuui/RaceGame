@@ -1,3 +1,6 @@
+//debug
+#include<iostream>
+
 #include<assert.h>
 #include"SoundManager.h"
 
@@ -46,11 +49,14 @@ namespace oka
 	{
 		if (m_sounds.find(_str)==m_sounds.end())
 		{
+			//debug
+			std::cout << "*Sound " << _str << "‚ð’Ç‰Á‚µ‚Ü‚µ‚½\n";
+
 			m_sounds.insert(std::make_pair(_str, _sound));
 		}
 		else
 		{
-			printf("%s‚ÍŠù‚É“o˜^‚³‚ê‚Ä‚¢‚Ü‚·\n", _str);
+			
 		}
 	}
 
@@ -87,6 +93,9 @@ namespace oka
 		}
 		else
 		{
+			//debug
+			std::cout << "*Sound " << _str << "‚Ííœ‚³‚ê‚Ü‚µ‚½\n";
+
 			m_sounds.erase(_str);
 		}
 	}

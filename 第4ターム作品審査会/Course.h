@@ -80,7 +80,7 @@ public:
 	CheckPoint m_checkPoint[checkPointNum]; //周回判定用のポイント
 	AimPoint m_aimPoint[aimPointNum];			 //敵AI用のポイント
 	
-	oka::Vec3 m_backgroundColor;
+	static const oka::Vec3 m_backgroundColor;
 
 	void Draw();
 	void Update() {};
@@ -98,6 +98,7 @@ public:
 	void SetAimPoint(const char *_txtName);
 
 	Course();
+	~Course();
 
 };
 

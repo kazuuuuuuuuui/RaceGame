@@ -7,12 +7,6 @@
 
 RaceManager* RaceManager::m_instance = nullptr;
 
-//取り敢えず
-int startFrame = 0;//フレーム数
-int timenow = 0;//経過時間
-int timebase = 0;//計測開始時間
-int startCount = 6;
-
 //-----------------------------------------------------------
 //シングルトンにするためインスタンスがない場合のみnewし
 //既にインスタンスがある場合はそのインスタンスをそのまま返す
@@ -26,19 +20,26 @@ RaceManager* RaceManager::GetInstance()
 	return m_instance;
 }
 
+//-------------------------------------
+//自身がnullptrでない場合自分自身を破棄する
 
-
+void RaceManager::Destory()
+{
+	if (m_instance)
+	{
+		delete m_instance;
+		m_instance = nullptr;
+	}
+}
 
 //-------------------------------------
 //レーススタートのカウントダウン
 
 void RaceManager::CountRaceStart()
 {
-	startFrame++; //フレーム数を＋１
+	m_flame++; //フレーム数を＋１
 
-	timenow = glutGet(GLUT_ELAPSED_TIME);//経過時間を取得
-
-	if (timenow - timebase > 1000)      //１秒以上たったら処理を行う
+	if (0 == m_flame % 60)      //１秒以上たったら処理を行う
 	{
 		startCount--;
 
@@ -50,46 +51,45 @@ void RaceManager::CountRaceStart()
 			m_raceStart = true;
 
 		}
-
-		timebase = timenow;//基準時間を設定                
-		startFrame = 0;//フレーム数をリセット
+       
+		m_flame = 0;//フレーム数をリセット
 	}
 
 	//カウントダウンの音
-	if (3 == startCount && startFrame == 0)
+	if (3 == startCount && m_flame == 0)
 	{
 		oka::SoundManager::GetInstance()->Play("CountDown");
 	}
-	if (3 == startCount && startFrame == 30)
+	if (3 == startCount && m_flame == 30)
 	{
 		oka::SoundManager::GetInstance()->Stop("CountDown");
 	}
 
-	if (2 == startCount && startFrame == 0)
+	if (2 == startCount && m_flame == 0)
 	{
 		oka::SoundManager::GetInstance()->Play("CountDown");
 	}
-	if (2 == startCount && startFrame == 30)
+	if (2 == startCount && m_flame == 30)
 	{
 		oka::SoundManager::GetInstance()->Stop("CountDown");
 	}
 
-	if (1 == startCount && startFrame == 0)
+	if (1 == startCount && m_flame == 0)
 	{
 		oka::SoundManager::GetInstance()->Play("CountDown");
 	}
-	if (1 == startCount && startFrame == 30)
+	if (1 == startCount && m_flame == 30)
 	{
 		oka::SoundManager::GetInstance()->Stop("CountDown");
 	}
 
-	if (0 == startCount && startFrame == 0)
+	if (0 == startCount && m_flame == 0)
 	{
 		oka::SoundManager::GetInstance()->ChangePitch("CountDown", 2.0f);
 		oka::SoundManager::GetInstance()->Play("CountDown");
 	}
 
-	if (-1 == startCount && startFrame == 10)
+	if (-1 == startCount && m_flame == 10)
 	{
 		oka::SoundManager::GetInstance()->Stop("CountDown");
 		oka::Sound::Play(RaceManager::GetInstance()->m_course->m_bgm);
@@ -147,17 +147,15 @@ void RaceManager::PrintRaceStrart()const
 		glPopMatrix();
 
 	}
-	else if (0 == startCount) {
-
-		static float num = 1.f;
-		num += 0.007f;
+	else if (0 == startCount) 
+	{
 
 		glPushMatrix();
 		{
 			glBindTexture(GL_TEXTURE_2D, oka::ImageManager::GetInstance()->GetHandle("Go"));
 
 			glTranslatef(150, 150, 0);
-			glScalef(num, num, num);
+			
 			glColor4f(1, 1, 1, 1);
 
 			glBegin(GL_QUADS);

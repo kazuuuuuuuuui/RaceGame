@@ -31,8 +31,7 @@ void Circle2DFill(float radius, int x, int y)
 	}
 }
 
-//アイテムの添え字に使う
-int itemNum = 0;
+
 
 //-------------------------------------
 //アイテムの更新
@@ -57,7 +56,7 @@ void Item::Update(){
 		{
 
 			m_isActive = false;
-
+			m_flame = 0;
 
 			//所持アイテムが3つ以下だったらアイテムを所持させる
 			if (CharacterManager::GetInstance()->m_character[i]->hasItemNumber() < HAS_ITEM_MAX)

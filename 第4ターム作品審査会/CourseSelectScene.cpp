@@ -17,6 +17,7 @@ CourseSelectScene::CourseSelectScene()
 {
 	//debug
 	printf("コース選択シーン生成\n");
+	printf("\n");
 
 	m_rot = 0.0f;
 

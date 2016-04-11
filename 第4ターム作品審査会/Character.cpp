@@ -96,19 +96,19 @@ void Character::Update(){
 
 			m_lapCount++;
 
-			if (m_contoroller.m_isConnect)
-			{
-				//1Žü–Ú‚Ü‚½‚Í2Žü–Ú‚ÌŽž‚Ì‚Ý–Â‚ç‚·
-				if (1 == m_lapCount)
-				{
-					oka::SoundManager::GetInstance()->Play("lapCountSE");
-				}
-				else if (2 == m_lapCount)
-				{
-					oka::SoundManager::GetInstance()->Play("finalLapSE");
-			
-				}
-			}
+			//if (m_contoroller.m_isConnect)
+			//{
+			//	//1Žü–Ú‚Ü‚½‚Í2Žü–Ú‚ÌŽž‚Ì‚Ý–Â‚ç‚·
+			//	if (1 == m_lapCount)
+			//	{
+			//		oka::SoundManager::GetInstance()->Play("lapCountSE");
+			//	}
+			//	else if (2 == m_lapCount)
+			//	{
+			//		oka::SoundManager::GetInstance()->Play("finalLapSE");
+			//
+			//	}
+			//}
 
 		}
 

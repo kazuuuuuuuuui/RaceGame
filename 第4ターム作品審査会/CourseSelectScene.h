@@ -8,7 +8,6 @@ class CourseSelectScene :public BaseScene
 {
 public:
 
-
 	//-------------
 	//コースの種類
 
@@ -33,6 +32,7 @@ public:
 	{
 		//debug
 		printf("コース選択シーン削除\n");
+		printf("\n");
 	}
 
 };

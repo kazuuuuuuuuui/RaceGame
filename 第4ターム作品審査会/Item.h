@@ -70,5 +70,3 @@ public:
 	void Update();
 
 };
-
-extern int itemNum;

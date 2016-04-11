@@ -12,9 +12,15 @@ private:
 public:
 	std::vector<Character*> m_character;
 
-	CharacterManager();
 	static CharacterManager* GetInstance();
 	unsigned int GetCharacterNumber()const;
+
+	static void Destroy();
+
+	CharacterManager();
+
+	~CharacterManager();
+
 };
 
 

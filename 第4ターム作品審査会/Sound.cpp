@@ -18,8 +18,8 @@ namespace oka
 
 	unsigned int Sound::LoadSquareWave(const unsigned char *data, int _size, int _freq)
 	{
-		unsigned int sid;
-		unsigned int bid;
+		unsigned int sid = NULL;
+		unsigned int bid = NULL;
 
 		alGenBuffers(1, &bid);
 		assert(alGetError() == AL_NO_ERROR);

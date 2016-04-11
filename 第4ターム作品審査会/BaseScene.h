@@ -11,6 +11,7 @@ public:
 	virtual void Render() = 0;
 
 	BaseScene() {};
+	virtual ~BaseScene() {};
 };
 
 #endif

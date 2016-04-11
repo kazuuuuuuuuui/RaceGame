@@ -10,6 +10,8 @@ class Contoroller
 public:
 
 	XINPUT_STATE m_state;
+
+	bool m_isConnect;
 	
 	//現フレームのスティックx方向の情報
 	float m_sThumbLX;
@@ -34,12 +36,16 @@ public:
 	unsigned int m_changedKey;//前フレームと現フレームで変化があったキー
 	unsigned int m_downkey;
 
-	bool m_isConnect;
-
 	void Update();
 	void stick_x();
 	void stick_y();
 
-	Contoroller(){};
+	Contoroller():
+		m_isConnect(false),
+		m_sThumbLX(0.0f), m_sThumbLY(0.0f),
+		m_xRightDown(false), m_xRightLast(false), m_xLeftDown(false), m_xLeftLast(false),
+		m_yTopDown(false), m_yTopLast(false), m_yBottomDown(false), m_yBottomLast(false),
+		m_pressedKey(0),m_lastkey(0),m_changedKey(0),m_downkey(0)
+	{};
 
 };

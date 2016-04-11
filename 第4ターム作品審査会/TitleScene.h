@@ -29,12 +29,14 @@ public:
 	{
 		//debug
 		printf("タイトルシーン生成\n");
+		printf("\n");
 	};
 
 	~TitleScene()
 	{
 		//debug
 		printf("タイトルシーン削除\n");
+		printf("\n");
 	};
 };
 
